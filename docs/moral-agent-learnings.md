@@ -77,11 +77,12 @@ feature, listed with where it comes from and how it could land.
   that build willingness to cooperate in the first place. *Proposed:* a trust-building
   trajectory in the interdependence sim where repeated reliance, not just sanction, raises the
   cooperation baseline.
-- **Learning from a public moral corpus (alignment_2).** "Learning a commonsense moral theory"
-  implies labels grounded in shared human judgment. The label-agreement study uses independent
-  *model* raters as a first proxy. *Proposed:* validate against a public, human-labeled moral
-  dataset (for example ETHICS, Social Chemistry 101, or the Commonsense Norm Bank) and report
-  how the router's dispositions track real human labels on data the author did not write.
+- **Learning from a public moral corpus (alignment_2).** *Integrated.* `labeling/public_corpus.py`
+  validates the assessor's model against the public, human-annotated ETHICS commonsense set
+  (Hendrycks et al., 2021): the model agrees with the human labels 97.5% (kappa 0.95) on a
+  sample, evidence its moral judgments are not idiosyncratic to this repo. Caveat: ETHICS is
+  general morality, not workspace appropriateness, so it is out-of-domain external validity.
+  A like-for-like, human-labeled workspace-appropriateness corpus would be the next step.
 
 The honest status: the repo has the course's *structure* (appropriateness, thin and thick,
 social enforcement, learned norms) and now its *moral psychology* as assessed dimensions

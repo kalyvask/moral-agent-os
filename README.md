@@ -436,18 +436,28 @@ idiosyncratic. These are model raters, not humans: a fast, reproducible check, n
 substitute for human annotation, which remains the gold standard. Full report:
 [docs/label-agreement.md](docs/label-agreement.md).
 
+For a less circular check against *real human* labels on data this repo did not write,
+`python -m labeling.public_corpus` runs the assessor's model over the public, human-annotated
+ETHICS commonsense-morality set (Hendrycks et al., 2021). The model agrees with the human
+labels **97.5%** (Cohen's kappa **0.95**) on a 40-item sample, so its moral judgments track
+human consensus rather than this repo's framing. The honest caveat: ETHICS is general
+morality, not workspace-agent appropriateness, so this is out-of-domain external validity,
+not a like-for-like benchmark. Report: [docs/public-corpus.md](docs/public-corpus.md).
+
 ## What Is Honestly Still Missing
 
 To keep the claims narrow:
 
-- The LLM assessor has a saved OpenRouter ablation run on the expanded bank, but
-  significance and consensus validation still need a fresh key-backed run. The committed
-  figures in `docs/figures/` are generated with the deterministic baseline so they
-  reproduce offline in CI; regenerate with `--assessor openrouter` (or `llm`) to refresh
-  them with model numbers.
-- Independent labels exist only from model raters (Fleiss kappa 0.85, author-vs-consensus
-  0.90); there are still no independent *human* labels. Model raters share text-trained
-  priors, so human annotation remains the gold standard and the open item in M5.
+- The committed figures in `docs/figures/` are generated with the deterministic baseline so
+  they reproduce offline in CI; the model numbers live in the saved OpenRouter reports
+  (ablation, validation, label-agreement, public-corpus). Regenerate with `--assessor
+  openrouter` (or `llm`) to refresh the figures with model numbers.
+- The model's moral judgments are validated against human ETHICS labels (kappa 0.95) and
+  independent model raters, but there are still no *human* labels on the in-domain
+  workspace-appropriateness scenarios themselves. That human annotation is the open M5 item.
+- The new moral-psychology gates (universalizability, patiency, sentiment) are implemented
+  but off by default; their routing benefit has not yet been measured (turn them on and
+  re-run).
 - The interdependence simulator is an illustrative scaffold, not an empirical model.
 
 ## Cost And Latency
