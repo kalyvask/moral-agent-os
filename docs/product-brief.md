@@ -10,6 +10,10 @@ Moral Agent OS is an appropriateness layer for AI agents. It intercepts proposed
 actions, models the social and operational context, then routes the action to
 auto-execute, confirm, present alternatives, escalate, or block.
 
+The deeper thesis is that moral behavior cannot be added only at the moment of
+action. It has to be learned in an environment of interdependence: repeated
+interaction, shared stakes, partner choice, reputation, sanction, and repair.
+
 ## User
 
 The first user is a builder of workspace agents: assistants that can send
@@ -23,6 +27,8 @@ infrastructure.
 - Expose value conflicts instead of collapsing them into fake certainty.
 - Learn an org's local norms from corrections.
 - Produce a measurable safety/friction frontier against hard-rule baselines.
+- Test whether repeated dependence and sanction make cooperation more stable
+  than one-shot action choice.
 
 ## Product Surface
 
@@ -30,6 +36,8 @@ The product has two parts:
 
 1. Runtime SDK: `intercept -> assess -> route -> act/ask/escalate/block`.
 2. Adaptive UI: the governance surface that changes with moral uncertainty.
+3. Interdependence lab: repeated multi-agent environments where norms can emerge,
+   fail, get sanctioned, and stabilize.
 
 ## Non-Goals
 
@@ -45,4 +53,5 @@ One workspace agent. One action category at a time. One scenario bank with
 matched pairs where the same action flips appropriateness across contexts.
 
 Success is not a polished demo. Success is showing a measured separation from
-hard rules on both safety and friction.
+hard rules on both safety and friction, then showing that interdependence
+conditions improve cooperation versus one-shot baselines.

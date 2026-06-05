@@ -1,12 +1,12 @@
 # Moral Agent OS
 
-Appropriateness infrastructure for AI agents.
+Appropriateness and interdependence infrastructure for AI agents.
 
 Hard rules fail in the moral long tail. Moral Agent OS routes agent actions by
 role, situation, stakeholders, stakes, reversibility, norm conflict, and local
-corrections. The goal is not to make an AI "moral" in the deep philosophical
-sense. The goal is to make agent behavior more appropriate, accountable, and
-measurable in real product workflows.
+corrections. It also tests the deeper course claim: moral behavior is learned in
+environments of interdependence, where agents repeatedly rely on each other,
+build trust, face sanction, and update norms.
 
 ## Why This Exists
 
@@ -23,6 +23,8 @@ Moral Agent OS treats this as a product and eval problem:
 - Route high-stakes or irreversible actions to accountable humans.
 - Learn from local corrections so the interface gets less annoying over time.
 - Measure whether this beats hard rules on safety and friction.
+- Evaluate whether repeated dependence, partner choice, reputation, and sanction
+  make cooperative behavior more stable than one-shot action choice.
 
 ## MVP Scope
 
@@ -44,6 +46,7 @@ The runtime returns one of four UI dispositions:
 moral-agent-os/
   moral_agent_os/        runtime package
   bench/                 Stress eval harness
+  bench/interdependence.py  repeated-dependence benchmark
   bench/scenarios/       36 same-action-different-context scenarios
   docs/                  product brief, course connection, eval plan
   examples/              quickstart usage
@@ -58,6 +61,12 @@ Run the benchmark with the deterministic scaffold assessor:
 
 ```bash
 python -m bench.run
+```
+
+Run the interdependence benchmark:
+
+```bash
+python -m bench.interdependence
 ```
 
 Validate the scenario bank:
@@ -84,6 +93,10 @@ to add an LLM assessor that emits the same structured `ContextAssessment`.
 
 ## The Measurement Spine
 
+Moral Agent OS has two measurement tracks.
+
+### Track 1: Appropriateness Routing
+
 The benchmark compares identical scenarios across three arms:
 
 - `hard_rules`: static allow, confirm, or block by action type.
@@ -99,23 +112,41 @@ The money plot is same-action-different-context pairs: the identical action is
 appropriate in one setting and inappropriate in another. Hard rules cannot see
 the difference by construction; Moral Agent OS should.
 
+### Track 2: Interdependence
+
+The interdependence benchmark compares:
+
+- `one_shot_baseline`: agents choose without memory, reputation, or repeated
+  dependence.
+- `repeated_no_sanction`: agents repeat interactions but norms have no real
+  enforcement.
+- `interdependent_norm_learning`: agents have repeated dependence, reputation,
+  partner choice, sanction, and a seeded cooperative cluster.
+
+The headline is not "the agent knows the rule." It is whether environmental
+conditions make cooperation and norm-following more stable over time.
+
 ## Course Connection
 
 This project productizes the Stanford CS 186 / PHIL 86 "How to Make a Moral
 Agent" lesson that moral competence is contextual, social, learned, and
-accountable, not a hand-coded lookup table.
+accountable, not a hand-coded lookup table. The deeper thesis is that morality
+emerges under interdependence: repeated cooperation, shared stakes, trust,
+partner choice, sanction, and norm feedback.
 
 See [docs/moral-agent-learnings.md](docs/moral-agent-learnings.md).
+See [docs/interdependence-design.md](docs/interdependence-design.md).
 
 ## Roadmap
 
 1. Build the scenario bank to 50-60 cases with held-out situation families.
-2. Add an LLM assessor with structured output and prompt caching.
-3. Add independent human labels and inter-rater agreement.
-4. Sweep routing thresholds and render the safety/friction frontier.
-5. Add norm memory with correction episodes and a frozen-control comparison.
-6. Build the adaptive UI around the four dispositions.
-7. Publish a short writeup with falsifiers and measured results.
+2. Add threshold sweeps for the safety/friction frontier.
+3. Expand the interdependence benchmark into richer multi-agent tasks.
+4. Add an LLM assessor with structured output and prompt caching.
+5. Add independent human labels and inter-rater agreement.
+6. Add norm memory with correction episodes and a frozen-control comparison.
+7. Build the adaptive UI around the four dispositions.
+8. Publish a short writeup with falsifiers and measured results.
 
 ## GitHub Milestones
 

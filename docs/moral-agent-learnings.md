@@ -7,6 +7,10 @@ Moral Agent OS uses the course as design input, not as decorative philosophy.
 | Hard-coded ethics fails in the long tail. | The constitution floor is thin and limited to legal, safety, and irreversible actions. |
 | Rulebooks are not models. | The runtime builds a context model before judging an action. |
 | Moral competence is learned socially. | Norm memory learns from user and org corrections. |
+| Morality emerges under interdependence. | The interdependence benchmark tests repeated cooperation, reputation, partner choice, and sanction. |
+| Cooperation is often a Stag Hunt, not a simple temptation problem. | Agents need enough trust to choose the shared task over the safe individual shortcut. |
+| Shared intentionality creates a "we." | Future evals should include joint tasks with shared success criteria, not only individual rewards. |
+| Norms require enforcement. | Violations should carry trace, reputation, autonomy, or review consequences. |
 | Appropriateness is local and role-bound. | The assessor asks what situation this is, what role the agent has, and what someone in that role does here. |
 | Societies function despite value disagreement. | Kaleidoscope shows multiple reasonable interpretations when norms conflict. |
 | Accountability differs from capability. | High-stakes or irreversible decisions escalate to an accountable human. |
@@ -18,6 +22,9 @@ Moral Agent OS uses the course as design input, not as decorative philosophy.
 The product should say less "this violates rule X" and more "this action does
 not fit the agent's role in this situation, for these stakeholders, at this
 level of risk."
+
+The environment should say: "this behavior changed whether others can rely on
+you." That is the missing step between action classification and moral learning.
 
 ## Falsifier
 
