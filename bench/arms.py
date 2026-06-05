@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from moral_agent_os import MoralAgentOS
-from moral_agent_os.floor import ConstitutionFloor
-from moral_agent_os.schema import ArmResult, Disposition, Scenario
+from ai_safety_os import MoralAgentOS
+from ai_safety_os.floor import ConstitutionFloor
+from ai_safety_os.schema import ArmResult, Disposition, Scenario
 
 
 class HardRulesArm:

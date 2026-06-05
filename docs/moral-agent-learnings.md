@@ -1,6 +1,6 @@
 # Moral Agent Course Learnings
 
-Moral Agent OS uses the course as design input, not as decorative philosophy.
+AI Safety OS uses the course as design input, not as decorative philosophy.
 
 | Course learning | Product translation |
 | --- | --- |
@@ -28,7 +28,7 @@ you." That is the missing step between action classification and moral learning.
 
 ## Falsifier
 
-If Moral Agent OS does not beat hard rules on matched
+If AI Safety OS does not beat hard rules on matched
 same-action-different-context scenarios, the thesis is wrong or the assessor is
 not yet good enough. That is a useful failure, not an embarrassment.
 

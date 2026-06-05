@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from moral_agent_os.kaleidoscope import Kaleidoscope
-from moral_agent_os.schema import ContextAssessment, Disposition, RouteDecision, Scenario
+from ai_safety_os.kaleidoscope import Kaleidoscope
+from ai_safety_os.schema import ContextAssessment, Disposition, RouteDecision, Scenario
 
 
 class NormRouter:

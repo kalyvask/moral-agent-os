@@ -12,7 +12,7 @@ from adapters import (
     guard_langchain_tool,
     guard_openai_tool,
 )
-from moral_agent_os import ContextSnapshot, MoralAgentOS, MoralRoute
+from ai_safety_os import ContextSnapshot, MoralAgentOS, MoralRoute
 
 
 def send_email(to: str, subject: str, body: str) -> str:
@@ -46,7 +46,7 @@ class TestGuardCallable(unittest.TestCase):
         guarded = guard_callable(runtime, send_email, action_type="send_email",
                                  context=EXTERNAL)
         result = guarded("inv@vc.com", "s", "b")
-        self.assertIn("[Moral Agent OS]", result)
+        self.assertIn("[AI Safety OS]", result)
         self.assertIn("escalate", result)
 
     def test_context_builder_receives_args(self) -> None:
@@ -81,7 +81,7 @@ class TestGuardCallable(unittest.TestCase):
             reversibility=0.6,
         )
         blocked = guard_callable(runtime, send_email, action_type="send_email", context=ctx)
-        self.assertIn("[Moral Agent OS]", blocked("a@x.com", "s", "b"))
+        self.assertIn("[AI Safety OS]", blocked("a@x.com", "s", "b"))
         allowed = guard_callable(
             runtime, send_email, action_type="send_email", context=ctx,
             execute_routes=(MoralRoute.ALLOW, MoralRoute.CONFIRM),

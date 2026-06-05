@@ -1,6 +1,6 @@
 """LangChain adapter.
 
-Wrap any callable as a LangChain tool that is gated by Moral Agent OS. If LangChain is
+Wrap any callable as a LangChain tool that is gated by AI Safety OS. If LangChain is
 installed, returns a ``StructuredTool``; otherwise returns the guarded callable, which you
 can register however you like.
 """
@@ -11,7 +11,7 @@ from collections.abc import Callable
 from typing import Any
 
 from adapters.base import ContextLike, guard_callable
-from moral_agent_os import MoralAgentOS, MoralRoute
+from ai_safety_os import MoralAgentOS, MoralRoute
 
 
 def guard_langchain_tool(

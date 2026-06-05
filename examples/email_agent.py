@@ -1,4 +1,4 @@
-"""Example: guard an email-sending tool with Moral Agent OS."""
+"""Example: guard an email-sending tool with AI Safety OS."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from moral_agent_os import (  # noqa: E402
+from ai_safety_os import (  # noqa: E402
     ActionProposal,
     ContextSnapshot,
     MoralAgentOS,

@@ -6,8 +6,8 @@ import json
 import unittest
 from types import SimpleNamespace
 
-from moral_agent_os.llm_assessor import LLMAssessor, LLMAssessorError, _render_scenario
-from moral_agent_os.schema import Scenario, ScenarioLabel
+from ai_safety_os.llm_assessor import LLMAssessor, LLMAssessorError, _render_scenario
+from ai_safety_os.schema import Scenario, ScenarioLabel
 
 
 def _scenario(action: str, context: str, role: str = "workspace assistant") -> Scenario:

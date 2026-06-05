@@ -100,14 +100,14 @@ flowchart LR
 2. [done] CSV and JSON outputs for both benchmark tracks in `bench/results/`.
 3. [done] `docs/figures/` holds generated SVG charts (frontier, confusion matrix,
    interdependence, asymmetric, shared intent, ablation, memory).
-4. [done] `moral_agent_os/memory.py` persists corrections, relationships, and review
+4. [done] `ai_safety_os/memory.py` persists corrections, relationships, and review
    history, with a frozen-control comparison in `bench/memory_demo.py`.
 5. [done] Tool adapters for LangChain, CrewAI, AutoGen, and OpenAI Agents in `adapters/`,
    with a runnable example. (A second multi-tool example agent is still a nice-to-have.)
 
 ## Built Since This Critique
 
-- An LLM contextual assessor (`moral_agent_os/llm_assessor.py`) emitting the same schema.
+- An LLM contextual assessor (`ai_safety_os/llm_assessor.py`) emitting the same schema.
 - A context-ablation experiment (`bench/ablation.py`) that measures whether the
   same-action win is real or definitional, with the scenario bank grown to 56 including
   same-action twins and held-out, out-of-vocabulary cases.

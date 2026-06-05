@@ -7,7 +7,7 @@ dependency-free, reuses the same cached rubric and the same JSON->ContextAssessm
 coercion, and keeps the deterministic hard floor. Any model on OpenRouter works; the
 default is a current Claude model.
 
-    from moral_agent_os import OpenRouterAssessor
+    from ai_safety_os import OpenRouterAssessor
     assessor = OpenRouterAssessor()                 # reads OPENROUTER_API_KEY
     assessor = OpenRouterAssessor("anthropic/claude-opus-4.8")
 """
@@ -21,15 +21,15 @@ import urllib.error
 import urllib.request
 from typing import Any
 
-from moral_agent_os.floor import ConstitutionFloor
-from moral_agent_os.llm_assessor import (
+from ai_safety_os.floor import ConstitutionFloor
+from ai_safety_os.llm_assessor import (
     SYSTEM_RUBRIC,
     LLMAssessorError,
     _render_scenario,
     assessment_from_payload,
 )
-from moral_agent_os.reward_hacking import RewardHackingDetector
-from moral_agent_os.schema import ContextAssessment, Scenario
+from ai_safety_os.reward_hacking import RewardHackingDetector
+from ai_safety_os.schema import ContextAssessment, Scenario
 
 DEFAULT_MODEL = "anthropic/claude-sonnet-4.6"
 DEFAULT_BASE_URL = "https://openrouter.ai/api/v1"
@@ -119,7 +119,7 @@ class OpenRouterAssessor:
             "Content-Type": "application/json",
             # OpenRouter attribution headers (optional but polite).
             "HTTP-Referer": "https://github.com/kalyvask/ai-safety-os",
-            "X-Title": "Moral Agent OS",
+            "X-Title": "AI Safety OS",
         }
         last_error: Exception | None = None
         for attempt in range(self.max_retries):

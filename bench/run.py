@@ -6,10 +6,10 @@ import argparse
 import json
 from pathlib import Path
 
+from ai_safety_os.schema import Scenario
 from bench.arms import AlwaysConfirmArm, HardRulesArm, NormOSArm
 from bench.assessors import build_assessor
 from bench.metrics import format_rate, summarize
-from moral_agent_os.schema import Scenario
 
 ROOT = Path(__file__).resolve().parent
 SCENARIO_FILE = ROOT / "scenarios" / "workspace_actions.jsonl"

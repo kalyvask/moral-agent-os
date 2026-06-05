@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from moral_agent_os import (
+from ai_safety_os import (
     ActionProposal,
     ContextSnapshot,
     MoralAgentOS,

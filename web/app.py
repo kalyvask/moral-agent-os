@@ -14,8 +14,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from ai_safety_os import MoralAgentOS
 from bench.run import load_scenarios
-from moral_agent_os import MoralAgentOS
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -33,7 +33,7 @@ class Handler(BaseHTTPRequestHandler):
         <!doctype html>
         <html>
           <head>
-            <title>Moral Agent OS</title>
+            <title>AI Safety OS</title>
             <style>
               body {{ font-family: system-ui, sans-serif; margin: 2rem; }}
               table {{ border-collapse: collapse; width: 100%; }}
@@ -41,7 +41,7 @@ class Handler(BaseHTTPRequestHandler):
             </style>
           </head>
           <body>
-            <h1>Moral Agent OS</h1>
+            <h1>AI Safety OS</h1>
             <p>Adaptive action routing scaffold.</p>
             <table>
               <thead>

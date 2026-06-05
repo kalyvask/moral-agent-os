@@ -24,13 +24,13 @@ import json
 from math import comb
 from pathlib import Path
 
+from ai_safety_os import MoralAgentOS
+from ai_safety_os.schema import Disposition, Scenario, ScenarioLabel
 from bench.ablation import CAUTION, twin_pairs
 from bench.assessors import build_assessor
 from bench.run import load_scenarios
 from labeling.agreement import agreement_rate, majority_consensus
 from labeling.model_raters import DEFAULT_RATERS, _normos_label, _safe_name
-from moral_agent_os import MoralAgentOS
-from moral_agent_os.schema import Disposition, Scenario, ScenarioLabel
 
 REPO = Path(__file__).resolve().parent.parent
 DOCS = REPO / "docs"

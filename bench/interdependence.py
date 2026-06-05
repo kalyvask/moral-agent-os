@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from moral_agent_os.interdependence import (
+from ai_safety_os.interdependence import (
     InterdependenceEnvironment,
     SimulationResult,
     default_conditions,

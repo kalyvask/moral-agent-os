@@ -1,6 +1,6 @@
 """AutoGen adapter.
 
-Wrap any callable as an AutoGen tool gated by Moral Agent OS. If autogen-core is installed,
+Wrap any callable as an AutoGen tool gated by AI Safety OS. If autogen-core is installed,
 returns a ``FunctionTool``; otherwise returns the guarded callable, which AutoGen also
 accepts directly (e.g. ``register_function`` or ``tools=[...]``).
 """
@@ -11,7 +11,7 @@ from collections.abc import Callable
 from typing import Any
 
 from adapters.base import ContextLike, guard_callable
-from moral_agent_os import MoralAgentOS, MoralRoute
+from ai_safety_os import MoralAgentOS, MoralRoute
 
 
 def guard_autogen_tool(

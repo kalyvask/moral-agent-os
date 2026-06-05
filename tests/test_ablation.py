@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import unittest
 
+from ai_safety_os.schema import Scenario, ScenarioLabel
 from bench.ablation import run_ablation, twin_pairs
 from bench.run import load_scenarios
-from moral_agent_os.schema import Scenario, ScenarioLabel
 
 
 def _twin(id_: str, context: str, label: ScenarioLabel) -> Scenario:

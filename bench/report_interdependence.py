@@ -6,8 +6,8 @@ import argparse
 from collections import defaultdict
 from pathlib import Path
 
+from ai_safety_os.interdependence import EnvironmentFamily, SimulationResult
 from bench.interdependence import run_all
-from moral_agent_os.interdependence import EnvironmentFamily, SimulationResult
 
 FAMILY_LABELS = {
     EnvironmentFamily.STAG_HUNT: "Stag Hunt",

@@ -6,7 +6,7 @@ Hard rules are necessary but insufficient for agent safety. They catch obvious
 violations, but they do not know what role the agent is playing, who is affected,
 whether an action is reversible, or whether a norm conflict is real.
 
-Moral Agent OS is an appropriateness layer for AI agents. It intercepts proposed
+AI Safety OS is an appropriateness layer for AI agents. It intercepts proposed
 actions, models the social and operational context, then routes the action to
 auto-execute, confirm, present alternatives, escalate, or block.
 

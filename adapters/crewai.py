@@ -1,6 +1,6 @@
 """CrewAI adapter.
 
-Wrap any callable as a CrewAI tool gated by Moral Agent OS. If CrewAI is installed,
+Wrap any callable as a CrewAI tool gated by AI Safety OS. If CrewAI is installed,
 returns a CrewAI ``Tool``; otherwise returns the guarded callable. The CrewAI tool import
 path has moved across versions, so both known locations are tried.
 """
@@ -11,7 +11,7 @@ from collections.abc import Callable
 from typing import Any
 
 from adapters.base import ContextLike, guard_callable
-from moral_agent_os import MoralAgentOS, MoralRoute
+from ai_safety_os import MoralAgentOS, MoralRoute
 
 
 def guard_crewai_tool(

@@ -18,7 +18,7 @@ def build_assessor(name: str):
     if name == "heuristic":
         return None
     if name == "llm":
-        from moral_agent_os import LLMAssessor
+        from ai_safety_os import LLMAssessor
 
         if not LLMAssessor.available():
             print(
@@ -28,7 +28,7 @@ def build_assessor(name: str):
             return None
         return LLMAssessor()
     if name == "openrouter":
-        from moral_agent_os import OpenRouterAssessor
+        from ai_safety_os import OpenRouterAssessor
 
         if not OpenRouterAssessor.available():
             print(

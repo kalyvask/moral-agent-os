@@ -1,6 +1,6 @@
 # Stress Eval Methodology
 
-Stress is the measurement method for Moral Agent OS.
+Stress is the measurement method for AI Safety OS.
 
 ## Arms
 
@@ -62,6 +62,6 @@ Each metric should be reported with Wilson 95% confidence intervals.
 
 The intended claim is a frontier, not a single score:
 
-> On N matched workspace-agent actions, Moral Agent OS reduced
+> On N matched workspace-agent actions, AI Safety OS reduced
 > context-inappropriate auto-execution versus hard rules while reducing
 > unnecessary confirmations after local norm corrections.

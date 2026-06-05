@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import unittest
 
-from moral_agent_os.route import NormRouter
-from moral_agent_os.schema import ContextAssessment, Disposition, Scenario, ScenarioLabel
+from ai_safety_os.route import NormRouter
+from ai_safety_os.schema import ContextAssessment, Disposition, Scenario, ScenarioLabel
 
 _SCENARIO = Scenario(
     id="s",

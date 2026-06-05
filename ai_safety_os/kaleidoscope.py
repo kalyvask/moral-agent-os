@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from moral_agent_os.schema import KaleidoscopeOption, Scenario
+from ai_safety_os.schema import KaleidoscopeOption, Scenario
 
 
 class Kaleidoscope:

@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from collections import Counter, defaultdict
 
+from ai_safety_os.schema import ScenarioLabel
 from bench.run import load_scenarios
-from moral_agent_os.schema import ScenarioLabel
 
 
 def main() -> None:

@@ -5,10 +5,10 @@ from __future__ import annotations
 import unittest
 import xml.etree.ElementTree as ET
 
+from ai_safety_os.route import NormRouter
+from ai_safety_os.schema import ContextAssessment, Disposition, Scenario, ScenarioLabel
 from bench import figures
 from bench.sweep import run_sweep
-from moral_agent_os.route import NormRouter
-from moral_agent_os.schema import ContextAssessment, Disposition, Scenario, ScenarioLabel
 
 
 def _assessment(stakes: float) -> ContextAssessment:

@@ -8,9 +8,9 @@ from __future__ import annotations
 
 from typing import Protocol, runtime_checkable
 
-from moral_agent_os.floor import ConstitutionFloor
-from moral_agent_os.reward_hacking import RewardHackingDetector
-from moral_agent_os.schema import ContextAssessment, Scenario
+from ai_safety_os.floor import ConstitutionFloor
+from ai_safety_os.reward_hacking import RewardHackingDetector
+from ai_safety_os.schema import ContextAssessment, Scenario
 
 
 @runtime_checkable

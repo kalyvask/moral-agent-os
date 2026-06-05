@@ -1,6 +1,6 @@
 """OpenAI Agents-style adapter.
 
-Wrap any callable as a tool gated by Moral Agent OS. If the OpenAI Agents SDK (``agents``)
+Wrap any callable as a tool gated by AI Safety OS. If the OpenAI Agents SDK (``agents``)
 is installed, returns a ``function_tool``; otherwise returns the guarded callable, which
 works with raw OpenAI function calling (you dispatch the call yourself).
 """
@@ -11,7 +11,7 @@ from collections.abc import Callable
 from typing import Any
 
 from adapters.base import ContextLike, guard_callable
-from moral_agent_os import MoralAgentOS, MoralRoute
+from ai_safety_os import MoralAgentOS, MoralRoute
 
 
 def guard_openai_tool(

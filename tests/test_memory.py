@@ -6,8 +6,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from moral_agent_os import MoralAgentOS, WorkspaceMemory, hydrate_context
-from moral_agent_os.schema import (
+from ai_safety_os import MoralAgentOS, WorkspaceMemory, hydrate_context
+from ai_safety_os.schema import (
     ContextSnapshot,
     Disposition,
     RelationshipState,

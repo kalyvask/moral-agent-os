@@ -17,13 +17,13 @@ import argparse
 from dataclasses import dataclass
 from pathlib import Path
 
+from ai_safety_os import MoralAgentOS
+from ai_safety_os.route import NormRouter
+from ai_safety_os.schema import ArmResult, Scenario
 from bench import figures
 from bench.arms import AlwaysConfirmArm, HardRulesArm
 from bench.metrics import summarize
 from bench.run import load_scenarios
-from moral_agent_os import MoralAgentOS
-from moral_agent_os.route import NormRouter
-from moral_agent_os.schema import ArmResult, Scenario
 
 REPO = Path(__file__).resolve().parent.parent
 DOCS = REPO / "docs"

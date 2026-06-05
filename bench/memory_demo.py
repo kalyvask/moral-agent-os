@@ -21,10 +21,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from ai_safety_os import MoralAgentOS, WorkspaceMemory
+from ai_safety_os.schema import Disposition, Scenario, ScenarioLabel
 from bench import figures
 from bench.run import load_scenarios
-from moral_agent_os import MoralAgentOS, WorkspaceMemory
-from moral_agent_os.schema import Disposition, Scenario, ScenarioLabel
 
 REPO = Path(__file__).resolve().parent.parent
 DOCS = REPO / "docs"

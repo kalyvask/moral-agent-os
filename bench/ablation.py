@@ -26,11 +26,11 @@ from collections import defaultdict
 from dataclasses import dataclass, replace
 from pathlib import Path
 
+from ai_safety_os import MoralAgentOS
+from ai_safety_os.schema import Disposition, Scenario, ScenarioLabel
 from bench.assessors import build_assessor
 from bench.metrics import Rate, format_rate, rate, summarize
 from bench.run import load_scenarios
-from moral_agent_os import MoralAgentOS
-from moral_agent_os.schema import Disposition, Scenario, ScenarioLabel
 
 # Caution ordering: a pair is discriminated when the inappropriate action is routed
 # strictly more cautiously than its appropriate twin.
@@ -120,7 +120,7 @@ def _condition(
     )
 
     # Reuse the headline safety/friction metrics from the routing benchmark.
-    from moral_agent_os.schema import ArmResult
+    from ai_safety_os.schema import ArmResult
 
     arm_results = [
         ArmResult(

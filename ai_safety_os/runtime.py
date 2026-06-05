@@ -8,10 +8,10 @@ from functools import wraps
 from inspect import signature
 from typing import Any
 
-from moral_agent_os.assess import Assessor, HeuristicAssessor
-from moral_agent_os.norms import CorrectionStore, LocalNormMemory
-from moral_agent_os.route import NormRouter
-from moral_agent_os.schema import (
+from ai_safety_os.assess import Assessor, HeuristicAssessor
+from ai_safety_os.norms import CorrectionStore, LocalNormMemory
+from ai_safety_os.route import NormRouter
+from ai_safety_os.schema import (
     ActionProposal,
     ContextAssessment,
     ContextSnapshot,
@@ -123,7 +123,7 @@ class MoralAgentOS:
         context_builder: Callable[..., ContextSnapshot] | None = None,
         execute_routes: tuple[MoralRoute, ...] = (MoralRoute.ALLOW,),
     ) -> Callable[[Callable[..., Any]], Callable[..., GuardedToolResult]]:
-        """Decorate an agent tool so Moral Agent OS gates execution."""
+        """Decorate an agent tool so AI Safety OS gates execution."""
 
         def decorator(func: Callable[..., Any]) -> Callable[..., GuardedToolResult]:
             @wraps(func)
@@ -148,7 +148,7 @@ class MoralAgentOS:
                         decision=decision,
                         executed=True,
                         result=result,
-                        message="Executed after Moral Agent OS allowed the action.",
+                        message="Executed after AI Safety OS allowed the action.",
                     )
 
                 return GuardedToolResult(
@@ -325,5 +325,5 @@ class MoralAgentOS:
         if decision.route == MoralRoute.ESCALATE:
             return "Tool call paused for accountable review."
         if decision.route == MoralRoute.BLOCK:
-            return "Tool call blocked by Moral Agent OS."
-        return "Tool call paused by Moral Agent OS."
+            return "Tool call blocked by AI Safety OS."
+        return "Tool call paused by AI Safety OS."

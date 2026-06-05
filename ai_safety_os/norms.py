@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol, runtime_checkable
 
-from moral_agent_os.schema import Disposition, Scenario
+from ai_safety_os.schema import Disposition, Scenario
 
 
 @runtime_checkable

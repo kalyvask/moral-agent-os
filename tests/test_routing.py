@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import unittest
 
+from ai_safety_os import Disposition, MoralAgentOS
+from ai_safety_os.schema import Scenario, ScenarioLabel
 from bench.metrics import summarize
 from bench.run import load_scenarios
-from moral_agent_os import Disposition, MoralAgentOS
-from moral_agent_os.schema import Scenario, ScenarioLabel
 
 
 class RoutingTest(unittest.TestCase):

@@ -1,7 +1,7 @@
-"""Framework-agnostic core for gating agent tools through Moral Agent OS.
+"""Framework-agnostic core for gating agent tools through AI Safety OS.
 
 Every tool-calling framework ultimately calls a Python callable. ``guard_callable`` wraps
-one so that, before it runs, Moral Agent OS assesses the action in context and routes it.
+one so that, before it runs, AI Safety OS assesses the action in context and routes it.
 When the route is allowed, the tool runs and returns its result. When it is not, the
 wrapper returns a short, agent-readable message instead of executing, so the model can do
 what the route asks: confirm with the user, present alternatives, or escalate. Returning a
@@ -21,7 +21,7 @@ from functools import wraps
 from inspect import signature
 from typing import Any
 
-from moral_agent_os import (
+from ai_safety_os import (
     ActionProposal,
     ContextSnapshot,
     MoralAgentOS,
@@ -41,7 +41,7 @@ def decision_message(decision: MoralDecision) -> str:
         MoralRoute.BLOCK: "Do not attempt this action; it violates a hard safety or legal floor.",
     }.get(decision.route, "This action was paused.")
     parts = [
-        f"[Moral Agent OS] Not executed (route={decision.route.value}, stakes={decision.stakes}).",
+        f"[AI Safety OS] Not executed (route={decision.route.value}, stakes={decision.stakes}).",
         guidance,
         f"Reason: {decision.reason}",
     ]
@@ -79,10 +79,10 @@ def guard_callable(
     execute_routes: tuple[MoralRoute, ...] = (MoralRoute.ALLOW,),
     on_decision: Callable[[MoralDecision], None] | None = None,
 ) -> Callable[..., Any]:
-    """Wrap ``func`` so Moral Agent OS gates it. Returns a signature-preserving callable.
+    """Wrap ``func`` so AI Safety OS gates it. Returns a signature-preserving callable.
 
     Args:
-        runtime: the Moral Agent OS instance to assess with.
+        runtime: the AI Safety OS instance to assess with.
         func: the underlying tool callable.
         action_type: action family (defaults to the function name).
         context: a ContextSnapshot, or a builder called with the tool's args that returns

@@ -27,9 +27,9 @@ import json
 import os
 from typing import Any
 
-from moral_agent_os.floor import ConstitutionFloor
-from moral_agent_os.reward_hacking import RewardHackingDetector
-from moral_agent_os.schema import ContextAssessment, Scenario
+from ai_safety_os.floor import ConstitutionFloor
+from ai_safety_os.reward_hacking import RewardHackingDetector
+from ai_safety_os.schema import ContextAssessment, Scenario
 
 DEFAULT_MODEL = "claude-opus-4-8"
 
@@ -37,7 +37,7 @@ DEFAULT_MODEL = "claude-opus-4-8"
 # with anchors so LLM output is calibrated against the same axes the deterministic
 # scaffold uses, and it is stable across scenarios so it can be prompt-cached.
 SYSTEM_RUBRIC = """\
-You are the contextual assessor inside Moral Agent OS, a layer that sits between an AI
+You are the contextual assessor inside AI Safety OS, a layer that sits between an AI
 agent and its consequential tools (email, documents, calendar, CRM, code, infra). You do
 not decide what to do. You read a single proposed action in context and score it on a
 fixed set of axes. A separate router turns your scores into a disposition (auto, confirm,
@@ -246,7 +246,7 @@ class LLMAssessor:
         except ImportError as exc:  # pragma: no cover - exercised only without the extra
             raise LLMAssessorError(
                 "The LLM assessor needs the anthropic SDK. Install it with "
-                "`pip install 'moral-agent-os[llm]'`."
+                "`pip install 'ai-safety-os[llm]'`."
             ) from exc
         kwargs: dict[str, Any] = {}
         if self._api_key:

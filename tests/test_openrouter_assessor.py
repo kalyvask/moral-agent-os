@@ -6,12 +6,12 @@ import json
 import unittest
 from unittest.mock import patch
 
-from moral_agent_os.openrouter_assessor import (
+from ai_safety_os.openrouter_assessor import (
     OpenRouterAssessor,
     OpenRouterAssessorError,
     _extract_json,
 )
-from moral_agent_os.schema import Scenario, ScenarioLabel
+from ai_safety_os.schema import Scenario, ScenarioLabel
 
 PAYLOAD = {
     "situation": "destructive_shared_branch_action",

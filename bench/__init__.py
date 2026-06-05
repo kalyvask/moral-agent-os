@@ -1,1 +1,1 @@
-"""Benchmark harness for Moral Agent OS."""
+"""Benchmark harness for AI Safety OS."""

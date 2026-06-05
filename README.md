@@ -1,8 +1,8 @@
-# Moral Agent OS
+# AI Safety OS
 
 Appropriateness and interdependence infrastructure for AI agents.
 
-Moral Agent OS is a runtime layer and eval lab for agents that can take
+AI Safety OS is a runtime layer and eval lab for agents that can take
 consequential actions: send emails, edit records, share docs, schedule meetings,
 or touch code and infrastructure. It sits between an agent and its tools,
 assesses the action in context, and returns a route: allow, confirm, present
@@ -10,7 +10,7 @@ alternatives, escalate for review, or block.
 
 The core idea is simple: hard rules are necessary, but they fail in the moral
 long tail. The same action can be appropriate in one role/context and wrong in
-another. Moral Agent OS routes actions by role, situation, stakeholders, stakes,
+another. AI Safety OS routes actions by role, situation, stakeholders, stakes,
 reversibility, norm conflict, repair obligations, shared commitments, and public
 review needs.
 
@@ -40,7 +40,7 @@ build trust, form commitments, face sanction, repair harm, and update norms.
 
 ## Why It Matters
 
-Most agent guardrails answer "is this action type allowed?" Moral Agent OS asks
+Most agent guardrails answer "is this action type allowed?" AI Safety OS asks
 "is this action appropriate here, for this agent, toward these people, with these
 stakes?" That distinction matters for real workspace agents because the dangerous
 part is often social and contextual: sending the right-looking email to the wrong
@@ -52,7 +52,7 @@ or acting before the team has a shared commitment.
 The shortest path is to wrap each consequential tool:
 
 ```python
-from moral_agent_os import ContextSnapshot, MoralAgentOS
+from ai_safety_os import ContextSnapshot, MoralAgentOS
 
 runtime = MoralAgentOS()
 
@@ -85,7 +85,7 @@ action is not allowed, the guarded tool returns a short message the model can ac
 
 ```python
 from adapters import guard_langchain_tool
-from moral_agent_os import ContextSnapshot, MoralAgentOS
+from ai_safety_os import ContextSnapshot, MoralAgentOS
 
 runtime = MoralAgentOS()
 tool = guard_langchain_tool(
@@ -133,7 +133,7 @@ types, allow safe ones, and ask for confirmation when unsure. That is useful as
 a legal and safety floor, but it misses the core problem. The same action can be
 appropriate in one context and wrong in another.
 
-Moral Agent OS treats this as a product and eval problem:
+AI Safety OS treats this as a product and eval problem:
 
 - Model the situation before judging the action.
 - Separate a thin hard-rule floor from a contextual norm layer.
@@ -162,7 +162,7 @@ The benchmark runtime returns one of five UI dispositions:
 
 ```text
 ai-safety-os/
-  moral_agent_os/             runtime package
+  ai_safety_os/             runtime package
     assess.py                 deterministic scaffold assessor + Assessor protocol
     llm_assessor.py           LLM contextual assessor (same schema, cached rubric)
     memory.py                 persistent corrections, relationships, review history
@@ -283,12 +283,12 @@ python -m bench.ablation --assessor openrouter
 
 Both assessors keep the thin hard-rule floor deterministic and ask the model only for the
 contextual layer, with the long rubric sent as a cached system prompt. See
-[moral_agent_os/llm_assessor.py](moral_agent_os/llm_assessor.py) and
-[moral_agent_os/openrouter_assessor.py](moral_agent_os/openrouter_assessor.py).
+[ai_safety_os/llm_assessor.py](ai_safety_os/llm_assessor.py) and
+[ai_safety_os/openrouter_assessor.py](ai_safety_os/openrouter_assessor.py).
 
 ## The Measurement Spine
 
-Moral Agent OS has two measurement tracks.
+AI Safety OS has two measurement tracks.
 
 ### Track 1: Appropriateness Routing
 
@@ -305,7 +305,7 @@ The headline metrics are a two-axis frontier:
 
 The money plot is same-action-different-context pairs: the identical action is
 appropriate in one setting and inappropriate in another. Hard rules cannot see
-the difference by construction; Moral Agent OS should.
+the difference by construction; AI Safety OS should.
 
 But there is an honest objection to that plot, and the repo now tests it instead of
 hiding it. See [Is the win real?](#is-the-win-real-context-ablation) below.

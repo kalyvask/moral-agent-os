@@ -1,11 +1,11 @@
-"""Moral Agent OS runtime package."""
+"""AI Safety OS runtime package."""
 
-from moral_agent_os.assess import Assessor, HeuristicAssessor
-from moral_agent_os.llm_assessor import LLMAssessor
-from moral_agent_os.memory import WorkspaceMemory, hydrate_context
-from moral_agent_os.openrouter_assessor import OpenRouterAssessor
-from moral_agent_os.runtime import MoralAgentOS
-from moral_agent_os.schema import (
+from ai_safety_os.assess import Assessor, HeuristicAssessor
+from ai_safety_os.llm_assessor import LLMAssessor
+from ai_safety_os.memory import WorkspaceMemory, hydrate_context
+from ai_safety_os.openrouter_assessor import OpenRouterAssessor
+from ai_safety_os.runtime import MoralAgentOS
+from ai_safety_os.schema import (
     ActionProposal,
     ContextSnapshot,
     Disposition,

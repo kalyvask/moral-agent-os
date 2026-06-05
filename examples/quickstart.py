@@ -7,8 +7,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from moral_agent_os import MoralAgentOS
-from moral_agent_os.schema import Scenario, ScenarioLabel
+from ai_safety_os import MoralAgentOS
+from ai_safety_os.schema import Scenario, ScenarioLabel
 
 scenario = Scenario(
     id="quickstart_external_email",

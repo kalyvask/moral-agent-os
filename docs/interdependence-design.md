@@ -5,7 +5,7 @@ actions. Human morality grew in environments where agents depended on one
 another: repeated cooperation, mutual vulnerability, partner choice, reputation,
 sanction, repair, and shared norms.
 
-Moral Agent OS should therefore have two layers:
+AI Safety OS should therefore have two layers:
 
 1. **Appropriateness runtime:** decide whether a proposed action fits this role
    in this context.

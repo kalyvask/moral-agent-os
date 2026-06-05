@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from moral_agent_os.schema import Scenario
+from ai_safety_os.schema import Scenario
 
 
 class RewardHackingDetector:

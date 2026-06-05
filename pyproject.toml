@@ -1,5 +1,5 @@
 [project]
-name = "moral-agent-os"
+name = "ai-safety-os"
 version = "0.1.0"
 description = "Appropriateness infrastructure for AI agents."
 readme = "README.md"
@@ -24,7 +24,7 @@ llm = [
 # examples, labeling, and web folders are run from the repo root (python -m ...), not
 # shipped, so they are excluded from package discovery.
 [tool.setuptools]
-packages = ["moral_agent_os", "adapters"]
+packages = ["ai_safety_os", "adapters"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

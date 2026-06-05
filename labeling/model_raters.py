@@ -27,6 +27,9 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+from ai_safety_os import MoralAgentOS
+from ai_safety_os.openrouter_assessor import DEFAULT_BASE_URL, _extract_json
+from ai_safety_os.schema import Disposition, Scenario, ScenarioLabel
 from bench.run import load_scenarios
 from labeling.agreement import (
     agreement_rate,
@@ -35,9 +38,6 @@ from labeling.agreement import (
     interpret_kappa,
     majority_consensus,
 )
-from moral_agent_os import MoralAgentOS
-from moral_agent_os.openrouter_assessor import DEFAULT_BASE_URL, _extract_json
-from moral_agent_os.schema import Disposition, Scenario, ScenarioLabel
 
 REPO = Path(__file__).resolve().parent.parent
 DOCS = REPO / "docs"
@@ -98,7 +98,7 @@ def _post(api_key: str, model: str, scenario: Scenario, *, timeout: float = 90.0
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
         "HTTP-Referer": "https://github.com/kalyvask/ai-safety-os",
-        "X-Title": "Moral Agent OS labeling",
+        "X-Title": "AI Safety OS labeling",
     }
     url = f"{DEFAULT_BASE_URL}/chat/completions"
     for attempt in range(4):

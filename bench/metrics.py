@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from math import sqrt
 
-from moral_agent_os.schema import ArmResult, Disposition, ScenarioLabel
+from ai_safety_os.schema import ArmResult, Disposition, ScenarioLabel
 
 
 @dataclass(frozen=True)

@@ -35,4 +35,4 @@ jobs:
       - name: Lint
         run: |
           python -m pip install ruff
-          ruff check moral_agent_os adapters bench tests examples
+          ruff check ai_safety_os adapters bench tests examples

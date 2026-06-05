@@ -1,4 +1,4 @@
-"""Adapters that gate agent-framework tools through Moral Agent OS.
+"""Adapters that gate agent-framework tools through AI Safety OS.
 
 The core (`guard_callable`) is framework-agnostic. The per-framework helpers wrap it in the
 native tool type when that framework is installed, and fall back to the guarded callable

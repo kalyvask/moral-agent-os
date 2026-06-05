@@ -26,7 +26,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass, replace
 from pathlib import Path
 
-from moral_agent_os.schema import ContextSnapshot, Disposition, RelationshipState, Scenario
+from ai_safety_os.schema import ContextSnapshot, Disposition, RelationshipState, Scenario
 
 _STOPWORDS = {"action", "agent", "context", "should", "would", "the", "and", "with"}
 

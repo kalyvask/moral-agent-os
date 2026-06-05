@@ -19,9 +19,9 @@ import argparse
 from dataclasses import dataclass
 from pathlib import Path
 
+from ai_safety_os import MoralAgentOS
+from ai_safety_os.schema import ContextAssessment, Disposition, Scenario, ScenarioLabel
 from bench.run import load_scenarios
-from moral_agent_os import MoralAgentOS
-from moral_agent_os.schema import ContextAssessment, Disposition, Scenario, ScenarioLabel
 
 REPO = Path(__file__).resolve().parent.parent
 DOCS = REPO / "docs"

@@ -20,6 +20,7 @@ import csv
 import json
 from pathlib import Path
 
+from ai_safety_os.schema import ArmResult, Disposition, ScenarioLabel
 from bench import figures
 from bench.ablation import render_report as render_ablation
 from bench.ablation import run_ablation
@@ -28,7 +29,6 @@ from bench.assessors import build_assessor
 from bench.interdependence import run_all as run_interdependence
 from bench.metrics import Rate, format_rate, summarize
 from bench.run import load_scenarios
-from moral_agent_os.schema import ArmResult, Disposition, ScenarioLabel
 
 ROOT = Path(__file__).resolve().parent
 REPO = ROOT.parent

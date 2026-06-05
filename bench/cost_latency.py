@@ -17,14 +17,14 @@ import os
 import urllib.request
 from pathlib import Path
 
-from bench.run import load_scenarios
-from moral_agent_os import MoralAgentOS, OpenRouterAssessor
-from moral_agent_os.openrouter_assessor import (
+from ai_safety_os import MoralAgentOS, OpenRouterAssessor
+from ai_safety_os.openrouter_assessor import (
     DEFAULT_BASE_URL,
     DEFAULT_MODEL,
     OpenRouterAssessorError,
 )
-from moral_agent_os.schema import Disposition
+from ai_safety_os.schema import Disposition
+from bench.run import load_scenarios
 
 REPO = Path(__file__).resolve().parent.parent
 DOCS = REPO / "docs"
