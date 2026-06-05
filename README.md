@@ -403,6 +403,25 @@ inappropriate actions. The same-action win is real, not definitional. Full run:
 baseline and confidence intervals: [docs/ablation-report.md](docs/ablation-report.md) and
 [docs/benchmark-report.md](docs/benchmark-report.md).
 
+## Are The Labels Shared?
+
+The premise is that moral competence is shared, so the labels cannot be one author's
+intuition. As a runnable first check, three frontier models from different organizations
+label the bank independently (`python -m labeling.model_raters`):
+
+| Rater | Agreement with author | Cohen's kappa |
+| --- | ---: | ---: |
+| `anthropic/claude-sonnet-4.6` | 98.2% | 0.97 |
+| `openai/gpt-5` | 91.1% | 0.84 |
+| `google/gemini-2.5-pro` | 83.3% | 0.72 |
+
+Fleiss' kappa across the three raters is 0.82, and the author agrees with their majority
+consensus at kappa 0.86. Independent intelligences trained by three different labs converge
+on the same appropriate/inappropriate judgments, so the labels are shared rather than
+idiosyncratic. These are model raters, not humans: a fast, reproducible check, not a
+substitute for human annotation, which remains the gold standard. Full report:
+[docs/label-agreement.md](docs/label-agreement.md).
+
 ## What Is Honestly Still Missing
 
 To keep the claims narrow:
@@ -411,8 +430,9 @@ To keep the claims narrow:
   (100% twin discrimination, 0% unsafe). The committed figures in `docs/figures/` are still
   generated with the deterministic baseline so they reproduce offline in CI; regenerate
   with `--assessor openrouter` (or `llm`) to refresh them with model numbers.
-- There are still no independent human labels and no inter-rater agreement (M5). The
-  expected labels are the author's; validating them is the next priority.
+- Independent labels exist only from model raters (Fleiss kappa 0.82, author-vs-consensus
+  0.86); there are still no independent *human* labels. Model raters share text-trained
+  priors, so human annotation remains the gold standard and the open item in M5.
 - The interdependence simulator is an illustrative scaffold, not an empirical model.
 
 ## Course Connection
@@ -437,7 +457,8 @@ See [docs/interdependence-report.md](docs/interdependence-report.md).
 - [x] Framework adapters (LangChain, CrewAI, AutoGen, OpenAI Agents).
 - [x] Threshold sweeps for the safety/friction frontier (Pareto curve, dominance check).
 - [x] Run the LLM assessor at scale and report LLM-vs-scaffold numbers (over OpenRouter).
-- [ ] Independent labels and inter-rater agreement.
+- [x] Independent (model-rater) labels and inter-rater agreement (Fleiss 0.82).
+- [ ] Independent *human* labels and agreement.
 - [ ] Expand the interdependence benchmark into richer multi-agent tasks.
 - [ ] Adaptive UI around the five dispositions.
 - [ ] Short writeup with falsifiers and measured LLM-vs-scaffold results.
@@ -450,4 +471,5 @@ See [docs/interdependence-report.md](docs/interdependence-report.md).
   0% vs 20% unsafe). Independent labels move to M5.
 - M3 (done): Social learning loop: correction episodes and a frozen-control comparison.
 - M4: Adaptive governance UI: auto, confirm, present-options, escalate, and block states.
-- M5: Results writeup: human labels, confidence intervals, failure analysis, and demo video.
+- M5 (in progress): Results writeup. Confidence intervals, failure analysis, and model-rater
+  inter-rater agreement are done; human labels and a demo video remain.
