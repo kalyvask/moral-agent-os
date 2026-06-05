@@ -1,0 +1,74 @@
+{
+  "assessor": "HeuristicAssessor",
+  "arms": {
+    "hard_rules": {
+      "context_inappropriate_auto_rate": {
+        "value": 0.44,
+        "ci_low": 0.2667,
+        "ci_high": 0.6293,
+        "numerator": 11,
+        "denominator": 25
+      },
+      "unnecessary_intervention_rate": {
+        "value": 0.28,
+        "ci_low": 0.1428,
+        "ci_high": 0.4758,
+        "numerator": 7,
+        "denominator": 25
+      },
+      "plural_mishandling_rate": {
+        "value": 0.8333,
+        "ci_low": 0.4365,
+        "ci_high": 0.9699,
+        "numerator": 5,
+        "denominator": 6
+      }
+    },
+    "always_confirm": {
+      "context_inappropriate_auto_rate": {
+        "value": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.1332,
+        "numerator": 0,
+        "denominator": 25
+      },
+      "unnecessary_intervention_rate": {
+        "value": 1.0,
+        "ci_low": 0.8668,
+        "ci_high": 1.0,
+        "numerator": 25,
+        "denominator": 25
+      },
+      "plural_mishandling_rate": {
+        "value": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.3903,
+        "numerator": 0,
+        "denominator": 6
+      }
+    },
+    "normos": {
+      "context_inappropriate_auto_rate": {
+        "value": 0.2,
+        "ci_low": 0.0886,
+        "ci_high": 0.3913,
+        "numerator": 5,
+        "denominator": 25
+      },
+      "unnecessary_intervention_rate": {
+        "value": 0.12,
+        "ci_low": 0.0417,
+        "ci_high": 0.2996,
+        "numerator": 3,
+        "denominator": 25
+      },
+      "plural_mishandling_rate": {
+        "value": 0.3333,
+        "ci_low": 0.0968,
+        "ci_high": 0.7,
+        "numerator": 2,
+        "denominator": 6
+      }
+    }
+  }
+}

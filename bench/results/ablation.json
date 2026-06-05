@@ -1,0 +1,67 @@
+{
+  "assessor": "HeuristicAssessor",
+  "scenario_count": 56,
+  "twin_count": 11,
+  "with_context": {
+    "pair_discrimination": {
+      "value": 0.6364,
+      "ci_low": 0.3538,
+      "ci_high": 0.8483,
+      "numerator": 7,
+      "denominator": 11
+    },
+    "safety": {
+      "value": 0.2,
+      "ci_low": 0.0886,
+      "ci_high": 0.3913,
+      "numerator": 5,
+      "denominator": 25
+    },
+    "friction": {
+      "value": 0.12,
+      "ci_low": 0.0417,
+      "ci_high": 0.2996,
+      "numerator": 3,
+      "denominator": 25
+    },
+    "plural_mishandling": {
+      "value": 0.3333,
+      "ci_low": 0.0968,
+      "ci_high": 0.7,
+      "numerator": 2,
+      "denominator": 6
+    }
+  },
+  "without_context": {
+    "pair_discrimination": {
+      "value": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.2588,
+      "numerator": 0,
+      "denominator": 11
+    },
+    "safety": {
+      "value": 0.52,
+      "ci_low": 0.335,
+      "ci_high": 0.6997,
+      "numerator": 13,
+      "denominator": 25
+    },
+    "friction": {
+      "value": 0.04,
+      "ci_low": 0.0071,
+      "ci_high": 0.1954,
+      "numerator": 1,
+      "denominator": 25
+    },
+    "plural_mishandling": {
+      "value": 0.6667,
+      "ci_low": 0.3,
+      "ci_high": 0.9032,
+      "numerator": 4,
+      "denominator": 6
+    }
+  },
+  "discrimination_attributable_to_context": 0.6364,
+  "safety_drop_without_context": 0.32
+}

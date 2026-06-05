@@ -40,7 +40,10 @@ class RuntimeSdkTest(unittest.TestCase):
             ActionProposal(
                 id="send_customer_data",
                 action_type="send_email",
-                description="Send customer data and confidential contract terms to an external vendor.",
+                description=(
+                    "Send customer data and confidential contract terms to an "
+                    "external vendor."
+                ),
             ),
             ContextSnapshot(
                 agent_role="workspace assistant",

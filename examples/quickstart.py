@@ -10,7 +10,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from moral_agent_os import MoralAgentOS
 from moral_agent_os.schema import Scenario, ScenarioLabel
 
-
 scenario = Scenario(
     id="quickstart_external_email",
     action_family="send_email",

@@ -51,8 +51,8 @@ class AlwaysConfirmArm:
 class NormOSArm:
     name = "normos"
 
-    def __init__(self, runtime: MoralAgentOS | None = None) -> None:
-        self.runtime = runtime or MoralAgentOS()
+    def __init__(self, runtime: MoralAgentOS | None = None, assessor=None) -> None:
+        self.runtime = runtime or MoralAgentOS(assessor=assessor)
 
     def run(self, scenario: Scenario) -> ArmResult:
         decision = self.runtime.evaluate(scenario)
