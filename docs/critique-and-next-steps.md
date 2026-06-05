@@ -48,7 +48,7 @@ flowchart LR
     HardRules --> Metrics["Safety/friction metrics"]
     AlwaysConfirm --> Metrics
     NormOS --> Metrics
-    Interdependence["Interdependence environments"] --> SocialMetrics["Cooperation, repair, stewardship,<br/>public review, joint commitment"]
+    Interdependence["Interdependence environments"] --> SocialMetrics["Cooperation, repair, stewardship, public review, joint commitment"]
 ```
 
 ## What Is Strong

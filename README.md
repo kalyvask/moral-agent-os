@@ -110,11 +110,11 @@ With none of those frameworks installed they return a guarded callable, so
 ```mermaid
 flowchart LR
     Agent["Agent proposes tool call"] --> Proposal["ActionProposal"]
-    Context["ContextSnapshot<br/>role, stakes, stakeholders,<br/>dependency, repair, norms"] --> Runtime["MoralAgentOS.assess"]
+    Context["ContextSnapshot: role, stakes, stakeholders, dependency, repair, norms"] --> Runtime["MoralAgentOS.assess"]
     Proposal --> Runtime
     Runtime --> Floor["Thin safety floor"]
     Floor --> Assess["Context assessment"]
-    Assess --> Interdependence["Interdependence signals<br/>repair, public review,<br/>shared intent, dependency"]
+    Assess --> Interdependence["Interdependence signals: repair, public review, shared intent, dependency"]
     Interdependence --> Decision["MoralDecision"]
     Decision --> Allow["allow: execute"]
     Decision --> Confirm["confirm: ask user"]
