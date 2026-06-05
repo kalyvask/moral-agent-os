@@ -74,6 +74,11 @@ class OpenRouterAssessor:
         self.floor = floor or ConstitutionFloor()
         self.reward_hacking = reward_hacking or RewardHackingDetector()
         self.calls = 0
+        # Cost/latency instrumentation, populated per call.
+        self.last_latency_s = 0.0
+        self.last_usage: dict[str, Any] = {}
+        self.total_prompt_tokens = 0
+        self.total_completion_tokens = 0
 
     @staticmethod
     def available(api_key: str | None = None) -> bool:
@@ -122,8 +127,15 @@ class OpenRouterAssessor:
                 url, data=json.dumps(body).encode("utf-8"), headers=headers, method="POST"
             )
             try:
+                start = time.monotonic()
                 with urllib.request.urlopen(request, timeout=self.timeout) as response:
                     data = json.loads(response.read().decode("utf-8"))
+                self.last_latency_s = time.monotonic() - start
+                self.last_usage = data.get("usage") or {}
+                self.total_prompt_tokens += self.last_usage.get("prompt_tokens", 0) or 0
+                self.total_completion_tokens += (
+                    self.last_usage.get("completion_tokens", 0) or 0
+                )
                 self.calls += 1
                 return _message_content(data)
             except urllib.error.HTTPError as exc:
