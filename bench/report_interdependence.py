@@ -9,7 +9,6 @@ from pathlib import Path
 from bench.interdependence import run_all
 from moral_agent_os.interdependence import EnvironmentFamily, SimulationResult
 
-
 FAMILY_LABELS = {
     EnvironmentFamily.STAG_HUNT: "Stag Hunt",
     EnvironmentFamily.COMMONS: "Shared-Resource Commons",
@@ -52,8 +51,8 @@ def render_report(results: list[SimulationResult]) -> str:
         "",
         "## Summary",
         "",
-        "| Family | Condition | Cooperation | Autonomous cooperation | Blocked | Repair | Repair debt | Joint commitment | Stewardship | Dependent harm | Public review | Norm strength | Norm stability |",
-        "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+        "| Family | Condition | Cooperation | Autonomous cooperation | Blocked | Repair | Repair debt | Joint commitment | Stewardship | Dependent harm | Public review | Norm strength | Norm stability |",  # noqa: E501
+        "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",  # noqa: E501
     ]
 
     for family in EnvironmentFamily:

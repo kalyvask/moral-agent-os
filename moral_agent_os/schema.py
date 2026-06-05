@@ -40,7 +40,7 @@ class Scenario:
     notes: str = ""
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "Scenario":
+    def from_dict(cls, data: dict[str, Any]) -> Scenario:
         return cls(
             id=str(data["id"]),
             action_family=str(data["action_family"]),

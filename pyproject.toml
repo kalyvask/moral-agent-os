@@ -14,6 +14,17 @@ dependencies = []
 dev = [
   "pytest>=8.0",
 ]
+# The contextual LLM assessor. Use a current SDK: structured outputs
+# (output_config.format) and adaptive thinking are recent additions.
+llm = [
+  "anthropic>=0.69",
+]
+
+# The installed library surface is the runtime package and the adapters. The benchmark,
+# examples, labeling, and web folders are run from the repo root (python -m ...), not
+# shipped, so they are excluded from package discovery.
+[tool.setuptools]
+packages = ["moral_agent_os", "adapters"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

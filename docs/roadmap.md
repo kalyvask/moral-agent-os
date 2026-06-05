@@ -10,17 +10,17 @@
 
 ## M2: LLM Assessor
 
-- Structured `ContextAssessment` output.
-- Prompt cache.
-- Context-ablation mode.
-- Model-family switch for independent labels.
+- [x] Structured `ContextAssessment` output (`output_config.format` json_schema).
+- [x] Prompt cache (cached rubric system prompt).
+- [x] Context-ablation mode (`bench/ablation.py`, same-action twins).
+- [ ] Model-family switch for independent labels and human inter-rater agreement.
 
 ## M3: Norm Memory
 
-- Correction episodes.
-- Situation signatures.
-- Nearest-neighbor norm retrieval.
-- Frozen-control comparison.
+- [x] Correction episodes (`WorkspaceMemory.record_correction`).
+- [x] Situation signatures (`situation_tokens`).
+- [x] Nearest-neighbor norm retrieval (token Jaccard above a threshold).
+- [x] Frozen-control comparison (`bench/memory_demo.py`).
 
 ## M3b: Interdependence Environments
 

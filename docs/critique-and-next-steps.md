@@ -65,16 +65,17 @@ flowchart LR
 
 ## What Is Weak
 
-- The assessor is still heuristic. It proves the interface and eval structure,
-  but not real-world judgment quality.
-- The scenario bank is too small for serious claims. Thirty-six scenarios is
-  enough for scaffolding, not enough for external confidence.
+- The default assessor is heuristic. An LLM assessor now exists and emits the same schema,
+  but the headline numbers are produced with the deterministic baseline unless a key is
+  supplied, and the LLM's judgment quality has not been measured at scale yet.
+- [improved] The scenario bank grew from 36 to 56, including same-action twins and
+  held-out cases, but it still has no independent human labels or inter-rater agreement.
 - The interdependence simulator is illustrative, not scientific. Its numbers are
   useful for product thinking but should not be presented as empirical proof.
-- The SDK has no persistence yet. Repair obligations, local norms, and review
-  history currently have to be passed into `ContextSnapshot` manually.
-- The guard decorator does not yet integrate with a real agent framework such as
-  LangChain, OpenAI tool calling, CrewAI, AutoGen, or a custom MCP server.
+- [addressed] The SDK now persists corrections, repair obligations, trust, and review
+  history via `WorkspaceMemory`; `hydrate_context` fills a `ContextSnapshot` from storage.
+- [addressed] The guard now integrates with LangChain, CrewAI, AutoGen, and OpenAI
+  Agents-style tools through `adapters/`.
 
 ## Product Next Steps
 
@@ -94,11 +95,22 @@ flowchart LR
 
 ## Near-Term Build Order
 
-1. Add `bench/report.py` to generate a compact Markdown report for the
-   safety/friction benchmark.
-2. Add CSV outputs for both benchmark tracks.
-3. Add a `docs/figures/` placeholder and generated Mermaid or text chart
-   snapshots.
-4. Add `moral_agent_os/memory.py` persistence for local norm and relationship
-   state.
-5. Add a second example agent with two tools: `share_doc` and `schedule_meeting`.
+1. [done] `bench/report.py` generates Markdown, CSV, and JSON for the safety/friction
+   benchmark, plus the confusion matrix.
+2. [done] CSV and JSON outputs for both benchmark tracks in `bench/results/`.
+3. [done] `docs/figures/` holds generated SVG charts (frontier, confusion matrix,
+   interdependence, asymmetric, shared intent, ablation, memory).
+4. [done] `moral_agent_os/memory.py` persists corrections, relationships, and review
+   history, with a frozen-control comparison in `bench/memory_demo.py`.
+5. [done] Tool adapters for LangChain, CrewAI, AutoGen, and OpenAI Agents in `adapters/`,
+   with a runnable example. (A second multi-tool example agent is still a nice-to-have.)
+
+## Built Since This Critique
+
+- An LLM contextual assessor (`moral_agent_os/llm_assessor.py`) emitting the same schema.
+- A context-ablation experiment (`bench/ablation.py`) that measures whether the
+  same-action win is real or definitional, with the scenario bank grown to 56 including
+  same-action twins and held-out, out-of-vocabulary cases.
+
+The assessor-quality and human-label gaps (M2 at scale, M5) remain open and are stated
+honestly in the README.

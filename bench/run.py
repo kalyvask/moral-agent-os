@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 
 from bench.arms import AlwaysConfirmArm, HardRulesArm, NormOSArm
+from bench.assessors import build_assessor
 from bench.metrics import format_rate, summarize
 from moral_agent_os.schema import Scenario
-
 
 ROOT = Path(__file__).resolve().parent
 SCENARIO_FILE = ROOT / "scenarios" / "workspace_actions.jsonl"
@@ -26,8 +27,21 @@ def load_scenarios(path: Path = SCENARIO_FILE) -> list[Scenario]:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Run the appropriateness-routing benchmark.")
+    parser.add_argument(
+        "--assessor",
+        choices=("heuristic", "llm"),
+        default="heuristic",
+        help="Assessor for the normos arm (default: heuristic, runs offline).",
+    )
+    args = parser.parse_args()
+
     scenarios = load_scenarios()
-    arms = [HardRulesArm(), AlwaysConfirmArm(), NormOSArm()]
+    arms = [
+        HardRulesArm(),
+        AlwaysConfirmArm(),
+        NormOSArm(assessor=build_assessor(args.assessor)),
+    ]
 
     print("# Stress Benchmark")
     print()
@@ -42,8 +56,8 @@ def main() -> None:
             print(f"- {name}: {format_rate(metric)}")
         print()
 
-    print("Matched-pair scaffold is in bench/scenarios/workspace_actions.jsonl.")
-    print("Expand this to 50-60 cases before making README claims.")
+    print("Same-action twins and matched families are in bench/scenarios/workspace_actions.jsonl.")
+    print("Run `python -m bench.ablation` to test whether the win is contextual or definitional.")
 
 
 if __name__ == "__main__":

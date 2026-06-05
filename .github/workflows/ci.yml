@@ -16,9 +16,19 @@ jobs:
         run: python -m bench.validate
       - name: Run benchmark smoke test
         run: python -m bench.run
+      - name: Run context-ablation smoke test
+        run: python -m bench.ablation
       - name: Run interdependence benchmark smoke test
         run: python -m bench.interdependence
-      - name: Generate interdependence report smoke test
-        run: python -m bench.report_interdependence --output bench/report/interdependence.md
+      - name: Generate report artifacts smoke test
+        run: python -m bench.report
+      - name: Run norm-memory frozen-control smoke test
+        run: python -m bench.memory_demo
+      - name: Run framework-adapters example smoke test
+        run: python examples/framework_adapters.py
       - name: Run unit tests
         run: python -m unittest discover -s tests
+      - name: Lint
+        run: |
+          python -m pip install ruff
+          ruff check moral_agent_os adapters bench tests examples

@@ -1,0 +1,44 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 634 436' width='634' height='436' role='img'>
+<rect width='634' height='436' fill='white'/>
+<text x='20.0' y='28.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='18' fill='#222' font-weight='bold' text-anchor='start'>Routing confusion matrix (normos)</text>
+<text x='20.0' y='48.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='12' fill='#666' font-weight='normal' text-anchor='start'>Clear-bad should not land in auto; clear-good should.</text>
+<text x='196.0' y='60.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='12' fill='#333' font-weight='normal' text-anchor='middle'>auto</text>
+<text x='288.0' y='60.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='12' fill='#333' font-weight='normal' text-anchor='middle'>confirm</text>
+<text x='380.0' y='60.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='12' fill='#333' font-weight='normal' text-anchor='middle'>present_options</text>
+<text x='472.0' y='60.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='12' fill='#333' font-weight='normal' text-anchor='middle'>escalate</text>
+<text x='564.0' y='60.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='12' fill='#333' font-weight='normal' text-anchor='middle'>block</text>
+<text x='138.0' y='120.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='12' fill='#333' font-weight='normal' text-anchor='end'>clear_appropriate</text>
+<text x='138.0' y='212.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='12' fill='#333' font-weight='normal' text-anchor='end'>clear_inappropriate</text>
+<text x='138.0' y='304.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='12' fill='#333' font-weight='normal' text-anchor='end'>plural</text>
+<rect x='150' y='70' width='92' height='92' fill='rgb(47,111,143)' stroke='white' stroke-width='2'/>
+<text x='196.0' y='121.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='18' fill='#fff' font-weight='bold' text-anchor='middle'>22</text>
+<rect x='242' y='70' width='92' height='92' fill='rgb(245,248,249)' stroke='white' stroke-width='2'/>
+<text x='288.0' y='121.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='18' fill='#222' font-weight='bold' text-anchor='middle'>1</text>
+<rect x='334' y='70' width='92' height='92' fill='rgb(255,255,255)' stroke='white' stroke-width='2'/>
+<text x='380.0' y='121.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='18' fill='#222' font-weight='bold' text-anchor='middle'>0</text>
+<rect x='426' y='70' width='92' height='92' fill='rgb(236,241,244)' stroke='white' stroke-width='2'/>
+<text x='472.0' y='121.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='18' fill='#222' font-weight='bold' text-anchor='middle'>2</text>
+<rect x='518' y='70' width='92' height='92' fill='rgb(255,255,255)' stroke='white' stroke-width='2'/>
+<text x='564.0' y='121.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='18' fill='#222' font-weight='bold' text-anchor='middle'>0</text>
+<rect x='150' y='162' width='92' height='92' fill='rgb(207,222,229)' stroke='white' stroke-width='2'/>
+<text x='196.0' y='213.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='18' fill='#222' font-weight='bold' text-anchor='middle'>5</text>
+<rect x='242' y='162' width='92' height='92' fill='rgb(226,235,239)' stroke='white' stroke-width='2'/>
+<text x='288.0' y='213.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='18' fill='#222' font-weight='bold' text-anchor='middle'>3</text>
+<rect x='334' y='162' width='92' height='92' fill='rgb(255,255,255)' stroke='white' stroke-width='2'/>
+<text x='380.0' y='213.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='18' fill='#222' font-weight='bold' text-anchor='middle'>0</text>
+<rect x='426' y='162' width='92' height='92' fill='rgb(188,209,219)' stroke='white' stroke-width='2'/>
+<text x='472.0' y='213.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='18' fill='#222' font-weight='bold' text-anchor='middle'>7</text>
+<rect x='518' y='162' width='92' height='92' fill='rgb(160,189,204)' stroke='white' stroke-width='2'/>
+<text x='564.0' y='213.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='18' fill='#222' font-weight='bold' text-anchor='middle'>10</text>
+<rect x='150' y='254' width='92' height='92' fill='rgb(236,241,244)' stroke='white' stroke-width='2'/>
+<text x='196.0' y='305.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='18' fill='#222' font-weight='bold' text-anchor='middle'>2</text>
+<rect x='242' y='254' width='92' height='92' fill='rgb(255,255,255)' stroke='white' stroke-width='2'/>
+<text x='288.0' y='305.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='18' fill='#222' font-weight='bold' text-anchor='middle'>0</text>
+<rect x='334' y='254' width='92' height='92' fill='rgb(236,241,244)' stroke='white' stroke-width='2'/>
+<text x='380.0' y='305.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='18' fill='#222' font-weight='bold' text-anchor='middle'>2</text>
+<rect x='426' y='254' width='92' height='92' fill='rgb(236,241,244)' stroke='white' stroke-width='2'/>
+<text x='472.0' y='305.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='18' fill='#222' font-weight='bold' text-anchor='middle'>2</text>
+<rect x='518' y='254' width='92' height='92' fill='rgb(255,255,255)' stroke='white' stroke-width='2'/>
+<text x='564.0' y='305.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='18' fill='#222' font-weight='bold' text-anchor='middle'>0</text>
+<text x='20.0' y='406.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='11' fill='#666' font-weight='normal' text-anchor='start'>rows: expected label   columns: routed disposition</text>
+</svg>

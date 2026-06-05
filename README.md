@@ -23,13 +23,20 @@ build trust, form commitments, face sanction, repair harm, and update norms.
 
 - A deterministic SDK: `MoralAgentOS.assess(action, context)` returns a
   structured `MoralDecision`.
+- An LLM contextual assessor that emits the same `ContextAssessment` schema, with
+  prompt caching and a no-key fallback to the deterministic baseline.
+- A context-ablation experiment that measures whether the same-action-different-context
+  win is real or definitional, instead of asserting it.
 - A tool wrapper: `@runtime.guard_tool(...)` pauses or executes agent tools based
   on that decision.
 - A routing benchmark: hard rules vs always-confirm vs context-aware NormOS.
 - An interdependence benchmark: Stag Hunt, commons, delegation, asymmetric
   dependence, repair obligations, third-party review, and shared intent.
-- A report snapshot and tests so the thesis stays measurable instead of turning
-  into a demo claim.
+- Persistent workspace memory: corrections, repair obligations, trust, and review
+  history, with a frozen-control comparison for the learning loop.
+- Adapters that gate tools in LangChain, CrewAI, AutoGen, and OpenAI Agents-style agents.
+- Generated reports and figures (Markdown, CSV, JSON, SVG) plus tests, so the thesis
+  stays measurable instead of turning into a demo claim.
 
 ## Why It Matters
 
@@ -71,6 +78,32 @@ else:
 For richer agents, build `ActionProposal` and `ContextSnapshot` per tool call,
 including stakeholders, dependency, repair debt, norm conflicts, and review
 requirements. See [examples/email_agent.py](examples/email_agent.py).
+
+If you use an agent framework, the adapters wrap a tool in that framework's idiom. When the
+action is not allowed, the guarded tool returns a short message the model can act on
+(confirm, present alternatives, escalate) instead of executing:
+
+```python
+from adapters import guard_langchain_tool
+from moral_agent_os import ContextSnapshot, MoralAgentOS
+
+runtime = MoralAgentOS()
+tool = guard_langchain_tool(
+    runtime,
+    send_email,
+    context=lambda to, subject, body: ContextSnapshot(
+        agent_role="workspace assistant",
+        user_intent="Send the email the user asked for.",
+        stakes=0.85 if not to.endswith("@ourcompany.com") else 0.2,
+        reversibility=0.1 if not to.endswith("@ourcompany.com") else 0.9,
+    ),
+)
+# agent = AgentExecutor(..., tools=[tool])
+```
+
+`guard_crewai_tool`, `guard_autogen_tool`, and `guard_openai_tool` follow the same shape.
+With none of those frameworks installed they return a guarded callable, so
+[examples/framework_adapters.py](examples/framework_adapters.py) runs anywhere.
 
 ## System Shape
 
@@ -129,15 +162,23 @@ The benchmark runtime returns one of five UI dispositions:
 
 ```text
 moral-agent-os/
-  moral_agent_os/        runtime package
-  bench/                 Stress eval harness
-  bench/interdependence.py  repeated-dependence benchmark
-  bench/scenarios/       36 same-action-different-context scenarios
-  docs/                  product brief, course connection, eval plan
-  examples/              quickstart usage
-  labeling/              independent-labeler notes and stub
-  tests/                 routing tests
-  web/                   minimal adaptive UI placeholder
+  moral_agent_os/             runtime package
+    assess.py                 deterministic scaffold assessor + Assessor protocol
+    llm_assessor.py           LLM contextual assessor (same schema, cached rubric)
+    memory.py                 persistent corrections, relationships, review history
+    route.py / floor.py       routing and the thin hard-rule floor
+  adapters/                   LangChain, CrewAI, AutoGen, OpenAI Agents tool guards
+  bench/                      eval harness
+    ablation.py               context-ablation experiment (real vs definitional)
+    report.py / figures.py    Markdown/CSV/JSON + pure-Python SVG charts
+    interdependence.py        repeated-dependence benchmark
+    memory_demo.py            frozen-control comparison for the learning loop
+    scenarios/                56 scenarios incl. same-action twins and held-out cases
+    results/                  generated CSV/JSON with confidence intervals
+  docs/                       product brief, eval plan, reports, and docs/figures/
+  examples/                   quickstart, email agent, framework adapters
+  tests/                      57 tests across runtime, assessor, memory, adapters, figures
+  web/                        minimal adaptive UI placeholder
 ```
 
 ## Quickstart
@@ -158,6 +199,24 @@ Run the interdependence benchmark:
 
 ```bash
 python -m bench.interdependence
+```
+
+Run the context-ablation experiment (is the win real or definitional?):
+
+```bash
+python -m bench.ablation
+```
+
+Generate all artifacts (Markdown, CSV, JSON, and SVG figures):
+
+```bash
+python -m bench.report
+```
+
+Compare the norm-learning loop against a frozen control:
+
+```bash
+python -m bench.memory_demo
 ```
 
 Generate the grouped interdependence report:
@@ -190,12 +249,32 @@ Try an agent-tool guard:
 python examples/email_agent.py
 ```
 
+Gate the same tool through the LangChain, CrewAI, AutoGen, and OpenAI Agents adapters
+(runs with none of them installed):
+
+```bash
+python examples/framework_adapters.py
+```
+
 For integration code, start with the `guard_tool` example near the top of this
 README or the richer email example in [examples/email_agent.py](examples/email_agent.py).
 
-No API key is required yet. The current assessor is intentionally deterministic
-so the repo has a runnable measurement spine from day one. The next milestone is
-to add an LLM assessor that emits the same structured `ContextAssessment`.
+No API key is required for the default path. The deterministic assessor is the
+runnable baseline so the measurement spine works offline and in CI. The LLM assessor
+now exists and emits the same structured `ContextAssessment`; it runs when
+`ANTHROPIC_API_KEY` is set and the `llm` extra is installed, and every benchmark
+falls back to the deterministic baseline when it is not:
+
+```bash
+python -m pip install -e ".[llm]"
+export ANTHROPIC_API_KEY=...           # PowerShell: $env:ANTHROPIC_API_KEY="..."
+python -m bench.run --assessor llm     # contextual model on the routing benchmark
+python -m bench.ablation --assessor llm
+```
+
+The LLM assessor keeps the thin hard-rule floor deterministic and asks the model only for
+the contextual layer, with the long rubric sent as a cached system prompt. See
+[moral_agent_os/llm_assessor.py](moral_agent_os/llm_assessor.py).
 
 ## The Measurement Spine
 
@@ -217,6 +296,11 @@ The headline metrics are a two-axis frontier:
 The money plot is same-action-different-context pairs: the identical action is
 appropriate in one setting and inappropriate in another. Hard rules cannot see
 the difference by construction; Moral Agent OS should.
+
+But there is an honest objection to that plot, and the repo now tests it instead of
+hiding it. See [Is the win real?](#is-the-win-real-context-ablation) below.
+
+![Safety/friction frontier](docs/figures/frontier.svg)
 
 ### Track 2: Interdependence
 
@@ -248,6 +332,51 @@ cooperation as two isolated choices.
 The headline is not "the agent knows the rule." It is whether environmental
 conditions make cooperation and norm-following more stable over time.
 
+![Earned cooperation by environment](docs/figures/interdependence-by-environment.svg)
+
+Across all four families, static policy forces compliance while autonomous cooperation
+stays low; only interdependence earns it. More charts are in
+[docs/benchmark-report.md](docs/benchmark-report.md).
+
+## Is The Win Real? Context Ablation
+
+The honest objection to the same-action plot: the deterministic assessor reads the very
+context fields the scenarios vary, so of course it separates them. The win could be
+definitional, not real judgment.
+
+The repo turns that objection into a measurement. It uses **true twins**: pairs with
+byte-identical action text and role that differ only in their situation, one appropriate
+and one inappropriate. Each twin is assessed twice, with the situation and with it blanked.
+Without context the two members are identical inputs, so the without-context number is a
+control that must read ~0; the with-context number is the genuine contextual win.
+
+```bash
+python -m bench.ablation                # deterministic scaffold (offline)
+python -m bench.ablation --assessor llm # contextual model, if a key is present
+```
+
+On the current bank, the deterministic scaffold separates twins only when their context
+contains a hard-coded keyword. It misses the held-out twins whose situation never matches a
+term (release branch, approval limit, cross-customer disclosure, record of authority). That
+ceiling is the honest version of the objection, and it is exactly what the LLM assessor
+exists to clear by reading meaning instead of matching words.
+
+![Context ablation](docs/figures/ablation.svg)
+
+Full numbers, including confidence intervals, are in
+[docs/ablation-report.md](docs/ablation-report.md) and [docs/benchmark-report.md](docs/benchmark-report.md).
+
+## What Is Honestly Still Missing
+
+To keep the claims narrow:
+
+- The LLM assessor is implemented and runnable, but the headline LLM-vs-scaffold numbers in
+  this repo are produced with the deterministic assessor unless a key is supplied. Run it
+  with `--assessor llm` to generate the contextual results.
+- There are still no independent human labels and no inter-rater agreement (M5). The
+  expected labels are the author's.
+- The interdependence simulator is an illustrative scaffold, not an empirical model.
+
 ## Course Connection
 
 This project productizes the Stanford CS 186 / PHIL 86 "How to Make a Moral
@@ -262,19 +391,24 @@ See [docs/interdependence-report.md](docs/interdependence-report.md).
 
 ## Roadmap
 
-1. Build the scenario bank to 50-60 cases with held-out situation families.
-2. Add threshold sweeps for the safety/friction frontier.
-3. Expand the interdependence benchmark into richer multi-agent tasks.
-4. Add an LLM assessor with structured output and prompt caching.
-5. Add independent human labels and inter-rater agreement.
-6. Add norm memory with correction episodes and a frozen-control comparison.
-7. Build the adaptive UI around the five dispositions.
-8. Publish a short writeup with falsifiers and measured results.
+- [x] Scenario bank to 50-60 cases with held-out situation families (56, incl. twins).
+- [x] LLM assessor with structured output and prompt caching.
+- [x] Context-ablation experiment for the same-action win.
+- [x] Norm memory with correction episodes and a frozen-control comparison.
+- [x] Generated reports and figures (Markdown, CSV, JSON, SVG).
+- [x] Framework adapters (LangChain, CrewAI, AutoGen, OpenAI Agents).
+- [ ] Threshold sweeps for the safety/friction frontier.
+- [ ] Independent human labels and inter-rater agreement.
+- [ ] Expand the interdependence benchmark into richer multi-agent tasks.
+- [ ] Adaptive UI around the five dispositions.
+- [ ] Short writeup with falsifiers and measured LLM-vs-scaffold results.
 
 ## GitHub Milestones
 
-- M1: Measurable core: scenario bank, baselines, validation, CI, and first frontier report.
-- M2: Non-circular assessment: LLM structured assessor, context ablation, held-out families.
-- M3: Social learning loop: correction episodes and frozen-control comparison.
+- M1 (done): Measurable core: scenario bank, baselines, validation, CI, and frontier report.
+- M2 (in progress): Non-circular assessment. LLM structured assessor, context ablation, and
+  held-out families are built; running the model at scale and reporting LLM-vs-scaffold
+  numbers is the remaining step.
+- M3 (done): Social learning loop: correction episodes and a frozen-control comparison.
 - M4: Adaptive governance UI: auto, confirm, present-options, escalate, and block states.
 - M5: Results writeup: human labels, confidence intervals, failure analysis, and demo video.

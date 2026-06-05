@@ -5,8 +5,20 @@ from __future__ import annotations
 import sqlite3
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Protocol, runtime_checkable
 
 from moral_agent_os.schema import Disposition, Scenario
+
+
+@runtime_checkable
+class CorrectionStore(Protocol):
+    """A store the runtime can consult for a remembered disposition.
+
+    Both the lightweight ``LocalNormMemory`` and the richer ``WorkspaceMemory`` satisfy
+    this, so either can back ``MoralAgentOS``.
+    """
+
+    def lookup(self, scenario: Scenario) -> Disposition | None: ...
 
 
 @dataclass(frozen=True)

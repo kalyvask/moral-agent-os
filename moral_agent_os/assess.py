@@ -6,9 +6,22 @@ Future LLM assessors should emit the same ContextAssessment schema.
 
 from __future__ import annotations
 
+from typing import Protocol, runtime_checkable
+
 from moral_agent_os.floor import ConstitutionFloor
 from moral_agent_os.reward_hacking import RewardHackingDetector
 from moral_agent_os.schema import ContextAssessment, Scenario
+
+
+@runtime_checkable
+class Assessor(Protocol):
+    """Anything that turns a Scenario into a ContextAssessment.
+
+    Both the deterministic ``HeuristicAssessor`` and the ``LLMAssessor`` satisfy this, so
+    the runtime, the benchmark arms, and the ablation harness are assessor-agnostic.
+    """
+
+    def assess(self, scenario: Scenario) -> ContextAssessment: ...
 
 
 class HeuristicAssessor:

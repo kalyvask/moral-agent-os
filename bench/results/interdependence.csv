@@ -1,0 +1,16 @@
+condition,family,cooperation_rate,autonomous_cooperation_rate,blocked_rate,betrayal_rate,repair_rate,mean_repair_obligation,stewardship_rate,dependent_harm_rate,third_party_review_rate,joint_commitment_rate,mean_payoff,mean_reputation,norm_strength,norm_stability
+stag_hunt_one_shot,stag_hunt,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,20.0,0.5,0.0,0.0
+stag_hunt_static_policy,stag_hunt,1.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,80.0,0.5,0.0,1.0
+stag_hunt_repeated_no_sanction,stag_hunt,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,20.0,0.0,0.2,0.0
+stag_hunt_interdependent,stag_hunt,0.3333333333333333,0.3333333333333333,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,40.0,0.3333333333333333,0.384101947669738,0.3333333333333333
+stag_hunt_shared_intent,stag_hunt,0.6666666666666666,0.6666666666666666,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.6666666666666666,60.0,0.6666666666666666,0.733361625020127,0.6666666666666666
+commons_one_shot,shared_resource_commons,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,11.999999999999995,0.5,0.0,0.0
+commons_static_policy,shared_resource_commons,1.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,64.00000000000001,0.5,0.0,1.0
+commons_interdependent,shared_resource_commons,0.9166666666666666,0.9166666666666666,0.0,0.0,0.18333333333333332,0.0,0.0,0.0,0.0,0.0,58.791666666666686,1.0,0.8438623443078317,1.0
+delegation_one_shot,delegation_with_accountability,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,22.000000000000004,0.5,0.0,0.0
+delegation_static_policy,delegation_with_accountability,1.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,70.0,0.5,0.0,1.0
+delegation_interdependent,delegation_with_accountability,0.9583333333333334,0.9583333333333334,0.0,0.0,0.11666666666666667,0.0,0.0,0.0,0.0,0.0,67.875,1.0,0.8456645347587178,1.0
+asymmetric_one_shot,asymmetric_dependence,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,15.999999999999998,0.5,0.0,0.0
+asymmetric_static_policy,asymmetric_dependence,1.0,0.0,1.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,74.00000000000003,0.5,0.0,1.0
+asymmetric_interdependent,asymmetric_dependence,0.925,0.925,0.0,0.06666666666666667,0.18333333333333332,0.0,0.9,0.1,0.0,0.0,67.26041666666669,1.0,0.8453974263674396,1.0
+asymmetric_third_party_enforced,asymmetric_dependence,1.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,1.0,0.0,74.00000000000003,1.0,1.0,1.0

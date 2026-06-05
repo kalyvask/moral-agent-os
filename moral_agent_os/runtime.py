@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import replace
 from functools import wraps
 from inspect import signature
-from typing import Any, Callable
+from typing import Any
 
-from moral_agent_os.assess import HeuristicAssessor
-from moral_agent_os.norms import LocalNormMemory
+from moral_agent_os.assess import Assessor, HeuristicAssessor
+from moral_agent_os.norms import CorrectionStore, LocalNormMemory
 from moral_agent_os.route import NormRouter
 from moral_agent_os.schema import (
     ActionProposal,
@@ -28,9 +29,9 @@ from moral_agent_os.schema import (
 class MoralAgentOS:
     def __init__(
         self,
-        assessor: HeuristicAssessor | None = None,
+        assessor: Assessor | None = None,
         router: NormRouter | None = None,
-        memory: LocalNormMemory | None = None,
+        memory: CorrectionStore | None = None,
     ) -> None:
         self.assessor = assessor or HeuristicAssessor()
         self.router = router or NormRouter()
