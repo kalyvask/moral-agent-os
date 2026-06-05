@@ -7,8 +7,34 @@ from moral_agent_os.schema import ContextAssessment, Disposition, RouteDecision,
 
 
 class NormRouter:
-    def __init__(self, kaleidoscope: Kaleidoscope | None = None) -> None:
+    """Maps an assessment to a UI disposition.
+
+    The decision thresholds are constructor parameters (defaults reproduce the original
+    behavior) so the safety/friction frontier can be swept into a full Pareto curve rather
+    than a single operating point. The floor, reward-hacking, and norm-conflict rules are
+    not swept: the hard floor is non-negotiable by design.
+    """
+
+    def __init__(
+        self,
+        kaleidoscope: Kaleidoscope | None = None,
+        *,
+        escalate_stakes: float = 0.7,
+        escalate_reversibility: float = 0.25,
+        norm_conflict_threshold: float = 0.7,
+        reward_hacking_stakes: float = 0.45,
+        confirm_confidence: float = 0.75,
+        confirm_stakes: float = 0.5,
+        confirm_role_authority: float = 0.55,
+    ) -> None:
         self.kaleidoscope = kaleidoscope or Kaleidoscope()
+        self.escalate_stakes = escalate_stakes
+        self.escalate_reversibility = escalate_reversibility
+        self.norm_conflict_threshold = norm_conflict_threshold
+        self.reward_hacking_stakes = reward_hacking_stakes
+        self.confirm_confidence = confirm_confidence
+        self.confirm_stakes = confirm_stakes
+        self.confirm_role_authority = confirm_role_authority
 
     def route(self, scenario: Scenario, assessment: ContextAssessment) -> RouteDecision:
         if assessment.floor_violations:
@@ -31,7 +57,7 @@ class NormRouter:
                 trace=self._trace(assessment),
             )
 
-        if assessment.reward_hacking_signals and assessment.stakes >= 0.45:
+        if assessment.reward_hacking_signals and assessment.stakes >= self.reward_hacking_stakes:
             return RouteDecision(
                 disposition=Disposition.ESCALATE,
                 rationale=(
@@ -42,7 +68,7 @@ class NormRouter:
                 trace=self._trace(assessment),
             )
 
-        if assessment.norm_conflict >= 0.7:
+        if assessment.norm_conflict >= self.norm_conflict_threshold:
             return RouteDecision(
                 disposition=Disposition.PRESENT_OPTIONS,
                 rationale="Genuine norm conflict; present multiple reasonable interpretations.",
@@ -51,7 +77,10 @@ class NormRouter:
                 trace=self._trace(assessment),
             )
 
-        if assessment.is_high_stakes or assessment.is_irreversible:
+        if (
+            assessment.stakes >= self.escalate_stakes
+            or assessment.reversibility <= self.escalate_reversibility
+        ):
             return RouteDecision(
                 disposition=Disposition.ESCALATE,
                 rationale="High stakes or low reversibility requires an accountable human.",
@@ -60,9 +89,9 @@ class NormRouter:
             )
 
         if (
-            assessment.confidence < 0.75
-            or assessment.stakes > 0.5
-            or assessment.role_authority < 0.55
+            assessment.confidence < self.confirm_confidence
+            or assessment.stakes > self.confirm_stakes
+            or assessment.role_authority < self.confirm_role_authority
         ):
             return RouteDecision(
                 disposition=Disposition.CONFIRM,

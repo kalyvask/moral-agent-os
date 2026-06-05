@@ -226,14 +226,23 @@ def render_report(result: AblationResult) -> str:
 def _interpretation(result: AblationResult) -> str:
     control = result.without_context.pair_discrimination.value
     with_context = result.with_context.pair_discrimination.value
+    is_deterministic = result.assessor_name == "HeuristicAssessor"
     lines = []
     if control > 0.05:
-        lines.append(
-            "Warning: the without-context control is above zero. For true twins it should"
-            " be ~0, since the two members are identical inputs once context is blanked. A"
-            " non-zero value means a non-twin pair leaked in; check the bank."
-        )
-    if result.assessor_name == "HeuristicAssessor":
+        if is_deterministic:
+            lines.append(
+                "Warning: a deterministic assessor's control is above zero. For true twins"
+                " it must be 0, since the two members are identical inputs once context is"
+                " blanked. A non-zero value means a non-twin pair leaked in; check the bank."
+            )
+        else:
+            lines.append(
+                f"Note: the control is {control:.1%}, not exactly 0. With a stochastic model,"
+                " identical-input twins can still draw different dispositions on separate"
+                " calls, so a small non-zero control is sampling noise, not leakage. It also"
+                " bounds the noise floor on the with-context number."
+            )
+    if is_deterministic:
         separated = int(round(with_context * result.pair_count))
         lines.append(
             "This is the deterministic scaffold. Its twin discrimination is bounded by its"

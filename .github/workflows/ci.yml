@@ -18,6 +18,8 @@ jobs:
         run: python -m bench.run
       - name: Run context-ablation smoke test
         run: python -m bench.ablation
+      - name: Run frontier sweep smoke test
+        run: python -m bench.sweep
       - name: Run interdependence benchmark smoke test
         run: python -m bench.interdependence
       - name: Generate report artifacts smoke test

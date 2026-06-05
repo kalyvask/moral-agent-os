@@ -297,6 +297,90 @@ def line_chart(
     return "\n".join(parts)
 
 
+def pareto_frontier(
+    title: str,
+    curve: list[tuple[float, float]],
+    references: list[ScatterPoint],
+    *,
+    x_label: str = "",
+    y_label: str = "",
+    x_max: float = 1.0,
+    y_max: float = 1.0,
+    subtitle: str = "",
+) -> str:
+    """A swept Pareto curve (line + dots) with labeled reference points overlaid."""
+    width, height = 640, 520
+    left, right, top, bottom = 70, 40, 70, 80
+    plot_w = width - left - right
+    plot_h = height - top - bottom
+
+    def px(x: float) -> float:
+        return left + plot_w * (x / x_max if x_max else 0)
+
+    def py(y: float) -> float:
+        return top + plot_h * (1 - (y / y_max if y_max else 0))
+
+    parts = [
+        f"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 {width} {height}' "
+        f"width='{width}' height='{height}' role='img'>",
+        f"<rect width='{width}' height='{height}' fill='white'/>",
+        _text(left, 28, title, size=18, weight="bold"),
+    ]
+    if subtitle:
+        parts.append(_text(left, 48, subtitle, size=12, color="#666"))
+
+    for frac in (0.0, 0.25, 0.5, 0.75, 1.0):
+        gx = left + plot_w * frac
+        gy = top + plot_h * (1 - frac)
+        parts.append(f"<line x1='{gx:.1f}' y1='{top}' x2='{gx:.1f}' "
+                     f"y2='{top + plot_h}' stroke='{GRID}'/>")
+        parts.append(f"<line x1='{left}' y1='{gy:.1f}' x2='{left + plot_w}' "
+                     f"y2='{gy:.1f}' stroke='{GRID}'/>")
+        parts.append(_text(left + plot_w * frac, top + plot_h + 18, _pct(frac * x_max),
+                           size=11, anchor="middle", color="#666"))
+        parts.append(_text(left - 8, top + plot_h * (1 - frac) + 4, _pct(frac * y_max),
+                           size=11, anchor="end", color="#666"))
+
+    parts.append(f"<line x1='{left}' y1='{top + plot_h}' x2='{left + plot_w}' "
+                 f"y2='{top + plot_h}' stroke='{AXIS}' stroke-width='1.5'/>")
+    parts.append(f"<line x1='{left}' y1='{top}' x2='{left}' y2='{top + plot_h}' "
+                 f"stroke='{AXIS}' stroke-width='1.5'/>")
+    if x_label:
+        parts.append(_text(left + plot_w / 2, height - 30, x_label, size=13,
+                           anchor="middle", color="#333"))
+    if y_label:
+        parts.append(_text(18, top + plot_h / 2, y_label, size=13, anchor="middle",
+                           color="#333", rotate=-90))
+
+    # Swept curve.
+    ordered = sorted(curve)
+    pts = " ".join(f"{px(x):.1f},{py(y):.1f}" for x, y in ordered)
+    parts.append(f"<polyline points='{pts}' fill='none' stroke='{PALETTE[2]}' "
+                 f"stroke-width='2.5'/>")
+    for x, y in ordered:
+        parts.append(f"<circle cx='{px(x):.1f}' cy='{py(y):.1f}' r='3.5' "
+                     f"fill='{PALETTE[2]}'/>")
+    parts.append(_text(px(ordered[len(ordered) // 2][0]) + 8,
+                       py(ordered[len(ordered) // 2][1]) - 8, "normos sweep", size=12,
+                       weight="bold", color=PALETTE[2]))
+
+    # Reference points (baselines).
+    for i, point in enumerate(references):
+        color = PALETTE[(i % 2)]  # alternate teal/terracotta, distinct from the green curve
+        cx, cy = px(point.x), py(point.y)
+        parts.append(f"<rect x='{cx - 5:.1f}' y='{cy - 5:.1f}' width='10' height='10' "
+                     f"fill='{color}'/>")
+        if point.x > 0.7 * x_max:
+            parts.append(_text(cx - 10, cy + 4, point.label, size=12, weight="bold",
+                               anchor="end", color=color))
+        else:
+            parts.append(_text(cx + 10, cy + 4, point.label, size=12, weight="bold",
+                               color=color))
+
+    parts.append("</svg>")
+    return "\n".join(parts)
+
+
 def confusion_matrix(
     title: str,
     row_labels: list[str],

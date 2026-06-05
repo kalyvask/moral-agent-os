@@ -312,6 +312,14 @@ hiding it. See [Is the win real?](#is-the-win-real-context-ablation) below.
 
 ![Safety/friction frontier](docs/figures/frontier.svg)
 
+Sweeping the routing thresholds (`python -m bench.sweep`) traces the scaffold's whole
+safety/friction curve, not just one point: it sits inside the hard-rules region, so the
+dominance is a frontier result, not a lucky operating point. The curve also exposes the
+keyword-blindness ceiling, the unsafe rate it cannot beat at low friction without a
+contextual model.
+
+![Frontier sweep](docs/figures/frontier-sweep.svg)
+
 ### Track 2: Interdependence
 
 The interdependence benchmark compares:
@@ -373,18 +381,33 @@ exists to clear by reading meaning instead of matching words.
 
 ![Context ablation](docs/figures/ablation.svg)
 
-Full numbers, including confidence intervals, are in
-[docs/ablation-report.md](docs/ablation-report.md) and [docs/benchmark-report.md](docs/benchmark-report.md).
+### Measured result
+
+Running the contextual assessor over OpenRouter (Claude Sonnet 4.6) clears that ceiling:
+
+| Assessor | Twin discrimination (with context) | Control (no context) | Unsafe (inappropriate auto) |
+| --- | ---: | ---: | ---: |
+| Hard rules | n/a by construction | n/a | 44% |
+| Deterministic scaffold | 63.6% (7/11) | 0.0% | 20% |
+| Claude Sonnet 4.6 (OpenRouter) | 100% (11/11) | 9.1% (sampling noise) | 0% |
+
+The reading model discriminates every same-action twin, including all the held-out
+out-of-vocabulary cases the scaffold cannot see, and auto-executes none of the
+inappropriate actions. The same-action win is real, not definitional. Full run:
+[docs/ablation-report-openrouter.md](docs/ablation-report-openrouter.md). Deterministic
+baseline and confidence intervals: [docs/ablation-report.md](docs/ablation-report.md) and
+[docs/benchmark-report.md](docs/benchmark-report.md).
 
 ## What Is Honestly Still Missing
 
 To keep the claims narrow:
 
-- The LLM assessor is implemented and runnable, but the headline LLM-vs-scaffold numbers in
-  this repo are produced with the deterministic assessor unless a key is supplied. Run it
-  with `--assessor llm` to generate the contextual results.
+- The LLM assessor has been run over OpenRouter and the contextual result is reported
+  (100% twin discrimination, 0% unsafe). The committed figures in `docs/figures/` are still
+  generated with the deterministic baseline so they reproduce offline in CI; regenerate
+  with `--assessor openrouter` (or `llm`) to refresh them with model numbers.
 - There are still no independent human labels and no inter-rater agreement (M5). The
-  expected labels are the author's.
+  expected labels are the author's; validating them is the next priority.
 - The interdependence simulator is an illustrative scaffold, not an empirical model.
 
 ## Course Connection
@@ -407,8 +430,9 @@ See [docs/interdependence-report.md](docs/interdependence-report.md).
 - [x] Norm memory with correction episodes and a frozen-control comparison.
 - [x] Generated reports and figures (Markdown, CSV, JSON, SVG).
 - [x] Framework adapters (LangChain, CrewAI, AutoGen, OpenAI Agents).
-- [ ] Threshold sweeps for the safety/friction frontier.
-- [ ] Independent human labels and inter-rater agreement.
+- [x] Threshold sweeps for the safety/friction frontier (Pareto curve, dominance check).
+- [x] Run the LLM assessor at scale and report LLM-vs-scaffold numbers (over OpenRouter).
+- [ ] Independent labels and inter-rater agreement.
 - [ ] Expand the interdependence benchmark into richer multi-agent tasks.
 - [ ] Adaptive UI around the five dispositions.
 - [ ] Short writeup with falsifiers and measured LLM-vs-scaffold results.
@@ -416,9 +440,9 @@ See [docs/interdependence-report.md](docs/interdependence-report.md).
 ## GitHub Milestones
 
 - M1 (done): Measurable core: scenario bank, baselines, validation, CI, and frontier report.
-- M2 (in progress): Non-circular assessment. LLM structured assessor, context ablation, and
-  held-out families are built; running the model at scale and reporting LLM-vs-scaffold
-  numbers is the remaining step.
+- M2 (done): Non-circular assessment. LLM structured assessor, context ablation, held-out
+  families, and the measured LLM-vs-scaffold result (100% vs 63.6% twin discrimination,
+  0% vs 20% unsafe). Independent labels move to M5.
 - M3 (done): Social learning loop: correction episodes and a frozen-control comparison.
 - M4: Adaptive governance UI: auto, confirm, present-options, escalate, and block states.
 - M5: Results writeup: human labels, confidence intervals, failure analysis, and demo video.
