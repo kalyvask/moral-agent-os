@@ -69,6 +69,12 @@ Run the interdependence benchmark:
 python -m bench.interdependence
 ```
 
+Generate the grouped interdependence report:
+
+```bash
+python -m bench.report_interdependence --output docs/interdependence-report.md
+```
+
 Validate the scenario bank:
 
 ```bash
@@ -139,6 +145,7 @@ partner choice, sanction, and norm feedback.
 
 See [docs/moral-agent-learnings.md](docs/moral-agent-learnings.md).
 See [docs/interdependence-design.md](docs/interdependence-design.md).
+See [docs/interdependence-report.md](docs/interdependence-report.md).
 
 ## Roadmap
 

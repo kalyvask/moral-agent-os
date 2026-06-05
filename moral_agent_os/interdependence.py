@@ -58,6 +58,7 @@ class InteractionRecord:
 @dataclass(frozen=True)
 class SimulationResult:
     condition: str
+    family: EnvironmentFamily
     records: tuple[InteractionRecord, ...]
     final_agents: tuple[AgentState, ...]
     cooperation_rate: float
@@ -406,6 +407,7 @@ class InterdependenceEnvironment:
 
         return SimulationResult(
             condition=self.config.name,
+            family=self.config.family,
             records=tuple(records),
             final_agents=tuple(self.agents),
             cooperation_rate=(

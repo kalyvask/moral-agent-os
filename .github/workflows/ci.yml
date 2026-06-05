@@ -18,5 +18,7 @@ jobs:
         run: python -m bench.run
       - name: Run interdependence benchmark smoke test
         run: python -m bench.interdependence
+      - name: Generate interdependence report smoke test
+        run: python -m bench.report_interdependence --output bench/report/interdependence.md
       - name: Run unit tests
         run: python -m unittest discover -s tests
