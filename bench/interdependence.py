@@ -28,6 +28,8 @@ def main() -> None:
     for result in run_all():
         print(f"## {result.condition}")
         print(f"- cooperation_rate: {result.cooperation_rate:.1%}")
+        print(f"- autonomous_cooperation_rate: {result.autonomous_cooperation_rate:.1%}")
+        print(f"- blocked_rate: {result.blocked_rate:.1%}")
         print(f"- betrayal_rate: {result.betrayal_rate:.1%}")
         print(f"- repair_rate: {result.repair_rate:.1%}")
         print(f"- mean_payoff: {result.mean_payoff:.2f}")

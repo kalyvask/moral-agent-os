@@ -121,8 +121,10 @@ The interdependence benchmark compares:
 - Delegation with accountability: faithful action under trace and review.
 
 Each family compares one-shot or weak-enforcement conditions against
-interdependent norm learning: repeated dependence, reputation, partner choice,
-sanction, repair, and a seeded cooperative cluster.
+static hard-rule policy and interdependent norm learning. Static policy can
+force compliance by blocking defection, but the interdependence track measures
+whether agents cooperate without being blocked, repair after sanction, and build
+norm strength over repeated interaction.
 
 The headline is not "the agent knows the rule." It is whether environmental
 conditions make cooperation and norm-following more stable over time.

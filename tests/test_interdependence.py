@@ -62,6 +62,33 @@ class InterdependenceTest(unittest.TestCase):
             baseline.mean_reputation,
         )
 
+    def test_static_policy_forces_compliance_without_norm_learning(self) -> None:
+        results = {result.condition: result for result in run_all()}
+
+        for condition in (
+            "stag_hunt_static_policy",
+            "commons_static_policy",
+            "delegation_static_policy",
+        ):
+            static_policy = results[condition]
+            self.assertGreater(static_policy.blocked_rate, 0.5)
+            self.assertEqual(static_policy.autonomous_cooperation_rate, 0.0)
+            self.assertEqual(static_policy.norm_strength, 0.0)
+            self.assertEqual(static_policy.repair_rate, 0.0)
+
+    def test_interdependence_does_not_depend_on_blocking(self) -> None:
+        results = {result.condition: result for result in run_all()}
+
+        for condition in (
+            "stag_hunt_interdependent",
+            "commons_interdependent",
+            "delegation_interdependent",
+        ):
+            interdependent = results[condition]
+            self.assertEqual(interdependent.blocked_rate, 0.0)
+            self.assertGreater(interdependent.autonomous_cooperation_rate, 0.0)
+            self.assertGreater(interdependent.norm_strength, 0.0)
+
 
 if __name__ == "__main__":
     unittest.main()

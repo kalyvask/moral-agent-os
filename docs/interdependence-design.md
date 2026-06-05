@@ -42,11 +42,15 @@ Across families:
 
 - The environment can turn on or off repeated interaction, reputation, partner
   choice, and sanction.
-- We compare a one-shot baseline against an interdependent environment.
+- We compare a one-shot baseline, a static hard-rule policy, and an
+  interdependent environment.
 
 Metrics:
 
 - `cooperation_rate`: how often agents choose the shared task.
+- `autonomous_cooperation_rate`: how often agents cooperate without being
+  blocked into compliance by a static policy.
+- `blocked_rate`: how often a static policy prevented a defection.
 - `betrayal_rate`: how often one agent defects while the partner cooperates.
 - `mean_payoff`: whether cooperation is actually better for the population.
 - `repair_rate`: whether sanctioned agents restore trust after a violation.
@@ -62,8 +66,9 @@ environment is not yet capturing the course insight.
 
 ## Product Implication
 
-NormOS should not only say "confirm this action." It should shape the agent's
-future operating environment:
+NormOS should not only say "confirm this action." Hard rules can force a safe
+move, but forced compliance is not the same as trust. NormOS should shape the
+agent's future operating environment:
 
 - preserve traces,
 - make behavior legible to partners,

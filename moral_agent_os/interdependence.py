@@ -29,6 +29,7 @@ class InterdependenceConfig:
     sanction_enabled: bool = True
     initial_norm_strength: float = 0.2
     cooperative_cluster: bool = False
+    static_policy_enabled: bool = False
 
 
 @dataclass
@@ -48,6 +49,7 @@ class InteractionRecord:
     action_b: InteractionAction
     payoff_a: float
     payoff_b: float
+    blocked: tuple[str, ...] = ()
     sanctioned: tuple[str, ...] = ()
     repaired: tuple[str, ...] = ()
     norm_strength: float = 0.0
@@ -59,6 +61,8 @@ class SimulationResult:
     records: tuple[InteractionRecord, ...]
     final_agents: tuple[AgentState, ...]
     cooperation_rate: float
+    autonomous_cooperation_rate: float
+    blocked_rate: float
     betrayal_rate: float
     repair_rate: float
     mean_payoff: float
@@ -93,8 +97,8 @@ class InterdependenceEnvironment:
             round_sanctions = 0
 
             for agent_a, agent_b in pairs:
-                action_a = self._choose_action(agent_a, agent_b)
-                action_b = self._choose_action(agent_b, agent_a)
+                action_a, blocked_a = self._choose_action_with_policy(agent_a, agent_b)
+                action_b, blocked_b = self._choose_action_with_policy(agent_b, agent_a)
                 payoff_a, payoff_b, sanctioned, repaired = self._apply_outcome(
                     agent_a,
                     agent_b,
@@ -116,6 +120,14 @@ class InterdependenceEnvironment:
                         action_b=action_b,
                         payoff_a=payoff_a,
                         payoff_b=payoff_b,
+                        blocked=tuple(
+                            agent.agent_id
+                            for agent, blocked in (
+                                (agent_a, blocked_a),
+                                (agent_b, blocked_b),
+                            )
+                            if blocked
+                        ),
                         sanctioned=sanctioned,
                         repaired=repaired,
                         norm_strength=round(self.norm_strength, 3),
@@ -164,6 +176,19 @@ class InterdependenceEnvironment:
             (agents[index], agents[index + 1])
             for index in range(0, len(agents) - 1, 2)
         ]
+
+    def _choose_action_with_policy(
+        self,
+        agent: AgentState,
+        partner: AgentState,
+    ) -> tuple[InteractionAction, bool]:
+        desired_action = self._choose_action(agent, partner)
+        if (
+            self.config.static_policy_enabled
+            and desired_action == InteractionAction.DEFECT
+        ):
+            return InteractionAction.COOPERATE, True
+        return desired_action, False
 
     def _choose_action(self, agent: AgentState, partner: AgentState) -> InteractionAction:
         if not self.config.repeated_interaction:
@@ -372,6 +397,9 @@ class InterdependenceEnvironment:
             == {InteractionAction.COOPERATE, InteractionAction.DEFECT}
         ]
         repairs = [agent_id for record in records for agent_id in record.repaired]
+        blocked = [agent_id for record in records for agent_id in record.blocked]
+        cooperation_count = sum(action == InteractionAction.COOPERATE for action in actions)
+        autonomous_cooperation_count = max(0, cooperation_count - len(blocked))
         total_payoff = sum(agent.payoff for agent in self.agents)
         total_reputation = sum(agent.reputation for agent in self.agents)
         norm_stability = self._norm_stability(records)
@@ -381,10 +409,12 @@ class InterdependenceEnvironment:
             records=tuple(records),
             final_agents=tuple(self.agents),
             cooperation_rate=(
-                sum(action == InteractionAction.COOPERATE for action in actions) / len(actions)
-                if actions
-                else 0.0
+                cooperation_count / len(actions) if actions else 0.0
             ),
+            autonomous_cooperation_rate=(
+                autonomous_cooperation_count / len(actions) if actions else 0.0
+            ),
+            blocked_rate=len(blocked) / len(actions) if actions else 0.0,
             betrayal_rate=len(betrayals) / len(records) if records else 0.0,
             repair_rate=len(repairs) / len(records) if records else 0.0,
             mean_payoff=total_payoff / len(self.agents) if self.agents else 0.0,
@@ -425,6 +455,16 @@ def default_conditions() -> tuple[InterdependenceConfig, ...]:
             initial_norm_strength=0.0,
         ),
         InterdependenceConfig(
+            name="stag_hunt_static_policy",
+            family=EnvironmentFamily.STAG_HUNT,
+            repeated_interaction=False,
+            reputation_enabled=False,
+            partner_choice_enabled=False,
+            sanction_enabled=False,
+            initial_norm_strength=0.0,
+            static_policy_enabled=True,
+        ),
+        InterdependenceConfig(
             name="stag_hunt_repeated_no_sanction",
             family=EnvironmentFamily.STAG_HUNT,
             repeated_interaction=True,
@@ -452,6 +492,16 @@ def default_conditions() -> tuple[InterdependenceConfig, ...]:
             initial_norm_strength=0.0,
         ),
         InterdependenceConfig(
+            name="commons_static_policy",
+            family=EnvironmentFamily.COMMONS,
+            repeated_interaction=False,
+            reputation_enabled=False,
+            partner_choice_enabled=False,
+            sanction_enabled=False,
+            initial_norm_strength=0.0,
+            static_policy_enabled=True,
+        ),
+        InterdependenceConfig(
             name="commons_interdependent",
             family=EnvironmentFamily.COMMONS,
             repeated_interaction=True,
@@ -469,6 +519,16 @@ def default_conditions() -> tuple[InterdependenceConfig, ...]:
             partner_choice_enabled=False,
             sanction_enabled=False,
             initial_norm_strength=0.0,
+        ),
+        InterdependenceConfig(
+            name="delegation_static_policy",
+            family=EnvironmentFamily.DELEGATION,
+            repeated_interaction=False,
+            reputation_enabled=False,
+            partner_choice_enabled=False,
+            sanction_enabled=False,
+            initial_norm_strength=0.0,
+            static_policy_enabled=True,
         ),
         InterdependenceConfig(
             name="delegation_interdependent",
