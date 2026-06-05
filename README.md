@@ -125,6 +125,8 @@ The interdependence benchmark compares:
 - Stag Hunt: trust under mutual dependence.
 - Shared-resource commons: restraint under diffuse group harm.
 - Delegation with accountability: faithful action under trace and review.
+- Asymmetric dependence: stewardship when one party's shortcut can harm a
+  dependent party.
 
 Each family compares one-shot or weak-enforcement conditions against
 static hard-rule policy and interdependent norm learning. Static policy can

@@ -15,6 +15,7 @@ class EnvironmentFamily(StrEnum):
     STAG_HUNT = "stag_hunt"
     COMMONS = "shared_resource_commons"
     DELEGATION = "delegation_with_accountability"
+    ASYMMETRIC_DEPENDENCE = "asymmetric_dependence"
 
 
 @dataclass(frozen=True)
@@ -68,6 +69,8 @@ class SimulationResult:
     betrayal_rate: float
     repair_rate: float
     mean_repair_obligation: float
+    stewardship_rate: float
+    dependent_harm_rate: float
     mean_payoff: float
     mean_reputation: float
     norm_strength: float
@@ -239,6 +242,13 @@ class InterdependenceEnvironment:
             return self._apply_commons_outcome(agent_a, agent_b, action_a, action_b)
         if self.config.family == EnvironmentFamily.DELEGATION:
             return self._apply_delegation_outcome(agent_a, agent_b, action_a, action_b)
+        if self.config.family == EnvironmentFamily.ASYMMETRIC_DEPENDENCE:
+            return self._apply_asymmetric_dependence_outcome(
+                agent_a,
+                agent_b,
+                action_a,
+                action_b,
+            )
         return self._apply_stag_hunt_outcome(agent_a, agent_b, action_a, action_b)
 
     def _apply_stag_hunt_outcome(
@@ -376,6 +386,52 @@ class InterdependenceEnvironment:
         agent_b.payoff += payoff_b
         return payoff_a, payoff_b, tuple(sanctioned), tuple(repaired)
 
+    def _apply_asymmetric_dependence_outcome(
+        self,
+        steward: AgentState,
+        dependent: AgentState,
+        steward_action: InteractionAction,
+        dependent_action: InteractionAction,
+    ) -> tuple[float, float, tuple[str, ...], tuple[str, ...]]:
+        sanctioned: list[str] = []
+        repaired: list[str] = []
+
+        if (
+            steward_action == InteractionAction.COOPERATE
+            and dependent_action == InteractionAction.COOPERATE
+        ):
+            steward_payoff, dependent_payoff = 3.2, 4.2
+            self._adjust_reputation(steward, 0.10)
+            self._adjust_reputation(dependent, 0.05)
+            steward_payoff -= self._attempt_repair(steward, repaired)
+            dependent_payoff -= self._attempt_repair(dependent, repaired)
+        elif (
+            steward_action == InteractionAction.DEFECT
+            and dependent_action == InteractionAction.COOPERATE
+        ):
+            steward_payoff, dependent_payoff = 4.6, -1.4
+            self._adjust_reputation(steward, -0.30)
+            self._adjust_reputation(dependent, 0.02)
+            if self.config.sanction_enabled:
+                steward_payoff -= 2.2
+                sanctioned.append(steward.agent_id)
+                self._add_repair_obligation(steward, 0.60)
+        elif steward_action == InteractionAction.COOPERATE:
+            steward_payoff, dependent_payoff = 1.0, 1.8
+            self._adjust_reputation(steward, 0.04)
+            self._adjust_reputation(dependent, -0.05)
+        else:
+            steward_payoff, dependent_payoff = 1.2, 0.4
+            self._adjust_reputation(steward, -0.12)
+            self._adjust_reputation(dependent, -0.03)
+            if self.config.sanction_enabled:
+                sanctioned.append(steward.agent_id)
+                self._add_repair_obligation(steward, 0.25)
+
+        steward.payoff += steward_payoff
+        dependent.payoff += dependent_payoff
+        return steward_payoff, dependent_payoff, tuple(sanctioned), tuple(repaired)
+
     def _adjust_reputation(self, agent: AgentState, delta: float) -> None:
         if not self.config.reputation_enabled:
             return
@@ -432,8 +488,18 @@ class InterdependenceEnvironment:
         ]
         repairs = [agent_id for record in records for agent_id in record.repaired]
         blocked = [agent_id for record in records for agent_id in record.blocked]
+        dependent_harms = [
+            record
+            for record in records
+            if self.config.family == EnvironmentFamily.ASYMMETRIC_DEPENDENCE
+            and record.action_a == InteractionAction.DEFECT
+        ]
         cooperation_count = sum(action == InteractionAction.COOPERATE for action in actions)
         autonomous_cooperation_count = max(0, cooperation_count - len(blocked))
+        steward_cooperation_count = sum(
+            record.action_a == InteractionAction.COOPERATE
+            for record in records
+        )
         total_payoff = sum(agent.payoff for agent in self.agents)
         total_reputation = sum(agent.reputation for agent in self.agents)
         total_repair_obligation = sum(agent.repair_obligation for agent in self.agents)
@@ -455,6 +521,16 @@ class InterdependenceEnvironment:
             repair_rate=len(repairs) / len(records) if records else 0.0,
             mean_repair_obligation=(
                 total_repair_obligation / len(self.agents) if self.agents else 0.0
+            ),
+            stewardship_rate=(
+                steward_cooperation_count / len(records)
+                if records and self.config.family == EnvironmentFamily.ASYMMETRIC_DEPENDENCE
+                else 0.0
+            ),
+            dependent_harm_rate=(
+                len(dependent_harms) / len(records)
+                if records and self.config.family == EnvironmentFamily.ASYMMETRIC_DEPENDENCE
+                else 0.0
             ),
             mean_payoff=total_payoff / len(self.agents) if self.agents else 0.0,
             mean_reputation=total_reputation / len(self.agents) if self.agents else 0.0,
@@ -577,6 +653,35 @@ def default_conditions() -> tuple[InterdependenceConfig, ...]:
             partner_choice_enabled=True,
             sanction_enabled=True,
             initial_norm_strength=0.55,
+            cooperative_cluster=True,
+        ),
+        InterdependenceConfig(
+            name="asymmetric_one_shot",
+            family=EnvironmentFamily.ASYMMETRIC_DEPENDENCE,
+            repeated_interaction=False,
+            reputation_enabled=False,
+            partner_choice_enabled=False,
+            sanction_enabled=False,
+            initial_norm_strength=0.0,
+        ),
+        InterdependenceConfig(
+            name="asymmetric_static_policy",
+            family=EnvironmentFamily.ASYMMETRIC_DEPENDENCE,
+            repeated_interaction=False,
+            reputation_enabled=False,
+            partner_choice_enabled=False,
+            sanction_enabled=False,
+            initial_norm_strength=0.0,
+            static_policy_enabled=True,
+        ),
+        InterdependenceConfig(
+            name="asymmetric_interdependent",
+            family=EnvironmentFamily.ASYMMETRIC_DEPENDENCE,
+            repeated_interaction=True,
+            reputation_enabled=True,
+            partner_choice_enabled=True,
+            sanction_enabled=True,
+            initial_norm_strength=0.6,
             cooperative_cluster=True,
         ),
     )

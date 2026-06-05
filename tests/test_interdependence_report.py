@@ -15,6 +15,8 @@ class InterdependenceReportTest(unittest.TestCase):
         self.assertIn("Autonomous cooperation", report)
         self.assertIn("Norm strength", report)
         self.assertIn("Repair debt", report)
+        self.assertIn("Asymmetric Dependence", report)
+        self.assertIn("Dependent harm", report)
 
 
 if __name__ == "__main__":

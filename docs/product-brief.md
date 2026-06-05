@@ -12,7 +12,8 @@ auto-execute, confirm, present alternatives, escalate, or block.
 
 The deeper thesis is that moral behavior cannot be added only at the moment of
 action. It has to be learned in an environment of interdependence: repeated
-interaction, shared stakes, partner choice, reputation, sanction, and repair.
+interaction, shared stakes, partner choice, reputation, sanction, repair, and
+stewardship under power asymmetry.
 
 ## User
 
@@ -29,6 +30,8 @@ infrastructure.
 - Produce a measurable safety/friction frontier against hard-rule baselines.
 - Test whether repeated dependence and sanction make cooperation more stable
   than one-shot action choice.
+- Test whether agents protect dependent stakeholders when shortcutting would
+  benefit the agent or its principal.
 
 ## Product Surface
 

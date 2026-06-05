@@ -14,6 +14,7 @@ FAMILY_LABELS = {
     EnvironmentFamily.STAG_HUNT: "Stag Hunt",
     EnvironmentFamily.COMMONS: "Shared-Resource Commons",
     EnvironmentFamily.DELEGATION: "Delegation With Accountability",
+    EnvironmentFamily.ASYMMETRIC_DEPENDENCE: "Asymmetric Dependence",
 }
 
 
@@ -47,8 +48,8 @@ def render_report(results: list[SimulationResult]) -> str:
         "",
         "## Summary",
         "",
-        "| Family | Condition | Cooperation | Autonomous cooperation | Blocked | Repair | Repair debt | Norm strength | Norm stability |",
-        "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+        "| Family | Condition | Cooperation | Autonomous cooperation | Blocked | Repair | Repair debt | Stewardship | Dependent harm | Norm strength | Norm stability |",
+        "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
 
     for family in EnvironmentFamily:
@@ -64,6 +65,8 @@ def render_report(results: list[SimulationResult]) -> str:
                         percent(result.blocked_rate),
                         percent(result.repair_rate),
                         f"{result.mean_repair_obligation:.2f}",
+                        percent(result.stewardship_rate),
+                        percent(result.dependent_harm_rate),
                         f"{result.norm_strength:.2f}",
                         percent(result.norm_stability),
                     ]
@@ -103,6 +106,12 @@ def render_report(results: list[SimulationResult]) -> str:
                 f"norm strength {interdependent.norm_strength:.2f}, with "
                 f"{interdependent.mean_repair_obligation:.2f} repair debt left."
             )
+            if family == EnvironmentFamily.ASYMMETRIC_DEPENDENCE:
+                lines.append(
+                    "- In the asymmetric case, interdependence produces "
+                    f"{percent(interdependent.stewardship_rate)} stewardship and "
+                    f"{percent(interdependent.dependent_harm_rate)} dependent harm."
+                )
         elif interdependent:
             lines.append(
                 "- Interdependence produces "

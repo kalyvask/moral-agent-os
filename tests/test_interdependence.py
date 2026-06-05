@@ -69,6 +69,7 @@ class InterdependenceTest(unittest.TestCase):
             "stag_hunt_static_policy",
             "commons_static_policy",
             "delegation_static_policy",
+            "asymmetric_static_policy",
         ):
             static_policy = results[condition]
             self.assertGreater(static_policy.blocked_rate, 0.5)
@@ -84,6 +85,7 @@ class InterdependenceTest(unittest.TestCase):
             "stag_hunt_interdependent",
             "commons_interdependent",
             "delegation_interdependent",
+            "asymmetric_interdependent",
         ):
             interdependent = results[condition]
             self.assertEqual(interdependent.blocked_rate, 0.0)
@@ -100,6 +102,17 @@ class InterdependenceTest(unittest.TestCase):
             interdependent = results[condition]
             self.assertGreater(interdependent.repair_rate, 0.0)
             self.assertLess(interdependent.mean_repair_obligation, 0.05)
+
+    def test_asymmetric_interdependence_improves_stewardship(self) -> None:
+        results = {result.condition: result for result in run_all()}
+
+        baseline = results["asymmetric_one_shot"]
+        interdependent = results["asymmetric_interdependent"]
+
+        self.assertGreater(interdependent.stewardship_rate, baseline.stewardship_rate)
+        self.assertLess(interdependent.dependent_harm_rate, baseline.dependent_harm_rate)
+        self.assertLessEqual(interdependent.dependent_harm_rate, 0.10)
+        self.assertGreater(interdependent.repair_rate, 0.0)
 
 
 if __name__ == "__main__":

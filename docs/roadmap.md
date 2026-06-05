@@ -24,8 +24,10 @@
 
 ## M3b: Interdependence Environments
 
-- Stag Hunt, shared-resource commons, and delegation-with-accountability families.
-- Reputation, partner choice, sanction, repair obligations, and norm-stability metrics.
+- Stag Hunt, shared-resource commons, delegation-with-accountability, and
+  asymmetric-dependence families.
+- Reputation, partner choice, sanction, repair obligations, stewardship,
+  dependent-harm, and norm-stability metrics.
 - Compare one-shot, weak-enforcement, and interdependent-learning conditions.
 
 ## M4: Adaptive UI
