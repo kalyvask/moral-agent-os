@@ -516,31 +516,3 @@ partner choice, sanction, and norm feedback.
 See [docs/moral-agent-learnings.md](docs/moral-agent-learnings.md).
 See [docs/interdependence-design.md](docs/interdependence-design.md).
 See [docs/interdependence-report.md](docs/interdependence-report.md).
-
-## Roadmap
-
-- [x] Scenario bank to 70 cases with held-out situation families and 18 same-action twins.
-- [x] LLM assessor with structured output and prompt caching.
-- [x] Context-ablation experiment for the same-action win.
-- [x] Norm memory with correction episodes and a frozen-control comparison.
-- [x] Generated reports and figures (Markdown, CSV, JSON, SVG).
-- [x] Framework adapters (LangChain, CrewAI, AutoGen, OpenAI Agents).
-- [x] Threshold sweeps for the safety/friction frontier (Pareto curve, dominance check).
-- [x] Run the LLM assessor at scale and report LLM-vs-scaffold numbers (over OpenRouter).
-- [x] Independent (model-rater) labels and inter-rater agreement (Fleiss 0.85).
-- [ ] Independent *human* labels and agreement.
-- [ ] Expand the interdependence benchmark into richer multi-agent tasks.
-- [ ] Adaptive UI around the five dispositions.
-- [ ] Short writeup with falsifiers and measured LLM-vs-scaffold results.
-
-## GitHub Milestones
-
-- M1 (done): Measurable core: scenario bank, baselines, validation, CI, and frontier report.
-- M2 (done): Non-circular assessment. LLM structured assessor, context ablation, held-out
-  families, a saved OpenRouter ablation on the 70-bank, and significance/consensus validation
-  (model vs assessor-excluded consensus 90% vs 71%; exact McNemar p < 0.001).
-- M3 (done): Social learning loop: correction episodes and a frozen-control comparison.
-- M4 (done): Adaptive governance UI. A review console over auto, confirm, present-options,
-  escalate, and block, with kaleidoscope cards and live corrections into norm memory.
-- M5 (in progress): Results writeup. Confidence intervals, failure analysis, and model-rater
-  inter-rater agreement are done; human labels and a demo video remain.
