@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from moral_agent_os.floor import ConstitutionFloor
 from moral_agent_os.reward_hacking import RewardHackingDetector
-from moral_agent_os.schema import ContextAssessment, Scenario, ScenarioLabel
+from moral_agent_os.schema import ContextAssessment, Scenario
 
 
 class HeuristicAssessor:
@@ -39,6 +39,16 @@ class HeuristicAssessor:
                 "health info": 0.45,
                 "compensation": 0.35,
                 "api key": 0.45,
+                "board deck": 0.35,
+                "confidential": 0.3,
+                "customer contract": 0.35,
+                "legal contract": 0.35,
+                "legal hold": 0.5,
+                "main branch": 0.3,
+                "public": 0.25,
+                "roadmap": 0.3,
+                "security questionnaire": 0.3,
+                "vendor": 0.2,
             },
             baseline=0.2,
         )
@@ -66,26 +76,61 @@ class HeuristicAssessor:
                 "api key": 0.5,
                 "secret": 0.5,
                 "compensation": 0.45,
+                "confidential": 0.4,
+                "private doc": 0.4,
+                "roadmap": 0.3,
+                "board deck": 0.4,
+                "customer contract": 0.35,
+                "legal contract": 0.35,
                 "private": 0.3,
             },
             baseline=0.0,
         )
 
         role_authority = 0.75
-        if any(term in text for term in ("commit", "promise", "definitely", "legal", "refund")):
+        if any(
+            term in text
+            for term in ("commitment", "promise", "definitely", "legal", "refund")
+        ):
             role_authority -= 0.25
         if any(term in text for term in ("production", "main branch", "investor")):
             role_authority -= 0.2
         role_authority = max(0.0, role_authority)
 
         norm_conflict = 0.15
-        if scenario.expected_label == ScenarioLabel.PLURAL:
-            norm_conflict = 0.8
-        elif any(term in text for term in ("refund", "loop in", "tone", "escalate", "refactor")):
+        if any(
+            term in text
+            for term in (
+                "refund",
+                "loop in",
+                "tone",
+                "escalate",
+                "refactor",
+                "outage",
+                "policy does not cover",
+                "sensitive",
+                "probably resolve",
+                "aggressive",
+                "public",
+                "trade-off",
+            )
+        ):
             norm_conflict = 0.55
+        if any(
+            phrase in text
+            for phrase in (
+                "but the policy",
+                "but the account",
+                "but the team",
+                "but the customer",
+                "reasonable people",
+                "could go either way",
+            )
+        ):
+            norm_conflict = 0.8
 
         confidence = 0.85
-        if scenario.expected_label == ScenarioLabel.PLURAL:
+        if norm_conflict >= 0.7:
             confidence = 0.55
         if floor_violations:
             confidence = 0.9

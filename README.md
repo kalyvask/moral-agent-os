@@ -44,7 +44,7 @@ The runtime returns one of four UI dispositions:
 moral-agent-os/
   moral_agent_os/        runtime package
   bench/                 Stress eval harness
-  bench/scenarios/       same-action-different-context scenarios
+  bench/scenarios/       36 same-action-different-context scenarios
   docs/                  product brief, course connection, eval plan
   examples/              quickstart usage
   labeling/              independent-labeler notes and stub
@@ -58,6 +58,12 @@ Run the benchmark with the deterministic scaffold assessor:
 
 ```bash
 python -m bench.run
+```
+
+Validate the scenario bank:
+
+```bash
+python -m bench.validate
 ```
 
 Run tests:
@@ -110,3 +116,11 @@ See [docs/moral-agent-learnings.md](docs/moral-agent-learnings.md).
 5. Add norm memory with correction episodes and a frozen-control comparison.
 6. Build the adaptive UI around the four dispositions.
 7. Publish a short writeup with falsifiers and measured results.
+
+## GitHub Milestones
+
+- M1: Measurable core: scenario bank, baselines, validation, CI, and first frontier report.
+- M2: Non-circular assessment: LLM structured assessor, context ablation, held-out families.
+- M3: Social learning loop: correction episodes and frozen-control comparison.
+- M4: Adaptive governance UI: auto, confirm, present-options, escalate, and block states.
+- M5: Results writeup: human labels, confidence intervals, failure analysis, and demo video.

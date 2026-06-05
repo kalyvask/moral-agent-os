@@ -59,7 +59,7 @@ class NormRouter:
                 trace=self._trace(assessment),
             )
 
-        if assessment.confidence < 0.75 or assessment.stakes >= 0.45 or assessment.role_authority < 0.55:
+        if assessment.confidence < 0.75 or assessment.stakes > 0.5 or assessment.role_authority < 0.55:
             return RouteDecision(
                 disposition=Disposition.CONFIRM,
                 rationale="Moderate uncertainty or authority gap; ask before acting.",

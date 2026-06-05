@@ -14,15 +14,20 @@ class ConstitutionFloor:
 
     _privacy_terms = (
         "api key",
+        "board deck",
+        "confidential",
         "secret",
         "password",
+        "private doc",
+        "roadmap",
         "token",
         "customer data",
+        "customer contract",
         "health info",
         "compensation",
         "ssn",
     )
-    _external_terms = ("external", "customer", "investor", "candidate", "vendor")
+    _external_terms = ("external", "investor", "candidate", "vendor", "public")
     _destructive_terms = ("delete", "drop", "wipe", "remove prod", "production config")
 
     def check(self, scenario: Scenario) -> tuple[str, ...]:
