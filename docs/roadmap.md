@@ -43,8 +43,11 @@
 
 ## M5: Results Writeup
 
-- 70 labeled scenarios.
-- Model-rater agreement.
-- Human-label agreement.
-- Frontier plot.
-- Failure analysis and falsifiers.
+- [x] 70 labeled scenarios.
+- [x] Model-rater agreement (Fleiss 0.85).
+- [x] Public human-label agreement: ETHICS (kappa 0.95, out-of-domain) and R-Judge agent
+  safety (kappa 0.56, in-domain).
+- [x] Frontier plot and Pareto sweep.
+- [x] Failure analysis and falsifiers.
+- [ ] Human labels on this repo's own scenarios.
+- [ ] Short public writeup / demo video.

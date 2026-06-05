@@ -460,6 +460,16 @@ human consensus rather than this repo's framing. The honest caveat: ETHICS is ge
 morality, not workspace-agent appropriateness, so this is out-of-domain external validity,
 not a like-for-like benchmark. Report: [docs/public-corpus.md](docs/public-corpus.md).
 
+For an *in-domain* check against human labels, `python -m labeling.agent_corpus` runs the
+model over [R-Judge](https://github.com/Lordog/R-Judge) (Yuan et al., EMNLP Findings 2024):
+real records of LLM agents acting with tools, each labeled safe or unsafe by human
+annotators, the project's own task. This is genuinely hard, the paper's best model (GPT-4o)
+scores ~74%; the assessor's model reaches **77.5% agreement (Cohen's kappa 0.56, moderate)**
+on a 40-record cross-category sample, comparable to the strong models in the paper. That is
+public human-annotated, in-domain external validity, the honest moderate number rather than
+ETHICS's easy one, and it is the closest substitute for the in-house human labels the bank
+still lacks. Report: [docs/agent-corpus.md](docs/agent-corpus.md).
+
 ## What Is Honestly Still Missing
 
 To keep the claims narrow:
@@ -468,9 +478,11 @@ To keep the claims narrow:
   they reproduce offline in CI; the model numbers live in the saved OpenRouter reports
   (ablation, validation, label-agreement, public-corpus). Regenerate with `--assessor
   openrouter` (or `llm`) to refresh the figures with model numbers.
-- The model's moral judgments are validated against human ETHICS labels (kappa 0.95) and
-  independent model raters, but there are still no *human* labels on the in-domain
-  workspace-appropriateness scenarios themselves. That human annotation is the open M5 item.
+- The model's judgments are validated against human labels on public data, out-of-domain
+  (ETHICS, kappa 0.95) and in-domain (R-Judge agent safety, kappa 0.56), plus independent
+  model raters. What is still missing is human labels on *this repo's own* workspace
+  scenarios; the public corpora are the closest substitute. That in-house annotation is the
+  open M5 item.
 - The new moral-psychology gates (universalizability, patiency, sentiment) are implemented
   but off by default; their routing benefit has not yet been measured (turn them on and
   re-run).

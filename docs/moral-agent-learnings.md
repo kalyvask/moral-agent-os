@@ -77,12 +77,14 @@ feature, listed with where it comes from and how it could land.
   that build willingness to cooperate in the first place. *Proposed:* a trust-building
   trajectory in the interdependence sim where repeated reliance, not just sanction, raises the
   cooperation baseline.
-- **Learning from a public moral corpus (alignment_2).** *Integrated.* `labeling/public_corpus.py`
-  validates the assessor's model against the public, human-annotated ETHICS commonsense set
-  (Hendrycks et al., 2021): the model agrees with the human labels 97.5% (kappa 0.95) on a
-  sample, evidence its moral judgments are not idiosyncratic to this repo. Caveat: ETHICS is
-  general morality, not workspace appropriateness, so it is out-of-domain external validity.
-  A like-for-like, human-labeled workspace-appropriateness corpus would be the next step.
+- **Learning from a public moral corpus (alignment_2).** *Integrated, two corpora.*
+  `labeling/public_corpus.py` checks the model against ETHICS commonsense (Hendrycks et al.,
+  2021): 97.5% agreement, kappa 0.95, but out-of-domain (general morality).
+  `labeling/agent_corpus.py` checks it against R-Judge (Yuan et al., 2024), human-labeled
+  records of LLM agents acting with tools, the project's exact task: 77.5% agreement, kappa
+  0.56, comparable to the frontier models in that paper. R-Judge is the in-domain,
+  human-annotated external validity the in-house bank could not provide. Human labels on this
+  repo's own scenarios remain the last open item.
 
 The honest status: the repo has the course's *structure* (appropriateness, thin and thick,
 social enforcement, learned norms) and now its *moral psychology* as assessed dimensions
