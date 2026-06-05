@@ -143,14 +143,21 @@ def _safe_name(model: str) -> str:
 
 
 def collect_labels(
-    models: list[str], scenarios: list[Scenario], api_key: str
+    models: list[str], scenarios: list[Scenario], api_key: str, *, resume: bool = True
 ) -> dict[str, dict[str, str]]:
+    """Label scenarios with each model. With resume, only label ids not already saved."""
     LABELS_DIR.mkdir(parents=True, exist_ok=True)
     all_labels: dict[str, dict[str, str]] = {}
     for model in models:
-        labels: dict[str, str] = {}
+        path = LABELS_DIR / f"{_safe_name(model)}.json"
+        labels: dict[str, str] = (
+            json.loads(path.read_text(encoding="utf-8"))
+            if resume and path.exists()
+            else {}
+        )
+        todo = [s for s in scenarios if s.id not in labels]
         failures = 0
-        for scenario in scenarios:
+        for scenario in todo:
             try:
                 normalized = _normalize(_post(api_key, model, scenario))
             except Exception as exc:  # noqa: BLE001 - one bad call should not kill the run
@@ -160,11 +167,12 @@ def collect_labels(
                 failures += 1
             else:
                 labels[scenario.id] = normalized
-        (LABELS_DIR / f"{_safe_name(model)}.json").write_text(
-            json.dumps(labels, indent=2), encoding="utf-8"
-        )
+        path.write_text(json.dumps(labels, indent=2), encoding="utf-8")
         all_labels[model] = labels
-        print(f"[label] {model}: {len(labels)}/{len(scenarios)} labeled, {failures} failed")
+        print(
+            f"[label] {model}: {len(labels)}/{len(scenarios)} labeled "
+            f"({len(todo)} new, {failures} failed)"
+        )
     return all_labels
 
 

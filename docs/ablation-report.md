@@ -10,7 +10,7 @@ context the two members are identical inputs, so the without-context number is a
 control that must read ~0 by construction; the with-context number is the genuine
 contextual win.
 
-Scenarios: 56. Same-action twins: 11.
+Scenarios: 70. Same-action twins: 18.
 
 ## Twin discrimination
 
@@ -20,10 +20,10 @@ number: it is exactly what hard rules cannot do, because the action is the same.
 
 | Condition | Twin discrimination |
 | --- | ---: |
-| With context | 63.6% (7/11, 95% CI 35.4%-84.8%) |
-| Without context (control) | 0.0% (0/11, 95% CI 0.0%-25.9%) |
+| With context | 38.9% (7/18, 95% CI 20.3%-61.4%) |
+| Without context (control) | 0.0% (0/18, 95% CI 0.0%-17.6%) |
 
-Discrimination attributable to reading context: **+63.6%**.
+Discrimination attributable to reading context: **+38.9%**.
 
 ## Safety and friction
 
@@ -32,10 +32,10 @@ Friction = clearly appropriate actions stopped unnecessarily (lower is better).
 
 | Condition | Safety (inappropriate auto) | Friction (appropriate stopped) | Plural mishandled |
 | --- | ---: | ---: | ---: |
-| With context | 20.0% (5/25, 95% CI 8.9%-39.1%) | 12.0% (3/25, 95% CI 4.2%-30.0%) | 33.3% (2/6, 95% CI 9.7%-70.0%) |
-| Without context | 52.0% (13/25, 95% CI 33.5%-70.0%) | 4.0% (1/25, 95% CI 0.7%-19.5%) | 66.7% (4/6, 95% CI 30.0%-90.3%) |
+| With context | 37.5% (12/32, 95% CI 22.9%-54.7%) | 12.5% (4/32, 95% CI 5.0%-28.1%) | 33.3% (2/6, 95% CI 9.7%-70.0%) |
+| Without context | 62.5% (20/32, 95% CI 45.3%-77.1%) | 3.1% (1/32, 95% CI 0.6%-15.7%) | 66.7% (4/6, 95% CI 30.0%-90.3%) |
 
-Context-inappropriate actions that slip through once context is hidden: **+32.0%**.
+Context-inappropriate actions that slip through once context is hidden: **+25.0%**.
 
 ## How to read this
 

@@ -15,23 +15,26 @@
 <line x1='64' y1='384' x2='580' y2='384' stroke='#444' stroke-width='1.5'/>
 <line x1='64' y1='64' x2='64' y2='384' stroke='#444' stroke-width='1.5'/>
 <text x='64.0' y='402.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='11' fill='#666' font-weight='normal' text-anchor='middle'>0</text>
-<text x='236.0' y='402.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='11' fill='#666' font-weight='normal' text-anchor='middle'>1</text>
-<text x='408.0' y='402.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='11' fill='#666' font-weight='normal' text-anchor='middle'>2</text>
-<text x='580.0' y='402.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='11' fill='#666' font-weight='normal' text-anchor='middle'>3</text>
+<text x='193.0' y='402.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='11' fill='#666' font-weight='normal' text-anchor='middle'>1</text>
+<text x='322.0' y='402.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='11' fill='#666' font-weight='normal' text-anchor='middle'>2</text>
+<text x='451.0' y='402.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='11' fill='#666' font-weight='normal' text-anchor='middle'>3</text>
+<text x='580.0' y='402.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='11' fill='#666' font-weight='normal' text-anchor='middle'>4</text>
 <text x='322.0' y='436.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='12' fill='#333' font-weight='normal' text-anchor='middle'>Corrections applied</text>
 <text x='20.0' y='224.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='12' fill='#333' font-weight='normal' text-anchor='middle' transform='rotate(-90 20 224.0)'>Friction (appropriate actions stopped)</text>
-<polyline points='64.0,345.6 236.0,358.4 408.0,358.4 580.0,358.4' fill='none' stroke='#2f6f8f' stroke-width='2.5'/>
-<circle cx='64.0' cy='345.6' r='3' fill='#2f6f8f'/>
-<circle cx='236.0' cy='358.4' r='3' fill='#2f6f8f'/>
-<circle cx='408.0' cy='358.4' r='3' fill='#2f6f8f'/>
-<circle cx='580.0' cy='358.4' r='3' fill='#2f6f8f'/>
+<polyline points='64.0,344.0 193.0,354.0 322.0,354.0 451.0,354.0 580.0,364.0' fill='none' stroke='#2f6f8f' stroke-width='2.5'/>
+<circle cx='64.0' cy='344.0' r='3' fill='#2f6f8f'/>
+<circle cx='193.0' cy='354.0' r='3' fill='#2f6f8f'/>
+<circle cx='322.0' cy='354.0' r='3' fill='#2f6f8f'/>
+<circle cx='451.0' cy='354.0' r='3' fill='#2f6f8f'/>
+<circle cx='580.0' cy='364.0' r='3' fill='#2f6f8f'/>
 <rect x='604' y='59' width='13' height='13' fill='#2f6f8f'/>
 <text x='623.0' y='70.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='12' fill='#222' font-weight='normal' text-anchor='start'>Learning</text>
-<polyline points='64.0,345.6 236.0,345.6 408.0,345.6 580.0,345.6' fill='none' stroke='#c1666b' stroke-width='2.5'/>
-<circle cx='64.0' cy='345.6' r='3' fill='#c1666b'/>
-<circle cx='236.0' cy='345.6' r='3' fill='#c1666b'/>
-<circle cx='408.0' cy='345.6' r='3' fill='#c1666b'/>
-<circle cx='580.0' cy='345.6' r='3' fill='#c1666b'/>
+<polyline points='64.0,344.0 193.0,344.0 322.0,344.0 451.0,344.0 580.0,344.0' fill='none' stroke='#c1666b' stroke-width='2.5'/>
+<circle cx='64.0' cy='344.0' r='3' fill='#c1666b'/>
+<circle cx='193.0' cy='344.0' r='3' fill='#c1666b'/>
+<circle cx='322.0' cy='344.0' r='3' fill='#c1666b'/>
+<circle cx='451.0' cy='344.0' r='3' fill='#c1666b'/>
+<circle cx='580.0' cy='344.0' r='3' fill='#c1666b'/>
 <rect x='604' y='83' width='13' height='13' fill='#c1666b'/>
 <text x='623.0' y='94.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='12' fill='#222' font-weight='normal' text-anchor='start'>Frozen (control)</text>
 </svg>

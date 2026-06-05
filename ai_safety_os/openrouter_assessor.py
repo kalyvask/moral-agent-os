@@ -109,8 +109,17 @@ class OpenRouterAssessor:
         if self.use_json_mode:
             body["response_format"] = {"type": "json_object"}
 
-        content = self._post(body)
-        return _extract_json(content)
+        # Retry a parse failure once: a model occasionally returns an empty or non-JSON
+        # message, and a fresh sample usually parses. Keeps long benchmark runs from
+        # aborting on a single bad response.
+        last_error: OpenRouterAssessorError | None = None
+        for _ in range(2):
+            content = self._post(dict(body))
+            try:
+                return _extract_json(content)
+            except OpenRouterAssessorError as exc:
+                last_error = exc
+        raise last_error if last_error else OpenRouterAssessorError("No response.")
 
     def _post(self, body: dict[str, Any]) -> str:
         url = f"{self.base_url}/chat/completions"
