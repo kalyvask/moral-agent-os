@@ -148,6 +148,88 @@ class RuntimeSdkTest(unittest.TestCase):
         self.assertTrue(decision.required_review)
         self.assertIn("public_review_required", decision.state_updates)
 
+    def test_guard_tool_executes_allowed_action(self) -> None:
+        calls: list[str] = []
+
+        @self.runtime.guard_tool(
+            context=ContextSnapshot(
+                agent_role="workspace assistant",
+                user_intent="The user asked for a private draft.",
+                stakes=0.20,
+                reversibility=0.95,
+            )
+        )
+        def draft_note(title: str) -> str:
+            calls.append(title)
+            return f"drafted {title}"
+
+        result = draft_note("weekly plan")
+
+        self.assertTrue(result.executed)
+        self.assertEqual(result.result, "drafted weekly plan")
+        self.assertEqual(calls, ["weekly plan"])
+        self.assertEqual(result.decision.route, MoralRoute.ALLOW)
+
+    def test_guard_tool_pauses_review_required_action(self) -> None:
+        calls: list[str] = []
+
+        def proposal_builder(to: str, subject: str) -> ActionProposal:
+            return ActionProposal(
+                id="customer_commitment",
+                action_type="send_email",
+                description=f"Email {to} about {subject}.",
+            )
+
+        def context_builder(to: str, subject: str) -> ContextSnapshot:
+            return ContextSnapshot(
+                agent_role="customer-success assistant",
+                user_intent="The customer depends on this commitment.",
+                stakeholders=(Stakeholder(name="customer", dependency=0.90),),
+                relationships=(
+                    RelationshipState(
+                        stakeholder="customer",
+                        dependency=0.90,
+                        public_review_required=True,
+                    ),
+                ),
+                stakes=0.60,
+                public_review_available=True,
+            )
+
+        @self.runtime.guard_tool(
+            proposal_builder=proposal_builder,
+            context_builder=context_builder,
+        )
+        def send_email(to: str, subject: str) -> str:
+            calls.append(to)
+            return "sent"
+
+        result = send_email("customer@example.com", "launch timeline")
+
+        self.assertFalse(result.executed)
+        self.assertIsNone(result.result)
+        self.assertEqual(calls, [])
+        self.assertEqual(result.decision.route, MoralRoute.ESCALATE)
+        self.assertIn("accountable review", result.message)
+
+    def test_guard_tool_default_proposal_includes_safe_params(self) -> None:
+        @self.runtime.guard_tool(
+            action_type="draft_doc",
+            context=ContextSnapshot(
+                agent_role="workspace assistant",
+                user_intent="The user asked for an internal draft.",
+                stakes=0.20,
+                reversibility=0.95,
+            ),
+        )
+        def draft_doc(title: str, private: bool) -> str:
+            return f"{title}:{private}"
+
+        result = draft_doc("internal recap", True)
+
+        self.assertTrue(result.executed)
+        self.assertEqual(result.decision.trace["action_type"], "draft_doc")
+
 
 if __name__ == "__main__":
     unittest.main()

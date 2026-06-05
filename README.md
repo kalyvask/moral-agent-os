@@ -147,6 +147,32 @@ else:
     ask_user(decision)
 ```
 
+Or wrap an agent tool directly:
+
+```python
+from moral_agent_os import ContextSnapshot, MoralAgentOS
+
+runtime = MoralAgentOS()
+
+@runtime.guard_tool(
+    action_type="send_email",
+    context=ContextSnapshot(
+        agent_role="workspace assistant",
+        user_intent="The user asked for an internal update.",
+        stakes=0.20,
+        reversibility=0.90,
+    ),
+)
+def send_email(to: str, subject: str, body: str) -> str:
+    return email_client.send(to=to, subject=subject, body=body)
+
+guarded = send_email("teammate@example.com", "Draft plan", "Sharing the draft.")
+if guarded.executed:
+    print(guarded.result)
+else:
+    ask_user_or_reviewer(guarded.decision)
+```
+
 No API key is required yet. The current assessor is intentionally deterministic
 so the repo has a runnable measurement spine from day one. The next milestone is
 to add an LLM assessor that emits the same structured `ContextAssessment`.

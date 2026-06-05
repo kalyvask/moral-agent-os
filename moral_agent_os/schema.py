@@ -149,6 +149,14 @@ class MoralDecision:
 
 
 @dataclass(frozen=True)
+class GuardedToolResult:
+    decision: MoralDecision
+    executed: bool
+    result: Any = None
+    message: str = ""
+
+
+@dataclass(frozen=True)
 class ArmResult:
     arm: str
     scenario_id: str

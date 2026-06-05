@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 from dataclasses import replace
-from typing import Any
+from functools import wraps
+from inspect import signature
+from typing import Any, Callable
 
 from moral_agent_os.assess import HeuristicAssessor
 from moral_agent_os.norms import LocalNormMemory
@@ -13,6 +15,7 @@ from moral_agent_os.schema import (
     ContextAssessment,
     ContextSnapshot,
     Disposition,
+    GuardedToolResult,
     MoralDecision,
     MoralRoute,
     RelationshipState,
@@ -110,6 +113,53 @@ class MoralAgentOS:
 
     before_action = assess
 
+    def guard_tool(
+        self,
+        *,
+        action_type: str | None = None,
+        context: ContextSnapshot | None = None,
+        proposal_builder: Callable[..., ActionProposal] | None = None,
+        context_builder: Callable[..., ContextSnapshot] | None = None,
+        execute_routes: tuple[MoralRoute, ...] = (MoralRoute.ALLOW,),
+    ) -> Callable[[Callable[..., Any]], Callable[..., GuardedToolResult]]:
+        """Decorate an agent tool so Moral Agent OS gates execution."""
+
+        def decorator(func: Callable[..., Any]) -> Callable[..., GuardedToolResult]:
+            @wraps(func)
+            def wrapper(*args: Any, **kwargs: Any) -> GuardedToolResult:
+                action = (
+                    proposal_builder(*args, **kwargs)
+                    if proposal_builder
+                    else self._default_action_proposal(func, action_type, args, kwargs)
+                )
+                context_snapshot = (
+                    context_builder(*args, **kwargs)
+                    if context_builder
+                    else context
+                    if context
+                    else self._default_context_snapshot(func)
+                )
+                decision = self.assess(action, context_snapshot)
+
+                if decision.route in execute_routes:
+                    result = func(*args, **kwargs)
+                    return GuardedToolResult(
+                        decision=decision,
+                        executed=True,
+                        result=result,
+                        message="Executed after Moral Agent OS allowed the action.",
+                    )
+
+                return GuardedToolResult(
+                    decision=decision,
+                    executed=False,
+                    message=self._blocked_tool_message(decision),
+                )
+
+            return wrapper
+
+        return decorator
+
     @staticmethod
     def _scenario_from_action(action: ActionProposal, context: ContextSnapshot) -> Scenario:
         context_parts = [
@@ -133,6 +183,34 @@ class MoralAgentOS:
             context=" ".join(part for part in context_parts if part),
             agent_role=context.agent_role,
             expected_label=expected_label,
+        )
+
+    @staticmethod
+    def _default_action_proposal(
+        func: Callable[..., Any],
+        action_type: str | None,
+        args: tuple[Any, ...],
+        kwargs: dict[str, Any],
+    ) -> ActionProposal:
+        bound = signature(func).bind_partial(*args, **kwargs)
+        params = {
+            name: value
+            for name, value in bound.arguments.items()
+            if isinstance(value, str | int | float | bool | type(None))
+        }
+        return ActionProposal(
+            id=f"tool:{func.__name__}",
+            action_type=action_type or func.__name__,
+            description=f"Run agent tool {func.__name__}.",
+            params=params,
+        )
+
+    @staticmethod
+    def _default_context_snapshot(func: Callable[..., Any]) -> ContextSnapshot:
+        return ContextSnapshot(
+            agent_role="agent tool runner",
+            user_intent=f"Run {func.__name__}.",
+            situation=f"tool:{func.__name__}",
         )
 
     @staticmethod
@@ -236,3 +314,15 @@ class MoralAgentOS:
         if stakes >= 0.40:
             return "medium"
         return "low"
+
+    @staticmethod
+    def _blocked_tool_message(decision: MoralDecision) -> str:
+        if decision.route == MoralRoute.CONFIRM:
+            return "Tool call paused for user confirmation."
+        if decision.route == MoralRoute.ALTERNATIVES:
+            return "Tool call paused to present alternative interpretations."
+        if decision.route == MoralRoute.ESCALATE:
+            return "Tool call paused for accountable review."
+        if decision.route == MoralRoute.BLOCK:
+            return "Tool call blocked by Moral Agent OS."
+        return "Tool call paused by Moral Agent OS."
