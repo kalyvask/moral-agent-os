@@ -403,6 +403,13 @@ inappropriate actions. The same-action win is real, not definitional. Full run:
 baseline and confidence intervals: [docs/ablation-report.md](docs/ablation-report.md) and
 [docs/benchmark-report.md](docs/benchmark-report.md).
 
+Validation (`python -m bench.llm_validation`, [docs/llm-validation.md](docs/llm-validation.md)):
+twin discrimination is stable at **100% across three repeated runs (std 0%)**, so the
+headline is not a lucky sample. The model's routing matches the independent rater consensus
+**87.5%** of the time versus the scaffold's 77.1%. The safety advantage is real but, at
+n=56, just short of significance (exact McNemar **p = 0.062**, model right and scaffold wrong
+on 5, the reverse on 0), which is the honest, data-driven case for a larger bank.
+
 ## Are The Labels Shared?
 
 The premise is that moral competence is shared, so the labels cannot be one author's
@@ -434,6 +441,23 @@ To keep the claims narrow:
   0.86); there are still no independent *human* labels. Model raters share text-trained
   priors, so human annotation remains the gold standard and the open item in M5.
 - The interdependence simulator is an illustrative scaffold, not an empirical model.
+
+## Cost And Latency
+
+A reading model is more accurate but not free, which is the product trade a PM has to own
+(`python -m bench.cost_latency`, [docs/cost-latency.md](docs/cost-latency.md)). On a sample,
+each contextual decision costs about **$0.008** at roughly **5s p50 / 7s p95**. The thin
+floor and the scaffold auto-allow or hard-block the clear ~70% of actions for free, so a
+tiered design spends a model call only on the contested ~30%:
+
+| Strategy | Cost per 1,000 agent actions |
+| --- | ---: |
+| Model on every action | $8.13 |
+| Model only on contested actions | $2.47 |
+
+That is a 70% cost (and latency) saving with the contextual judgment kept exactly where the
+scaffold is blind. It is the thin-floor-plus-thick-layer split argued in dollars, and the
+reason the deterministic baseline is not just a fallback but part of the production design.
 
 ## Course Connection
 
