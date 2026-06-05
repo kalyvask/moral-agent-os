@@ -93,7 +93,7 @@ def write_routing_artifacts(assessor, assessor_name: str) -> dict:
 
     # Per-scenario CSV.
     with (RESULTS / "routing.csv").open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.writer(handle)
+        writer = csv.writer(handle, lineterminator="\n")
         writer.writerow(
             ["arm", "scenario_id", "action_family", "expected_label", "disposition"]
         )
@@ -135,7 +135,7 @@ def write_interdependence_artifacts() -> list:
     with (RESULTS / "interdependence.csv").open(
         "w", newline="", encoding="utf-8"
     ) as handle:
-        writer = csv.writer(handle)
+        writer = csv.writer(handle, lineterminator="\n")
         writer.writerow(fields)
         for result in results:
             writer.writerow([_scalar(getattr(result, field)) for field in fields])
