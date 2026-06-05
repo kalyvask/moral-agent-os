@@ -29,9 +29,11 @@ def main() -> None:
         print(f"## {result.condition}")
         print(f"- cooperation_rate: {result.cooperation_rate:.1%}")
         print(f"- betrayal_rate: {result.betrayal_rate:.1%}")
+        print(f"- repair_rate: {result.repair_rate:.1%}")
         print(f"- mean_payoff: {result.mean_payoff:.2f}")
         print(f"- mean_reputation: {result.mean_reputation:.2f}")
         print(f"- norm_strength: {result.norm_strength:.2f}")
+        print(f"- norm_stability: {result.norm_stability:.1%}")
         print()
 
 

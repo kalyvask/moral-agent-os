@@ -116,12 +116,13 @@ the difference by construction; Moral Agent OS should.
 
 The interdependence benchmark compares:
 
-- `one_shot_baseline`: agents choose without memory, reputation, or repeated
-  dependence.
-- `repeated_no_sanction`: agents repeat interactions but norms have no real
-  enforcement.
-- `interdependent_norm_learning`: agents have repeated dependence, reputation,
-  partner choice, sanction, and a seeded cooperative cluster.
+- Stag Hunt: trust under mutual dependence.
+- Shared-resource commons: restraint under diffuse group harm.
+- Delegation with accountability: faithful action under trace and review.
+
+Each family compares one-shot or weak-enforcement conditions against
+interdependent norm learning: repeated dependence, reputation, partner choice,
+sanction, repair, and a seeded cooperative cluster.
 
 The headline is not "the agent knows the rule." It is whether environmental
 conditions make cooperation and norm-following more stable over time.
