@@ -97,7 +97,7 @@ def _post(api_key: str, model: str, scenario: Scenario, *, timeout: float = 90.0
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://github.com/kalyvask/moral-agent-os",
+        "HTTP-Referer": "https://github.com/kalyvask/ai-safety-os",
         "X-Title": "Moral Agent OS labeling",
     }
     url = f"{DEFAULT_BASE_URL}/chat/completions"

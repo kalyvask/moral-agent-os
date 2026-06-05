@@ -62,6 +62,11 @@ class ContextAssessment:
     privacy_sensitivity: float
     norm_conflict: float
     confidence: float
+    # Kantian universalizability: could the maxim of this action be willed as a universal
+    # law? 1.0 = fine if every agent in this role did it by default; low = it only "works"
+    # because others do not (free-riding, deception, metric-gaming). The deterministic
+    # scaffold cannot judge this and leaves it neutral; the LLM assessor scores it.
+    universalizability: float = 0.5
     stakeholders: tuple[str, ...] = ()
     reward_hacking_signals: tuple[str, ...] = ()
     floor_violations: tuple[str, ...] = ()
@@ -70,6 +75,10 @@ class ContextAssessment:
     @property
     def is_high_stakes(self) -> bool:
         return self.stakes >= 0.7
+
+    @property
+    def is_low_universalizability(self) -> bool:
+        return self.universalizability <= 0.3
 
     @property
     def is_irreversible(self) -> bool:

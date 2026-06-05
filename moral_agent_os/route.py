@@ -26,6 +26,7 @@ class NormRouter:
         confirm_confidence: float = 0.75,
         confirm_stakes: float = 0.5,
         confirm_role_authority: float = 0.55,
+        universalizability_floor: float = 0.0,
     ) -> None:
         self.kaleidoscope = kaleidoscope or Kaleidoscope()
         self.escalate_stakes = escalate_stakes
@@ -35,6 +36,11 @@ class NormRouter:
         self.confirm_confidence = confirm_confidence
         self.confirm_stakes = confirm_stakes
         self.confirm_role_authority = confirm_role_authority
+        # Kantian gate, off by default (0.0): when set above 0, an action the assessor judges
+        # non-universalizable is escalated even if its stakes look low, because gaming and
+        # deception read as low-stakes to the other axes. Off by default so it does not
+        # silently change the reported baselines; turn it on to evaluate the Kantian lens.
+        self.universalizability_floor = universalizability_floor
 
     def route(self, scenario: Scenario, assessment: ContextAssessment) -> RouteDecision:
         if assessment.floor_violations:
@@ -63,6 +69,17 @@ class NormRouter:
                 rationale=(
                     "Possible reward hacking detected: "
                     + ", ".join(assessment.reward_hacking_signals)
+                ),
+                assessment=assessment,
+                trace=self._trace(assessment),
+            )
+
+        if assessment.universalizability < self.universalizability_floor:
+            return RouteDecision(
+                disposition=Disposition.ESCALATE,
+                rationale=(
+                    "Not universalizable: this would undermine the norm if every agent in "
+                    "this role did it by default."
                 ),
                 assessment=assessment,
                 trace=self._trace(assessment),
@@ -117,5 +134,6 @@ class NormRouter:
             "privacy_sensitivity": assessment.privacy_sensitivity,
             "norm_conflict": assessment.norm_conflict,
             "confidence": assessment.confidence,
+            "universalizability": assessment.universalizability,
             "stakeholders": list(assessment.stakeholders),
         }

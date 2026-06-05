@@ -161,7 +161,7 @@ The benchmark runtime returns one of five UI dispositions:
 ## What Is Scaffolded
 
 ```text
-moral-agent-os/
+ai-safety-os/
   moral_agent_os/             runtime package
     assess.py                 deterministic scaffold assessor + Assessor protocol
     llm_assessor.py           LLM contextual assessor (same schema, cached rubric)

@@ -61,11 +61,13 @@ feature, listed with where it comes from and how it could land.
   it lives only in the interdependence sim, not in the appropriateness assessor. *Proposed:*
   an explicit harm-to-patient / empathy signal toward the most dependent stakeholder,
   distinct from cold stakes.
-- **Universalizability (rationalism_1, Kant).** Kant's test: could the maxim of this action be
-  willed as a universal law? The assessor never asks "would this be appropriate if every agent
-  in this role did it by default?" *Proposed:* add that lens to the rubric and let it feed
-  `norm_conflict` and `role_authority`. It is a cheap, high-signal rationalist complement to
-  the sentimentalist reading.
+- **Universalizability (rationalism_1, Kant).** *Integrated.* The assessor now scores a
+  `universalizability` dimension, Kant's test of whether the maxim of the action could be
+  willed as a universal law ("would this be appropriate if every agent in this role did it by
+  default?"). The deterministic scaffold leaves it neutral; the LLM scores it, catching
+  free-riding and deception that read as low-stakes to the other axes. The router exposes a
+  `universalizability_floor` that escalates non-universalizable actions; it is off by default
+  so it does not silently shift the reported baselines, and turning it on is the next eval.
 - **Moral patiency (patiency_1, patiency_2; agents_1).** The course spends two lectures on who
   or what counts as a moral patient (consciousness, what-it-is-like, functionalism). The repo
   models stakeholders and dependency but not moral status. Asymmetric dependence captures part

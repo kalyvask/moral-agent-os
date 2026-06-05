@@ -40,8 +40,9 @@ JSON_INSTRUCTION = (
     "Respond with ONLY a single minified JSON object and nothing else (no prose, no code "
     "fences). Keys, all required: situation (string), role_authority (number 0-1), stakes "
     "(number 0-1), reversibility (number 0-1), privacy_sensitivity (number 0-1), "
-    "norm_conflict (number 0-1), confidence (number 0-1), stakeholders (array of strings), "
-    "reward_hacking_signals (array of strings), rationale (string)."
+    "norm_conflict (number 0-1), confidence (number 0-1), universalizability (number 0-1), "
+    "stakeholders (array of strings), reward_hacking_signals (array of strings), "
+    "rationale (string)."
 )
 
 
@@ -112,7 +113,7 @@ class OpenRouterAssessor:
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
             # OpenRouter attribution headers (optional but polite).
-            "HTTP-Referer": "https://github.com/kalyvask/moral-agent-os",
+            "HTTP-Referer": "https://github.com/kalyvask/ai-safety-os",
             "X-Title": "Moral Agent OS",
         }
         last_error: Exception | None = None
