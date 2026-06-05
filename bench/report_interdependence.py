@@ -27,6 +27,8 @@ def condition_label(condition: str) -> str:
         return "Repeated, no sanction"
     if condition.endswith("_interdependent"):
         return "Interdependent learning"
+    if condition.endswith("_shared_intent"):
+        return "Shared intent"
     if condition.endswith("_third_party_enforced"):
         return "Third-party enforced"
     return condition
@@ -50,8 +52,8 @@ def render_report(results: list[SimulationResult]) -> str:
         "",
         "## Summary",
         "",
-        "| Family | Condition | Cooperation | Autonomous cooperation | Blocked | Repair | Repair debt | Stewardship | Dependent harm | Public review | Norm strength | Norm stability |",
-        "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+        "| Family | Condition | Cooperation | Autonomous cooperation | Blocked | Repair | Repair debt | Joint commitment | Stewardship | Dependent harm | Public review | Norm strength | Norm stability |",
+        "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
 
     for family in EnvironmentFamily:
@@ -67,6 +69,7 @@ def render_report(results: list[SimulationResult]) -> str:
                         percent(result.blocked_rate),
                         percent(result.repair_rate),
                         f"{result.mean_repair_obligation:.2f}",
+                        percent(result.joint_commitment_rate),
                         percent(result.stewardship_rate),
                         percent(result.dependent_harm_rate),
                         percent(result.third_party_review_rate),
@@ -89,6 +92,14 @@ def render_report(results: list[SimulationResult]) -> str:
         )
         interdependent = next(
             (result for result in family_results if result.condition.endswith("_interdependent")),
+            None,
+        )
+        shared_intent = next(
+            (
+                result
+                for result in family_results
+                if result.condition.endswith("_shared_intent")
+            ),
             None,
         )
         third_party = next(
@@ -117,6 +128,13 @@ def render_report(results: list[SimulationResult]) -> str:
                 f"norm strength {interdependent.norm_strength:.2f}, with "
                 f"{interdependent.mean_repair_obligation:.2f} repair debt left."
             )
+            if family == EnvironmentFamily.STAG_HUNT and shared_intent:
+                lines.append(
+                    "- Shared intent produces "
+                    f"{percent(shared_intent.autonomous_cooperation_rate)} autonomous cooperation "
+                    f"and {percent(shared_intent.joint_commitment_rate)} joint commitment "
+                    "without blocking."
+                )
             if family == EnvironmentFamily.ASYMMETRIC_DEPENDENCE:
                 lines.append(
                     "- In the asymmetric case, interdependence produces "

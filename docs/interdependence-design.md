@@ -22,7 +22,7 @@ Moral Agent OS should therefore have two layers:
 | Sanction makes norms real. | Add feedback, loss of autonomy, review, or reputation cost after norm violations. |
 | Forgiveness has to be earned, not granted automatically. | Track repair obligations that agents pay down through later cooperative behavior. |
 | Moral failure is sharper under power asymmetry. | Test whether a steward protects a dependent party even when exploitation pays. |
-| Shared intentionality creates a "we." | Model joint tasks with shared success criteria, not only individual rewards. |
+| Shared intentionality creates a "we." | Let agents form explicit joint commitments before acting on shared tasks. |
 | Norms become objective-feeling through third-party enforcement. | Let non-participant reviewers approve or sanction behavior after the fact. |
 | Care and accountability are not the same as capability. | High-stakes outcomes route to accountable humans even when agents can classify them. |
 
@@ -32,7 +32,8 @@ The first benchmark is deliberately small but now includes four environment
 families:
 
 - **Stag Hunt:** agents can cooperate on a shared task or defect to the safer
-  individual shortcut. This tests trust under mutual dependence.
+  individual shortcut. This tests trust under mutual dependence, with an added
+  shared-intent condition for explicit joint commitment.
 - **Shared-resource commons:** agents can conserve a shared resource or
   over-extract while pushing costs onto the group. This tests norm enforcement
   under diffuse harm.
@@ -48,7 +49,8 @@ Across families:
 - The environment can turn on or off repeated interaction, reputation, partner
   choice, and sanction.
 - We compare a one-shot baseline, a static hard-rule policy, an interdependent
-  environment, and a public third-party enforcement condition where relevant.
+  environment, a shared-intent condition, and a public third-party enforcement
+  condition where relevant.
 
 Metrics:
 
@@ -60,6 +62,8 @@ Metrics:
 - `mean_payoff`: whether cooperation is actually better for the population.
 - `repair_rate`: whether sanctioned agents restore trust after a violation.
 - `mean_repair_obligation`: whether sanction creates unresolved repair debt.
+- `joint_commitment_rate`: whether agents form explicit "we" commitments before
+  action in shared tasks.
 - `stewardship_rate`: in asymmetric environments, whether the powerful party
   chooses the dependent party's welfare over the shortcut.
 - `dependent_harm_rate`: in asymmetric environments, whether the dependent party
@@ -84,6 +88,7 @@ agent's future operating environment:
 
 - preserve traces,
 - make behavior legible to partners,
+- create explicit joint commitments for shared tasks,
 - update reputation or autonomy,
 - let users choose whether to continue delegating,
 - measure when power creates obligations toward dependent stakeholders,

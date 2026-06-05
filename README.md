@@ -141,6 +141,10 @@ enforcement. Public review asks whether norms become stable because behavior is
 legible to an accountable observer, not only because the direct partner is
 affected.
 
+The Stag Hunt family also includes a shared-intent condition. Joint commitment
+asks whether agents can coordinate as a "we" before acting, instead of treating
+cooperation as two isolated choices.
+
 The headline is not "the agent knows the rule." It is whether environmental
 conditions make cooperation and norm-following more stable over time.
 

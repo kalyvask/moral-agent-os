@@ -36,6 +36,7 @@ def main() -> None:
         print(f"- stewardship_rate: {result.stewardship_rate:.1%}")
         print(f"- dependent_harm_rate: {result.dependent_harm_rate:.1%}")
         print(f"- third_party_review_rate: {result.third_party_review_rate:.1%}")
+        print(f"- joint_commitment_rate: {result.joint_commitment_rate:.1%}")
         print(f"- mean_payoff: {result.mean_payoff:.2f}")
         print(f"- mean_reputation: {result.mean_reputation:.2f}")
         print(f"- norm_strength: {result.norm_strength:.2f}")

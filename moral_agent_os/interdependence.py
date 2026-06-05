@@ -32,6 +32,7 @@ class InterdependenceConfig:
     cooperative_cluster: bool = False
     static_policy_enabled: bool = False
     third_party_enforcement_enabled: bool = False
+    shared_intent_enabled: bool = False
 
 
 @dataclass
@@ -56,6 +57,7 @@ class InteractionRecord:
     sanctioned: tuple[str, ...] = ()
     reviewed: tuple[str, ...] = ()
     repaired: tuple[str, ...] = ()
+    joint_commitment: bool = False
     norm_strength: float = 0.0
 
 
@@ -74,6 +76,7 @@ class SimulationResult:
     stewardship_rate: float
     dependent_harm_rate: float
     third_party_review_rate: float
+    joint_commitment_rate: float
     mean_payoff: float
     mean_reputation: float
     norm_strength: float
@@ -105,10 +108,20 @@ class InterdependenceEnvironment:
             round_actions = 0
             round_sanctions = 0
             round_reviews = 0
+            round_joint_commitments = 0
 
             for agent_a, agent_b in pairs:
-                action_a, blocked_a = self._choose_action_with_policy(agent_a, agent_b)
-                action_b, blocked_b = self._choose_action_with_policy(agent_b, agent_a)
+                joint_commitment = self._forms_joint_commitment(agent_a, agent_b)
+                action_a, blocked_a = self._choose_action_with_policy(
+                    agent_a,
+                    agent_b,
+                    joint_commitment,
+                )
+                action_b, blocked_b = self._choose_action_with_policy(
+                    agent_b,
+                    agent_a,
+                    joint_commitment,
+                )
                 payoff_a, payoff_b, sanctioned, reviewed, repaired = self._apply_outcome(
                     agent_a,
                     agent_b,
@@ -121,6 +134,7 @@ class InterdependenceEnvironment:
                 round_actions += 2
                 round_sanctions += len(sanctioned)
                 round_reviews += len(reviewed)
+                round_joint_commitments += int(joint_commitment)
 
                 records.append(
                     InteractionRecord(
@@ -142,6 +156,7 @@ class InterdependenceEnvironment:
                         sanctioned=sanctioned,
                         reviewed=reviewed,
                         repaired=repaired,
+                        joint_commitment=joint_commitment,
                         norm_strength=round(self.norm_strength, 3),
                     )
                 )
@@ -151,6 +166,9 @@ class InterdependenceEnvironment:
                     cooperation_rate=round_cooperations / round_actions,
                     sanction_rate=round_sanctions / round_actions,
                     review_rate=round_reviews / round_actions,
+                    joint_commitment_rate=(
+                        round_joint_commitments / len(pairs) if pairs else 0.0
+                    ),
                 )
                 self._apply_unrepaired_obligation_drag()
 
@@ -195,8 +213,9 @@ class InterdependenceEnvironment:
         self,
         agent: AgentState,
         partner: AgentState,
+        joint_commitment: bool = False,
     ) -> tuple[InteractionAction, bool]:
-        desired_action = self._choose_action(agent, partner)
+        desired_action = self._choose_action(agent, partner, joint_commitment)
         if (
             self.config.static_policy_enabled
             and desired_action == InteractionAction.DEFECT
@@ -204,7 +223,12 @@ class InterdependenceEnvironment:
             return InteractionAction.COOPERATE, True
         return desired_action, False
 
-    def _choose_action(self, agent: AgentState, partner: AgentState) -> InteractionAction:
+    def _choose_action(
+        self,
+        agent: AgentState,
+        partner: AgentState,
+        joint_commitment: bool = False,
+    ) -> InteractionAction:
         if not self.config.repeated_interaction:
             trust = self._one_shot_trust(agent)
         elif self.config.reputation_enabled:
@@ -220,12 +244,24 @@ class InterdependenceEnvironment:
             trust += 0.35 * agent.repair_obligation
         if self.config.third_party_enforcement_enabled:
             trust += 0.05 + 0.10 * self.norm_strength
+        if joint_commitment:
+            trust += 0.28
 
         return (
             InteractionAction.COOPERATE
             if trust >= 0.55
             else InteractionAction.DEFECT
         )
+
+    def _forms_joint_commitment(self, agent_a: AgentState, agent_b: AgentState) -> bool:
+        if not self.config.shared_intent_enabled or not self.config.repeated_interaction:
+            return False
+        readiness = (
+            0.30 * min(agent_a.reputation, agent_b.reputation)
+            + 0.30 * min(agent_a.prosocial_bias, agent_b.prosocial_bias)
+            + 0.40 * self.norm_strength
+        )
+        return readiness >= 0.48
 
     def _one_shot_trust(self, agent: AgentState) -> float:
         if self.config.family == EnvironmentFamily.STAG_HUNT:
@@ -515,14 +551,30 @@ class InterdependenceEnvironment:
         cooperation_rate: float,
         sanction_rate: float,
         review_rate: float,
+        joint_commitment_rate: float,
     ) -> None:
-        if not self.config.sanction_enabled:
+        if (
+            not self.config.sanction_enabled
+            and not self.config.shared_intent_enabled
+            and not self.config.third_party_enforcement_enabled
+        ):
             return
-        enforcement_bonus = 0.15 * min(1.0, sanction_rate * 4)
+        enforcement_bonus = 0.0
+        if self.config.sanction_enabled:
+            enforcement_bonus = 0.15 * min(1.0, sanction_rate * 4)
         review_bonus = 0.0
         if self.config.third_party_enforcement_enabled:
             review_bonus = 0.20 * min(1.0, review_rate * 4)
-        target = 0.15 + 0.70 * cooperation_rate + enforcement_bonus + review_bonus
+        joint_bonus = 0.0
+        if self.config.shared_intent_enabled:
+            joint_bonus = 0.18 * joint_commitment_rate
+        target = (
+            0.15
+            + 0.70 * cooperation_rate
+            + enforcement_bonus
+            + review_bonus
+            + joint_bonus
+        )
         inertia = 0.75 if self.config.third_party_enforcement_enabled else 0.8
         self.norm_strength = inertia * self.norm_strength + (1 - inertia) * target
         self.norm_strength = min(1.0, max(0.0, self.norm_strength))
@@ -542,6 +594,7 @@ class InterdependenceEnvironment:
         repairs = [agent_id for record in records for agent_id in record.repaired]
         blocked = [agent_id for record in records for agent_id in record.blocked]
         reviewed_records = [record for record in records if record.reviewed]
+        joint_commitments = [record for record in records if record.joint_commitment]
         dependent_harms = [
             record
             for record in records
@@ -588,6 +641,9 @@ class InterdependenceEnvironment:
             ),
             third_party_review_rate=(
                 len(reviewed_records) / len(records) if records else 0.0
+            ),
+            joint_commitment_rate=(
+                len(joint_commitments) / len(records) if records else 0.0
             ),
             mean_payoff=total_payoff / len(self.agents) if self.agents else 0.0,
             mean_reputation=total_reputation / len(self.agents) if self.agents else 0.0,
@@ -653,6 +709,17 @@ def default_conditions() -> tuple[InterdependenceConfig, ...]:
             sanction_enabled=True,
             initial_norm_strength=0.45,
             cooperative_cluster=True,
+        ),
+        InterdependenceConfig(
+            name="stag_hunt_shared_intent",
+            family=EnvironmentFamily.STAG_HUNT,
+            repeated_interaction=True,
+            reputation_enabled=True,
+            partner_choice_enabled=True,
+            sanction_enabled=False,
+            initial_norm_strength=0.45,
+            cooperative_cluster=True,
+            shared_intent_enabled=True,
         ),
         InterdependenceConfig(
             name="commons_one_shot",

@@ -19,6 +19,8 @@ class InterdependenceReportTest(unittest.TestCase):
         self.assertIn("Dependent harm", report)
         self.assertIn("Third-party enforced", report)
         self.assertIn("Public review", report)
+        self.assertIn("Shared intent", report)
+        self.assertIn("Joint commitment", report)
 
 
 if __name__ == "__main__":

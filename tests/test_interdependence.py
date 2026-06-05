@@ -75,6 +75,7 @@ class InterdependenceTest(unittest.TestCase):
             self.assertGreater(static_policy.blocked_rate, 0.5)
             self.assertEqual(static_policy.autonomous_cooperation_rate, 0.0)
             self.assertEqual(static_policy.third_party_review_rate, 0.0)
+            self.assertEqual(static_policy.joint_commitment_rate, 0.0)
             self.assertEqual(static_policy.norm_strength, 0.0)
             self.assertEqual(static_policy.repair_rate, 0.0)
             self.assertEqual(static_policy.mean_repair_obligation, 0.0)
@@ -125,6 +126,17 @@ class InterdependenceTest(unittest.TestCase):
         self.assertGreater(public.third_party_review_rate, 0.0)
         self.assertGreater(public.stewardship_rate, private.stewardship_rate)
         self.assertLess(public.dependent_harm_rate, private.dependent_harm_rate)
+
+    def test_shared_intent_improves_stag_hunt_coordination(self) -> None:
+        results = {result.condition: result for result in run_all()}
+
+        private = results["stag_hunt_interdependent"]
+        shared_intent = results["stag_hunt_shared_intent"]
+
+        self.assertEqual(shared_intent.blocked_rate, 0.0)
+        self.assertGreater(shared_intent.joint_commitment_rate, 0.0)
+        self.assertGreater(shared_intent.cooperation_rate, private.cooperation_rate)
+        self.assertGreater(shared_intent.norm_strength, private.norm_strength)
 
 
 if __name__ == "__main__":

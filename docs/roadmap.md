@@ -27,7 +27,7 @@
 - Stag Hunt, shared-resource commons, delegation-with-accountability, and
   asymmetric-dependence families.
 - Reputation, partner choice, sanction, repair obligations, stewardship,
-  dependent-harm, third-party review, and norm-stability metrics.
+  dependent-harm, joint commitment, third-party review, and norm-stability metrics.
 - Compare one-shot, weak-enforcement, and interdependent-learning conditions.
 
 ## M4: Adaptive UI
