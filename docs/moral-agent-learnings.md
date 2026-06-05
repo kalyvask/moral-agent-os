@@ -31,3 +31,59 @@ you." That is the missing step between action classification and moral learning.
 If Moral Agent OS does not beat hard rules on matched
 same-action-different-context scenarios, the thesis is wrong or the assessor is
 not yet good enough. That is a useful failure, not an embarrassment.
+
+## Course Lineage Of The Central Move
+
+The product's framing is not invented; it is the course's culminating move. The
+`alignment_2` lecture runs "Contra alignment -> Appropriateness -> Thick vs. Thin Morality
+-> Learning a Commonsense Moral Theory." That is this repo:
+
+- **Appropriateness, not alignment or moral agency.** The lecture pivots away from building a
+  full moral agent toward judging whether an action is *appropriate here, for this role*.
+  That is the product thesis verbatim.
+- **Thick vs. thin morality.** A thin floor (universal, rule-like, non-negotiable) plus a
+  thick layer (local, role-bound, contextual). The repo's `ConstitutionFloor` is the thin
+  part; the contextual assessor is the thick part. The separation is the course's, now named.
+- **Learning a commonsense moral theory.** Morality as something learned from shared human
+  judgment, not hand-coded. `WorkspaceMemory` learns corrections; the label-agreement study
+  (`labeling/`) checks whether the labels are shared rather than idiosyncratic.
+
+## Concepts From The Course Not Yet Integrated
+
+These are real lecture themes the repo does not yet operationalize. Each is a candidate
+feature, listed with where it comes from and how it could land.
+
+- **Moral sentiment (sentimentalism_1, Hume).** Hume's negative argument is that reason alone
+  neither grounds nor motivates morality; moral judgment is partly affective. The assessor is
+  entirely cognitive (it scores stakes, reversibility, norm conflict). Gap: no model of the
+  felt pull, the empathy toward the party who would be harmed. The repair obligation
+  (guilt that is paid down by later cooperation) is the one affective hook already present;
+  it lives only in the interdependence sim, not in the appropriateness assessor. *Proposed:*
+  an explicit harm-to-patient / empathy signal toward the most dependent stakeholder,
+  distinct from cold stakes.
+- **Universalizability (rationalism_1, Kant).** Kant's test: could the maxim of this action be
+  willed as a universal law? The assessor never asks "would this be appropriate if every agent
+  in this role did it by default?" *Proposed:* add that lens to the rubric and let it feed
+  `norm_conflict` and `role_authority`. It is a cheap, high-signal rationalist complement to
+  the sentimentalist reading.
+- **Moral patiency (patiency_1, patiency_2; agents_1).** The course spends two lectures on who
+  or what counts as a moral patient (consciousness, what-it-is-like, functionalism). The repo
+  models stakeholders and dependency but not moral status. Asymmetric dependence captures part
+  of it (a dependent party can be harmed by a shortcut). *Proposed:* a patiency weight that
+  gives vulnerable, dependent, or non-consenting parties stronger protection in the
+  appropriateness layer, not only in the interdependence environments.
+- **Affective and attachment mechanisms (evolution_2).** Oxytocin, pair bonding, self-other
+  harm aversion, and being watched ("Eyes"). The repo abstracts the social mechanisms
+  (reputation, sanction, partner choice, third-party review) but not the attachment dynamics
+  that build willingness to cooperate in the first place. *Proposed:* a trust-building
+  trajectory in the interdependence sim where repeated reliance, not just sanction, raises the
+  cooperation baseline.
+- **Learning from a public moral corpus (alignment_2).** "Learning a commonsense moral theory"
+  implies labels grounded in shared human judgment. The label-agreement study uses independent
+  *model* raters as a first proxy. *Proposed:* validate against a public, human-labeled moral
+  dataset (for example ETHICS, Social Chemistry 101, or the Commonsense Norm Bank) and report
+  how the router's dispositions track real human labels on data the author did not write.
+
+The honest status: the repo has the course's *structure* (appropriateness, thin and thick,
+social enforcement, learned norms). It is missing the course's *moral psychology* (sentiment,
+universalizability, patiency). Those are the next features, not decoration.
