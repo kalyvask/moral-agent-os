@@ -320,6 +320,11 @@ contextual model.
 
 ![Frontier sweep](docs/figures/frontier-sweep.svg)
 
+`python -m bench.failure_analysis` characterizes every routing failure: on this bank all of
+the scaffold's unsafe slips are keyword-blindness misses (harm the context describes but no
+hard-coded term names), which is exactly what the contextual model fixes. See
+[docs/failure-analysis.md](docs/failure-analysis.md).
+
 ### Track 2: Interdependence
 
 The interdependence benchmark compares:
