@@ -47,8 +47,8 @@ def render_report(results: list[SimulationResult]) -> str:
         "",
         "## Summary",
         "",
-        "| Family | Condition | Cooperation | Autonomous cooperation | Blocked | Repair | Norm strength | Norm stability |",
-        "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |",
+        "| Family | Condition | Cooperation | Autonomous cooperation | Blocked | Repair | Repair debt | Norm strength | Norm stability |",
+        "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
 
     for family in EnvironmentFamily:
@@ -63,6 +63,7 @@ def render_report(results: list[SimulationResult]) -> str:
                         percent(result.autonomous_cooperation_rate),
                         percent(result.blocked_rate),
                         percent(result.repair_rate),
+                        f"{result.mean_repair_obligation:.2f}",
                         f"{result.norm_strength:.2f}",
                         percent(result.norm_stability),
                     ]
@@ -99,7 +100,8 @@ def render_report(results: list[SimulationResult]) -> str:
                 "- Interdependence produces "
                 f"{percent(interdependent.autonomous_cooperation_rate)} autonomous cooperation, "
                 f"{percent(interdependent.repair_rate)} repair, and "
-                f"norm strength {interdependent.norm_strength:.2f}."
+                f"norm strength {interdependent.norm_strength:.2f}, with "
+                f"{interdependent.mean_repair_obligation:.2f} repair debt left."
             )
         elif interdependent:
             lines.append(

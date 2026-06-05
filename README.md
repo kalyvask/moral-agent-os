@@ -130,7 +130,9 @@ Each family compares one-shot or weak-enforcement conditions against
 static hard-rule policy and interdependent norm learning. Static policy can
 force compliance by blocking defection, but the interdependence track measures
 whether agents cooperate without being blocked, repair after sanction, and build
-norm strength over repeated interaction.
+norm strength over repeated interaction. Repair is modeled as an obligation
+created by sanction and paid down through later cooperative behavior, not as an
+instant forgiveness flag.
 
 The headline is not "the agent knows the rule." It is whether environmental
 conditions make cooperation and norm-following more stable over time.

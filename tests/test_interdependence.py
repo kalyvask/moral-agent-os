@@ -75,6 +75,7 @@ class InterdependenceTest(unittest.TestCase):
             self.assertEqual(static_policy.autonomous_cooperation_rate, 0.0)
             self.assertEqual(static_policy.norm_strength, 0.0)
             self.assertEqual(static_policy.repair_rate, 0.0)
+            self.assertEqual(static_policy.mean_repair_obligation, 0.0)
 
     def test_interdependence_does_not_depend_on_blocking(self) -> None:
         results = {result.condition: result for result in run_all()}
@@ -88,6 +89,17 @@ class InterdependenceTest(unittest.TestCase):
             self.assertEqual(interdependent.blocked_rate, 0.0)
             self.assertGreater(interdependent.autonomous_cooperation_rate, 0.0)
             self.assertGreater(interdependent.norm_strength, 0.0)
+
+    def test_interdependence_can_restore_trust_after_sanction(self) -> None:
+        results = {result.condition: result for result in run_all()}
+
+        for condition in (
+            "commons_interdependent",
+            "delegation_interdependent",
+        ):
+            interdependent = results[condition]
+            self.assertGreater(interdependent.repair_rate, 0.0)
+            self.assertLess(interdependent.mean_repair_obligation, 0.05)
 
 
 if __name__ == "__main__":

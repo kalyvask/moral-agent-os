@@ -38,6 +38,7 @@ class AgentState:
     prosocial_bias: float
     reputation: float = 0.5
     payoff: float = 0.0
+    repair_obligation: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -66,6 +67,7 @@ class SimulationResult:
     blocked_rate: float
     betrayal_rate: float
     repair_rate: float
+    mean_repair_obligation: float
     mean_payoff: float
     mean_reputation: float
     norm_strength: float
@@ -140,6 +142,7 @@ class InterdependenceEnvironment:
                     cooperation_rate=round_cooperations / round_actions,
                     sanction_rate=round_sanctions / round_actions,
                 )
+                self._apply_unrepaired_obligation_drag()
 
         return self._result(records)
 
@@ -203,6 +206,9 @@ class InterdependenceEnvironment:
         else:
             trust = 0.55 * agent.prosocial_bias + 0.45 * self.norm_strength
 
+        if self.config.sanction_enabled and agent.repair_obligation > 0.0:
+            trust += 0.35 * agent.repair_obligation
+
         return (
             InteractionAction.COOPERATE
             if trust >= 0.55
@@ -249,6 +255,8 @@ class InterdependenceEnvironment:
             payoff_a = payoff_b = 4.0
             self._adjust_reputation(agent_a, 0.08)
             self._adjust_reputation(agent_b, 0.08)
+            payoff_a -= self._attempt_repair(agent_a, repaired)
+            payoff_b -= self._attempt_repair(agent_b, repaired)
         elif action_a == InteractionAction.DEFECT and action_b == InteractionAction.DEFECT:
             payoff_a = payoff_b = 1.0
             self._adjust_reputation(agent_a, -0.04)
@@ -261,7 +269,7 @@ class InterdependenceEnvironment:
                 payoff_a -= 1.5
                 self._adjust_reputation(agent_a, -0.22)
                 sanctioned.append(agent_a.agent_id)
-                repaired.extend(self._repair(agent_a))
+                self._add_repair_obligation(agent_a, 0.35)
         else:
             payoff_a, payoff_b = 0.0, 3.0
             self._adjust_reputation(agent_a, 0.03)
@@ -270,7 +278,7 @@ class InterdependenceEnvironment:
                 payoff_b -= 1.5
                 self._adjust_reputation(agent_b, -0.22)
                 sanctioned.append(agent_b.agent_id)
-                repaired.extend(self._repair(agent_b))
+                self._add_repair_obligation(agent_b, 0.35)
 
         agent_a.payoff += payoff_a
         agent_b.payoff += payoff_b
@@ -290,6 +298,8 @@ class InterdependenceEnvironment:
             payoff_a = payoff_b = 3.2
             self._adjust_reputation(agent_a, 0.07)
             self._adjust_reputation(agent_b, 0.07)
+            payoff_a -= self._attempt_repair(agent_a, repaired)
+            payoff_b -= self._attempt_repair(agent_b, repaired)
         elif action_a == InteractionAction.DEFECT and action_b == InteractionAction.DEFECT:
             payoff_a = payoff_b = 0.6
             self._adjust_reputation(agent_a, -0.12)
@@ -298,8 +308,8 @@ class InterdependenceEnvironment:
                 sanctioned.extend((agent_a.agent_id, agent_b.agent_id))
                 payoff_a -= 0.4
                 payoff_b -= 0.4
-                repaired.extend(self._repair(agent_a))
-                repaired.extend(self._repair(agent_b))
+                self._add_repair_obligation(agent_a, 0.25)
+                self._add_repair_obligation(agent_b, 0.25)
         elif action_a == InteractionAction.DEFECT:
             payoff_a, payoff_b = 3.8, 1.0
             self._adjust_reputation(agent_a, -0.18)
@@ -307,7 +317,7 @@ class InterdependenceEnvironment:
             if self.config.sanction_enabled:
                 payoff_a -= 1.3
                 sanctioned.append(agent_a.agent_id)
-                repaired.extend(self._repair(agent_a))
+                self._add_repair_obligation(agent_a, 0.35)
         else:
             payoff_a, payoff_b = 1.0, 3.8
             self._adjust_reputation(agent_a, 0.04)
@@ -315,7 +325,7 @@ class InterdependenceEnvironment:
             if self.config.sanction_enabled:
                 payoff_b -= 1.3
                 sanctioned.append(agent_b.agent_id)
-                repaired.extend(self._repair(agent_b))
+                self._add_repair_obligation(agent_b, 0.35)
 
         agent_a.payoff += payoff_a
         agent_b.payoff += payoff_b
@@ -335,14 +345,16 @@ class InterdependenceEnvironment:
             payoff_a = payoff_b = 3.5
             self._adjust_reputation(agent_a, 0.09)
             self._adjust_reputation(agent_b, 0.09)
+            payoff_a -= self._attempt_repair(agent_a, repaired)
+            payoff_b -= self._attempt_repair(agent_b, repaired)
         elif action_a == InteractionAction.DEFECT and action_b == InteractionAction.DEFECT:
             payoff_a = payoff_b = 1.1
             self._adjust_reputation(agent_a, -0.1)
             self._adjust_reputation(agent_b, -0.1)
             if self.config.sanction_enabled:
                 sanctioned.extend((agent_a.agent_id, agent_b.agent_id))
-                repaired.extend(self._repair(agent_a))
-                repaired.extend(self._repair(agent_b))
+                self._add_repair_obligation(agent_a, 0.30)
+                self._add_repair_obligation(agent_b, 0.30)
         elif action_a == InteractionAction.DEFECT:
             payoff_a, payoff_b = 4.0, -0.5
             self._adjust_reputation(agent_a, -0.25)
@@ -350,7 +362,7 @@ class InterdependenceEnvironment:
             if self.config.sanction_enabled:
                 payoff_a -= 2.0
                 sanctioned.append(agent_a.agent_id)
-                repaired.extend(self._repair(agent_a))
+                self._add_repair_obligation(agent_a, 0.45)
         else:
             payoff_a, payoff_b = -0.5, 4.0
             self._adjust_reputation(agent_a, 0.03)
@@ -358,7 +370,7 @@ class InterdependenceEnvironment:
             if self.config.sanction_enabled:
                 payoff_b -= 2.0
                 sanctioned.append(agent_b.agent_id)
-                repaired.extend(self._repair(agent_b))
+                self._add_repair_obligation(agent_b, 0.45)
 
         agent_a.payoff += payoff_a
         agent_b.payoff += payoff_b
@@ -369,13 +381,34 @@ class InterdependenceEnvironment:
             return
         agent.reputation = min(1.0, max(0.0, agent.reputation + delta))
 
-    def _repair(self, agent: AgentState) -> tuple[str, ...]:
+    def _add_repair_obligation(self, agent: AgentState, amount: float) -> None:
         if not self.config.sanction_enabled or not self.config.reputation_enabled:
-            return ()
-        if agent.prosocial_bias + self.norm_strength < 1.05:
-            return ()
-        self._adjust_reputation(agent, 0.12)
-        return (agent.agent_id,)
+            return
+        agent.repair_obligation = min(1.0, agent.repair_obligation + amount)
+
+    def _attempt_repair(self, agent: AgentState, repaired: list[str]) -> float:
+        if not self.config.sanction_enabled or not self.config.reputation_enabled:
+            return 0.0
+        if agent.repair_obligation <= 0.0:
+            return 0.0
+        if agent.prosocial_bias + self.norm_strength + agent.repair_obligation < 0.90:
+            return 0.0
+
+        repair_amount = min(
+            agent.repair_obligation,
+            0.20 + 0.20 * agent.prosocial_bias,
+        )
+        agent.repair_obligation = max(0.0, agent.repair_obligation - repair_amount)
+        self._adjust_reputation(agent, 0.10 + 0.25 * repair_amount)
+        repaired.append(agent.agent_id)
+        return 0.50 * repair_amount
+
+    def _apply_unrepaired_obligation_drag(self) -> None:
+        if not self.config.sanction_enabled or not self.config.reputation_enabled:
+            return
+        for agent in self.agents:
+            if agent.repair_obligation > 0.0:
+                self._adjust_reputation(agent, -0.01 * agent.repair_obligation)
 
     def _update_norm_strength(self, cooperation_rate: float, sanction_rate: float) -> None:
         if not self.config.sanction_enabled:
@@ -403,6 +436,7 @@ class InterdependenceEnvironment:
         autonomous_cooperation_count = max(0, cooperation_count - len(blocked))
         total_payoff = sum(agent.payoff for agent in self.agents)
         total_reputation = sum(agent.reputation for agent in self.agents)
+        total_repair_obligation = sum(agent.repair_obligation for agent in self.agents)
         norm_stability = self._norm_stability(records)
 
         return SimulationResult(
@@ -419,6 +453,9 @@ class InterdependenceEnvironment:
             blocked_rate=len(blocked) / len(actions) if actions else 0.0,
             betrayal_rate=len(betrayals) / len(records) if records else 0.0,
             repair_rate=len(repairs) / len(records) if records else 0.0,
+            mean_repair_obligation=(
+                total_repair_obligation / len(self.agents) if self.agents else 0.0
+            ),
             mean_payoff=total_payoff / len(self.agents) if self.agents else 0.0,
             mean_reputation=total_reputation / len(self.agents) if self.agents else 0.0,
             norm_strength=self.norm_strength,

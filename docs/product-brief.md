@@ -37,7 +37,7 @@ The product has two parts:
 1. Runtime SDK: `intercept -> assess -> route -> act/ask/escalate/block`.
 2. Adaptive UI: the governance surface that changes with moral uncertainty.
 3. Interdependence lab: repeated multi-agent environments where norms can emerge,
-   fail, get sanctioned, and stabilize.
+   fail, create repair obligations, and stabilize after trust is earned back.
 
 ## Non-Goals
 

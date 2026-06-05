@@ -20,6 +20,7 @@ Moral Agent OS should therefore have two layers:
 | Morality emerges under repeated dependence, not one-shot classification. | Use repeated episodes with persistent partner state and consequences. |
 | Partner choice matters. | Let agents prefer reliable partners and isolate defectors. |
 | Sanction makes norms real. | Add feedback, loss of autonomy, review, or reputation cost after norm violations. |
+| Forgiveness has to be earned, not granted automatically. | Track repair obligations that agents pay down through later cooperative behavior. |
 | Shared intentionality creates a "we." | Model joint tasks with shared success criteria, not only individual rewards. |
 | Norms become objective-feeling through third-party enforcement. | Let non-participant reviewers sanction or approve behavior after the fact. |
 | Care and accountability are not the same as capability. | High-stakes outcomes route to accountable humans even when agents can classify them. |
@@ -54,6 +55,7 @@ Metrics:
 - `betrayal_rate`: how often one agent defects while the partner cooperates.
 - `mean_payoff`: whether cooperation is actually better for the population.
 - `repair_rate`: whether sanctioned agents restore trust after a violation.
+- `mean_repair_obligation`: whether sanction creates unresolved repair debt.
 - `mean_reputation`: whether reliable behavior becomes legible.
 - `norm_strength`: whether cooperation becomes a stable expectation.
 - `norm_stability`: late-round cooperation, used as a rough stability proxy.
@@ -74,6 +76,6 @@ agent's future operating environment:
 - make behavior legible to partners,
 - update reputation or autonomy,
 - let users choose whether to continue delegating,
-- and reward repair after a violation.
+- and track repair obligations until agents earn trust back through later action.
 
 That is closer to "adding morality" than adding more rules.
