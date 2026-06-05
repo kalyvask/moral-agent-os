@@ -8,7 +8,11 @@ Then open http://127.0.0.1:8000
 
 from __future__ import annotations
 
+import sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from bench.run import load_scenarios
 from moral_agent_os import MoralAgentOS
