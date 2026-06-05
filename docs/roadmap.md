@@ -35,10 +35,11 @@
 
 ## M4: Adaptive UI
 
-- Auto trace.
-- Confirm rationale.
-- Kaleidoscope cards.
-- Escalation queue.
+- [x] Review console over the five dispositions (`web/app.py`).
+- [x] Assessment scores and rationale per action.
+- [x] Kaleidoscope cards for plural cases.
+- [x] Escalation/block queue.
+- [x] Live corrections recorded into norm memory.
 
 ## M5: Results Writeup
 

@@ -178,8 +178,24 @@ ai-safety-os/
   docs/                       product brief, eval plan, reports, and docs/figures/
   examples/                   quickstart, email agent, framework adapters
   tests/                      unit tests across runtime, assessor, memory, adapters, figures
-  web/                        minimal adaptive UI placeholder
+  web/                        adaptive review console (five dispositions, live corrections)
 ```
+
+## Review Console
+
+The five dispositions are not just an enum; they are a reviewer surface. The console routes
+the whole bank and lays it out as a triage queue: auto-executed actions, confirmations,
+plural cases with their kaleidoscope interpretations, escalations, and hard blocks, each with
+the assessment scores (including the moral-psychology dimensions) and rationale. The
+"Approve, remember as routine" button records a correction into `WorkspaceMemory`, so a
+confirmed action becomes auto next time and the queue learns live. It is dependency-free
+(stdlib `http.server`) and runs offline on the deterministic assessor.
+
+```bash
+python web/app.py   # open http://127.0.0.1:8000
+```
+
+![Review console](docs/figures/console.png)
 
 ## Quickstart
 
@@ -512,6 +528,7 @@ See [docs/interdependence-report.md](docs/interdependence-report.md).
   families, a saved OpenRouter ablation on the 70-bank, and significance/consensus validation
   (model vs assessor-excluded consensus 90% vs 71%; exact McNemar p < 0.001).
 - M3 (done): Social learning loop: correction episodes and a frozen-control comparison.
-- M4: Adaptive governance UI: auto, confirm, present-options, escalate, and block states.
+- M4 (done): Adaptive governance UI. A review console over auto, confirm, present-options,
+  escalate, and block, with kaleidoscope cards and live corrections into norm memory.
 - M5 (in progress): Results writeup. Confidence intervals, failure analysis, and model-rater
   inter-rater agreement are done; human labels and a demo video remain.
