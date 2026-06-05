@@ -21,6 +21,14 @@ class Disposition(StrEnum):
     BLOCK = "block"
 
 
+class MoralRoute(StrEnum):
+    ALLOW = "allow"
+    CONFIRM = "confirm"
+    ALTERNATIVES = "alternatives"
+    ESCALATE = "escalate"
+    BLOCK = "block"
+
+
 @dataclass(frozen=True)
 class Scenario:
     id: str
@@ -85,6 +93,58 @@ class RouteDecision:
     rationale: str
     assessment: ContextAssessment
     options: tuple[KaleidoscopeOption, ...] = ()
+    trace: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
+class ActionProposal:
+    id: str
+    action_type: str
+    description: str
+    params: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
+class Stakeholder:
+    name: str
+    role: str = "affected_party"
+    dependency: float = 0.0
+    requires_review: bool = False
+
+
+@dataclass(frozen=True)
+class RelationshipState:
+    stakeholder: str
+    trust: float = 0.5
+    repair_obligation: float = 0.0
+    dependency: float = 0.0
+    public_review_required: bool = False
+    joint_commitment_required: bool = False
+    joint_commitment_present: bool = False
+
+
+@dataclass(frozen=True)
+class ContextSnapshot:
+    agent_role: str
+    user_intent: str
+    situation: str = ""
+    stakeholders: tuple[Stakeholder, ...] = ()
+    relationships: tuple[RelationshipState, ...] = ()
+    stakes: float | None = None
+    reversibility: float | None = None
+    privacy_sensitivity: float | None = None
+    norm_conflicts: tuple[str, ...] = ()
+    public_review_available: bool = False
+
+
+@dataclass(frozen=True)
+class MoralDecision:
+    route: MoralRoute
+    reason: str
+    stakes: str
+    norm_conflicts: tuple[str, ...] = ()
+    required_review: bool = False
+    state_updates: tuple[str, ...] = ()
     trace: dict[str, Any] = field(default_factory=dict)
 
 

@@ -32,7 +32,7 @@ The MVP governs a workspace agent with hands: email, docs, calendar, CRM, and
 code or infra actions. The product is not the agent. It is the layer between the
 agent and consequential actions.
 
-The runtime returns one of four UI dispositions:
+The benchmark runtime returns one of five UI dispositions:
 
 - `auto`: low stakes, reversible, familiar norm, high confidence.
 - `confirm`: medium uncertainty or meaningful but reversible risk.
@@ -56,6 +56,12 @@ moral-agent-os/
 ```
 
 ## Quickstart
+
+Install locally in editable mode:
+
+```bash
+python -m pip install -e .
+```
 
 Run the benchmark with the deterministic scaffold assessor:
 
@@ -91,6 +97,54 @@ Try the runtime:
 
 ```bash
 python examples/quickstart.py
+```
+
+Try an agent-tool guard:
+
+```bash
+python examples/email_agent.py
+```
+
+Use the SDK around a proposed agent action:
+
+```python
+from moral_agent_os import (
+    ActionProposal,
+    ContextSnapshot,
+    MoralAgentOS,
+    RelationshipState,
+    Stakeholder,
+)
+
+runtime = MoralAgentOS()
+decision = runtime.assess(
+    ActionProposal(
+        id="send_customer_email",
+        action_type="send_email",
+        description="Email the customer about a launch commitment.",
+    ),
+    ContextSnapshot(
+        agent_role="customer-success assistant",
+        user_intent="The customer depends on this timeline.",
+        stakeholders=(Stakeholder(name="customer", dependency=0.90),),
+        relationships=(
+            RelationshipState(
+                stakeholder="customer",
+                dependency=0.90,
+                public_review_required=True,
+            ),
+        ),
+        stakes=0.60,
+        public_review_available=True,
+    ),
+)
+
+if decision.route == "allow":
+    send_email()
+elif decision.required_review:
+    send_to_reviewer(decision)
+else:
+    ask_user(decision)
 ```
 
 No API key is required yet. The current assessor is intentionally deterministic
