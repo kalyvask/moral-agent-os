@@ -258,7 +258,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--assessor",
-        choices=("heuristic", "llm"),
+        choices=("heuristic", "llm", "openrouter"),
         default="heuristic",
         help="Which assessor to ablate (default: heuristic, runs offline).",
     )

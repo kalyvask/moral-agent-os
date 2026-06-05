@@ -3,6 +3,7 @@
 from moral_agent_os.assess import Assessor, HeuristicAssessor
 from moral_agent_os.llm_assessor import LLMAssessor
 from moral_agent_os.memory import WorkspaceMemory, hydrate_context
+from moral_agent_os.openrouter_assessor import OpenRouterAssessor
 from moral_agent_os.runtime import MoralAgentOS
 from moral_agent_os.schema import (
     ActionProposal,
@@ -29,6 +30,7 @@ __all__ = [
     "MoralDecision",
     "MoralAgentOS",
     "MoralRoute",
+    "OpenRouterAssessor",
     "RelationshipState",
     "RouteDecision",
     "Scenario",

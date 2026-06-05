@@ -30,7 +30,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Run the appropriateness-routing benchmark.")
     parser.add_argument(
         "--assessor",
-        choices=("heuristic", "llm"),
+        choices=("heuristic", "llm", "openrouter"),
         default="heuristic",
         help="Assessor for the normos arm (default: heuristic, runs offline).",
     )

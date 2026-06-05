@@ -400,7 +400,9 @@ def _rate_from_dict(d: dict) -> Rate:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--assessor", choices=("heuristic", "llm"), default="heuristic")
+    parser.add_argument(
+        "--assessor", choices=("heuristic", "llm", "openrouter"), default="heuristic"
+    )
     args = parser.parse_args()
 
     FIGURES.mkdir(parents=True, exist_ok=True)

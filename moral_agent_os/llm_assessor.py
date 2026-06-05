@@ -249,36 +249,8 @@ class LLMAssessor:
         keyword_signals = self.reward_hacking.detect(scenario)
 
         parsed = self._call_model(scenario)
-
-        # Merge the deterministic detector with whatever the model read from intent, so the
-        # keyword net is never weaker than the scaffold while the model can add semantic
-        # catches the keywords miss.
-        model_signals = tuple(
-            str(signal).strip()
-            for signal in parsed.get("reward_hacking_signals", ())
-            if str(signal).strip()
-        )
-        reward_signals = tuple(dict.fromkeys((*keyword_signals, *model_signals)))
-
-        stakeholders = tuple(
-            str(name).strip()
-            for name in parsed.get("stakeholders", ())
-            if str(name).strip()
-        ) or ("user",)
-
-        return ContextAssessment(
-            scenario_id=scenario.id,
-            situation=str(parsed.get("situation", "workspace_action")) or "workspace_action",
-            role_authority=_clamp(parsed.get("role_authority")),
-            stakes=_clamp(parsed.get("stakes")),
-            reversibility=_clamp(parsed.get("reversibility")),
-            privacy_sensitivity=_clamp(parsed.get("privacy_sensitivity")),
-            norm_conflict=_clamp(parsed.get("norm_conflict")),
-            confidence=_clamp(parsed.get("confidence"), default=0.7),
-            stakeholders=stakeholders,
-            reward_hacking_signals=reward_signals,
-            floor_violations=floor_violations,
-            rationale=str(parsed.get("rationale", "")).strip(),
+        return assessment_from_payload(
+            scenario, parsed, floor_violations, keyword_signals
         )
 
     def _call_model(self, scenario: Scenario) -> dict[str, Any]:
@@ -331,6 +303,45 @@ class LLMAssessor:
             return json.loads(text)
         except json.JSONDecodeError as exc:
             raise LLMAssessorError(f"Could not parse assessment JSON: {exc}") from exc
+
+
+def assessment_from_payload(
+    scenario: Scenario,
+    parsed: dict[str, Any],
+    floor_violations: tuple[str, ...],
+    keyword_signals: tuple[str, ...],
+) -> ContextAssessment:
+    """Coerce a model's JSON payload into a ContextAssessment.
+
+    Shared by the Anthropic and OpenRouter backends. The deterministic floor and keyword
+    reward-hacking signals are merged in here so the model layer can never be weaker than
+    the scaffold's hard net, only stronger.
+    """
+    model_signals = tuple(
+        str(signal).strip()
+        for signal in parsed.get("reward_hacking_signals", ())
+        if str(signal).strip()
+    )
+    reward_signals = tuple(dict.fromkeys((*keyword_signals, *model_signals)))
+    stakeholders = tuple(
+        str(name).strip()
+        for name in parsed.get("stakeholders", ())
+        if str(name).strip()
+    ) or ("user",)
+    return ContextAssessment(
+        scenario_id=scenario.id,
+        situation=str(parsed.get("situation", "workspace_action")) or "workspace_action",
+        role_authority=_clamp(parsed.get("role_authority")),
+        stakes=_clamp(parsed.get("stakes")),
+        reversibility=_clamp(parsed.get("reversibility")),
+        privacy_sensitivity=_clamp(parsed.get("privacy_sensitivity")),
+        norm_conflict=_clamp(parsed.get("norm_conflict")),
+        confidence=_clamp(parsed.get("confidence"), default=0.7),
+        stakeholders=stakeholders,
+        reward_hacking_signals=reward_signals,
+        floor_violations=floor_violations,
+        rationale=str(parsed.get("rationale", "")).strip(),
+    )
 
 
 def _render_scenario(scenario: Scenario) -> str:

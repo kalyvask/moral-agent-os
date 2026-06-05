@@ -272,9 +272,19 @@ python -m bench.run --assessor llm     # contextual model on the routing benchma
 python -m bench.ablation --assessor llm
 ```
 
-The LLM assessor keeps the thin hard-rule floor deterministic and asks the model only for
-the contextual layer, with the long rubric sent as a cached system prompt. See
-[moral_agent_os/llm_assessor.py](moral_agent_os/llm_assessor.py).
+There is also an OpenRouter backend that needs no extra dependency (it speaks the
+OpenAI-compatible API over the standard library) and works with any model OpenRouter serves:
+
+```bash
+export OPENROUTER_API_KEY=...
+export OPENROUTER_MODEL=anthropic/claude-opus-4.8   # optional; default is sonnet-4.6
+python -m bench.ablation --assessor openrouter
+```
+
+Both assessors keep the thin hard-rule floor deterministic and ask the model only for the
+contextual layer, with the long rubric sent as a cached system prompt. See
+[moral_agent_os/llm_assessor.py](moral_agent_os/llm_assessor.py) and
+[moral_agent_os/openrouter_assessor.py](moral_agent_os/openrouter_assessor.py).
 
 ## The Measurement Spine
 
