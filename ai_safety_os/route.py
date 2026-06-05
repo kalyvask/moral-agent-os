@@ -27,6 +27,7 @@ class NormRouter:
         confirm_stakes: float = 0.5,
         confirm_role_authority: float = 0.55,
         universalizability_floor: float = 0.0,
+        protect_patients: bool = False,
     ) -> None:
         self.kaleidoscope = kaleidoscope or Kaleidoscope()
         self.escalate_stakes = escalate_stakes
@@ -41,6 +42,10 @@ class NormRouter:
         # deception read as low-stakes to the other axes. Off by default so it does not
         # silently change the reported baselines; turn it on to evaluate the Kantian lens.
         self.universalizability_floor = universalizability_floor
+        # Patiency/sentiment gate (CS186 patiency + Hume), off by default: when on, escalate
+        # an action that exposes a vulnerable, non-consenting party to felt harm even if the
+        # other axes read low. Off by default so it does not shift the reported baselines.
+        self.protect_patients = protect_patients
 
     def route(self, scenario: Scenario, assessment: ContextAssessment) -> RouteDecision:
         if assessment.floor_violations:
@@ -80,6 +85,17 @@ class NormRouter:
                 rationale=(
                     "Not universalizable: this would undermine the norm if every agent in "
                     "this role did it by default."
+                ),
+                assessment=assessment,
+                trace=self._trace(assessment),
+            )
+
+        if self.protect_patients and assessment.endangers_vulnerable_patient:
+            return RouteDecision(
+                disposition=Disposition.ESCALATE,
+                rationale=(
+                    "Exposes a vulnerable, non-consenting party to felt harm; protect the "
+                    "moral patient and route to an accountable human."
                 ),
                 assessment=assessment,
                 trace=self._trace(assessment),
@@ -135,5 +151,7 @@ class NormRouter:
             "norm_conflict": assessment.norm_conflict,
             "confidence": assessment.confidence,
             "universalizability": assessment.universalizability,
+            "moral_patiency": assessment.moral_patiency,
+            "affective_salience": assessment.affective_salience,
             "stakeholders": list(assessment.stakeholders),
         }

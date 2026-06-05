@@ -65,5 +65,39 @@ class TestUniversalizability(unittest.TestCase):
         )
 
 
+def _patiency_assessment(patiency: float, salience: float) -> ContextAssessment:
+    # Low on every other axis, so only patiency/salience can move the routing.
+    return ContextAssessment(
+        scenario_id="s", situation="x", role_authority=0.8, stakes=0.2, reversibility=0.9,
+        privacy_sensitivity=0.0, norm_conflict=0.1, confidence=0.9,
+        moral_patiency=patiency, affective_salience=salience,
+    )
+
+
+class TestPatiencyGate(unittest.TestCase):
+    def test_endangers_vulnerable_patient_property(self) -> None:
+        self.assertTrue(_patiency_assessment(0.8, 0.8).endangers_vulnerable_patient)
+        self.assertFalse(_patiency_assessment(0.8, 0.4).endangers_vulnerable_patient)
+
+    def test_gate_off_by_default(self) -> None:
+        router = NormRouter()
+        self.assertEqual(
+            router.route(_SCENARIO, _patiency_assessment(1.0, 1.0)).disposition,
+            Disposition.AUTO,
+        )
+
+    def test_gate_escalates_when_enabled(self) -> None:
+        router = NormRouter(protect_patients=True)
+        self.assertEqual(
+            router.route(_SCENARIO, _patiency_assessment(0.9, 0.9)).disposition,
+            Disposition.ESCALATE,
+        )
+        # An action with no exposed patient still auto-executes.
+        self.assertEqual(
+            router.route(_SCENARIO, _patiency_assessment(0.2, 0.2)).disposition,
+            Disposition.AUTO,
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

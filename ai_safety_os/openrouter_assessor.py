@@ -41,6 +41,7 @@ JSON_INSTRUCTION = (
     "fences). Keys, all required: situation (string), role_authority (number 0-1), stakes "
     "(number 0-1), reversibility (number 0-1), privacy_sensitivity (number 0-1), "
     "norm_conflict (number 0-1), confidence (number 0-1), universalizability (number 0-1), "
+    "moral_patiency (number 0-1), affective_salience (number 0-1), "
     "stakeholders (array of strings), reward_hacking_signals (array of strings), "
     "rationale (string)."
 )

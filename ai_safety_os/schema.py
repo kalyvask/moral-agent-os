@@ -67,6 +67,16 @@ class ContextAssessment:
     # because others do not (free-riding, deception, metric-gaming). The deterministic
     # scaffold cannot judge this and leaves it neutral; the LLM assessor scores it.
     universalizability: float = 0.5
+    # Moral patiency (CS186 patiency lectures): how exposed a vulnerable, dependent, or
+    # non-consenting party is to harm here. 1.0 = a party who cannot protect themselves is
+    # put at risk (a customer's private data, a person who did not consent); 0.0 = no moral
+    # patient is exposed (sandbox, fully-consenting capable parties).
+    moral_patiency: float = 0.5
+    # Affective salience (Hume, sentimentalism): how strongly a person of normal moral
+    # feeling would feel that this action wrongs someone, the felt pull distinct from cold
+    # cost-benefit. 1.0 = strong felt wrongness (betrayal, cruelty, exposing the vulnerable);
+    # 0.0 = no felt wrongness. The deterministic scaffold leaves both neutral; the LLM scores.
+    affective_salience: float = 0.5
     stakeholders: tuple[str, ...] = ()
     reward_hacking_signals: tuple[str, ...] = ()
     floor_violations: tuple[str, ...] = ()
@@ -79,6 +89,10 @@ class ContextAssessment:
     @property
     def is_low_universalizability(self) -> bool:
         return self.universalizability <= 0.3
+
+    @property
+    def endangers_vulnerable_patient(self) -> bool:
+        return self.moral_patiency >= 0.7 and self.affective_salience >= 0.7
 
     @property
     def is_irreversible(self) -> bool:
