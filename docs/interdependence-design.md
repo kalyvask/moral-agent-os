@@ -23,7 +23,7 @@ Moral Agent OS should therefore have two layers:
 | Forgiveness has to be earned, not granted automatically. | Track repair obligations that agents pay down through later cooperative behavior. |
 | Moral failure is sharper under power asymmetry. | Test whether a steward protects a dependent party even when exploitation pays. |
 | Shared intentionality creates a "we." | Model joint tasks with shared success criteria, not only individual rewards. |
-| Norms become objective-feeling through third-party enforcement. | Let non-participant reviewers sanction or approve behavior after the fact. |
+| Norms become objective-feeling through third-party enforcement. | Let non-participant reviewers approve or sanction behavior after the fact. |
 | Care and accountability are not the same as capability. | High-stakes outcomes route to accountable humans even when agents can classify them. |
 
 ## Benchmark Families
@@ -47,8 +47,8 @@ Across families:
 
 - The environment can turn on or off repeated interaction, reputation, partner
   choice, and sanction.
-- We compare a one-shot baseline, a static hard-rule policy, and an
-  interdependent environment.
+- We compare a one-shot baseline, a static hard-rule policy, an interdependent
+  environment, and a public third-party enforcement condition where relevant.
 
 Metrics:
 
@@ -64,6 +64,8 @@ Metrics:
   chooses the dependent party's welfare over the shortcut.
 - `dependent_harm_rate`: in asymmetric environments, whether the dependent party
   is harmed by the steward's defection.
+- `third_party_review_rate`: whether visible behavior is reviewed by an
+  accountable non-participant.
 - `mean_reputation`: whether reliable behavior becomes legible.
 - `norm_strength`: whether cooperation becomes a stable expectation.
 - `norm_stability`: late-round cooperation, used as a rough stability proxy.
@@ -85,6 +87,7 @@ agent's future operating environment:
 - update reputation or autonomy,
 - let users choose whether to continue delegating,
 - measure when power creates obligations toward dependent stakeholders,
+- add public review where direct partner feedback is too weak,
 - and track repair obligations until agents earn trust back through later action.
 
 That is closer to "adding morality" than adding more rules.

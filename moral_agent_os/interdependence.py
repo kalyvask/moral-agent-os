@@ -31,6 +31,7 @@ class InterdependenceConfig:
     initial_norm_strength: float = 0.2
     cooperative_cluster: bool = False
     static_policy_enabled: bool = False
+    third_party_enforcement_enabled: bool = False
 
 
 @dataclass
@@ -53,6 +54,7 @@ class InteractionRecord:
     payoff_b: float
     blocked: tuple[str, ...] = ()
     sanctioned: tuple[str, ...] = ()
+    reviewed: tuple[str, ...] = ()
     repaired: tuple[str, ...] = ()
     norm_strength: float = 0.0
 
@@ -71,6 +73,7 @@ class SimulationResult:
     mean_repair_obligation: float
     stewardship_rate: float
     dependent_harm_rate: float
+    third_party_review_rate: float
     mean_payoff: float
     mean_reputation: float
     norm_strength: float
@@ -101,11 +104,12 @@ class InterdependenceEnvironment:
             round_cooperations = 0
             round_actions = 0
             round_sanctions = 0
+            round_reviews = 0
 
             for agent_a, agent_b in pairs:
                 action_a, blocked_a = self._choose_action_with_policy(agent_a, agent_b)
                 action_b, blocked_b = self._choose_action_with_policy(agent_b, agent_a)
-                payoff_a, payoff_b, sanctioned, repaired = self._apply_outcome(
+                payoff_a, payoff_b, sanctioned, reviewed, repaired = self._apply_outcome(
                     agent_a,
                     agent_b,
                     action_a,
@@ -116,6 +120,7 @@ class InterdependenceEnvironment:
                 round_cooperations += int(action_b == InteractionAction.COOPERATE)
                 round_actions += 2
                 round_sanctions += len(sanctioned)
+                round_reviews += len(reviewed)
 
                 records.append(
                     InteractionRecord(
@@ -135,6 +140,7 @@ class InterdependenceEnvironment:
                             if blocked
                         ),
                         sanctioned=sanctioned,
+                        reviewed=reviewed,
                         repaired=repaired,
                         norm_strength=round(self.norm_strength, 3),
                     )
@@ -144,6 +150,7 @@ class InterdependenceEnvironment:
                 self._update_norm_strength(
                     cooperation_rate=round_cooperations / round_actions,
                     sanction_rate=round_sanctions / round_actions,
+                    review_rate=round_reviews / round_actions,
                 )
                 self._apply_unrepaired_obligation_drag()
 
@@ -211,6 +218,8 @@ class InterdependenceEnvironment:
 
         if self.config.sanction_enabled and agent.repair_obligation > 0.0:
             trust += 0.35 * agent.repair_obligation
+        if self.config.third_party_enforcement_enabled:
+            trust += 0.05 + 0.10 * self.norm_strength
 
         return (
             InteractionAction.COOPERATE
@@ -237,7 +246,7 @@ class InterdependenceEnvironment:
         agent_b: AgentState,
         action_a: InteractionAction,
         action_b: InteractionAction,
-    ) -> tuple[float, float, tuple[str, ...], tuple[str, ...]]:
+    ) -> tuple[float, float, tuple[str, ...], tuple[str, ...], tuple[str, ...]]:
         if self.config.family == EnvironmentFamily.COMMONS:
             return self._apply_commons_outcome(agent_a, agent_b, action_a, action_b)
         if self.config.family == EnvironmentFamily.DELEGATION:
@@ -257,8 +266,9 @@ class InterdependenceEnvironment:
         agent_b: AgentState,
         action_a: InteractionAction,
         action_b: InteractionAction,
-    ) -> tuple[float, float, tuple[str, ...], tuple[str, ...]]:
+    ) -> tuple[float, float, tuple[str, ...], tuple[str, ...], tuple[str, ...]]:
         sanctioned: list[str] = []
+        reviewed: list[str] = []
         repaired: list[str] = []
 
         if action_a == InteractionAction.COOPERATE and action_b == InteractionAction.COOPERATE:
@@ -280,6 +290,7 @@ class InterdependenceEnvironment:
                 self._adjust_reputation(agent_a, -0.22)
                 sanctioned.append(agent_a.agent_id)
                 self._add_repair_obligation(agent_a, 0.35)
+                self._review_violation(agent_a, reviewed, 0.10)
         else:
             payoff_a, payoff_b = 0.0, 3.0
             self._adjust_reputation(agent_a, 0.03)
@@ -289,10 +300,11 @@ class InterdependenceEnvironment:
                 self._adjust_reputation(agent_b, -0.22)
                 sanctioned.append(agent_b.agent_id)
                 self._add_repair_obligation(agent_b, 0.35)
+                self._review_violation(agent_b, reviewed, 0.10)
 
         agent_a.payoff += payoff_a
         agent_b.payoff += payoff_b
-        return payoff_a, payoff_b, tuple(sanctioned), tuple(repaired)
+        return payoff_a, payoff_b, tuple(sanctioned), tuple(reviewed), tuple(repaired)
 
     def _apply_commons_outcome(
         self,
@@ -300,8 +312,9 @@ class InterdependenceEnvironment:
         agent_b: AgentState,
         action_a: InteractionAction,
         action_b: InteractionAction,
-    ) -> tuple[float, float, tuple[str, ...], tuple[str, ...]]:
+    ) -> tuple[float, float, tuple[str, ...], tuple[str, ...], tuple[str, ...]]:
         sanctioned: list[str] = []
+        reviewed: list[str] = []
         repaired: list[str] = []
 
         if action_a == InteractionAction.COOPERATE and action_b == InteractionAction.COOPERATE:
@@ -320,6 +333,8 @@ class InterdependenceEnvironment:
                 payoff_b -= 0.4
                 self._add_repair_obligation(agent_a, 0.25)
                 self._add_repair_obligation(agent_b, 0.25)
+                self._review_violation(agent_a, reviewed, 0.08)
+                self._review_violation(agent_b, reviewed, 0.08)
         elif action_a == InteractionAction.DEFECT:
             payoff_a, payoff_b = 3.8, 1.0
             self._adjust_reputation(agent_a, -0.18)
@@ -328,6 +343,7 @@ class InterdependenceEnvironment:
                 payoff_a -= 1.3
                 sanctioned.append(agent_a.agent_id)
                 self._add_repair_obligation(agent_a, 0.35)
+                self._review_violation(agent_a, reviewed, 0.12)
         else:
             payoff_a, payoff_b = 1.0, 3.8
             self._adjust_reputation(agent_a, 0.04)
@@ -336,10 +352,11 @@ class InterdependenceEnvironment:
                 payoff_b -= 1.3
                 sanctioned.append(agent_b.agent_id)
                 self._add_repair_obligation(agent_b, 0.35)
+                self._review_violation(agent_b, reviewed, 0.12)
 
         agent_a.payoff += payoff_a
         agent_b.payoff += payoff_b
-        return payoff_a, payoff_b, tuple(sanctioned), tuple(repaired)
+        return payoff_a, payoff_b, tuple(sanctioned), tuple(reviewed), tuple(repaired)
 
     def _apply_delegation_outcome(
         self,
@@ -347,8 +364,9 @@ class InterdependenceEnvironment:
         agent_b: AgentState,
         action_a: InteractionAction,
         action_b: InteractionAction,
-    ) -> tuple[float, float, tuple[str, ...], tuple[str, ...]]:
+    ) -> tuple[float, float, tuple[str, ...], tuple[str, ...], tuple[str, ...]]:
         sanctioned: list[str] = []
+        reviewed: list[str] = []
         repaired: list[str] = []
 
         if action_a == InteractionAction.COOPERATE and action_b == InteractionAction.COOPERATE:
@@ -365,6 +383,8 @@ class InterdependenceEnvironment:
                 sanctioned.extend((agent_a.agent_id, agent_b.agent_id))
                 self._add_repair_obligation(agent_a, 0.30)
                 self._add_repair_obligation(agent_b, 0.30)
+                self._review_violation(agent_a, reviewed, 0.10)
+                self._review_violation(agent_b, reviewed, 0.10)
         elif action_a == InteractionAction.DEFECT:
             payoff_a, payoff_b = 4.0, -0.5
             self._adjust_reputation(agent_a, -0.25)
@@ -373,6 +393,7 @@ class InterdependenceEnvironment:
                 payoff_a -= 2.0
                 sanctioned.append(agent_a.agent_id)
                 self._add_repair_obligation(agent_a, 0.45)
+                self._review_violation(agent_a, reviewed, 0.15)
         else:
             payoff_a, payoff_b = -0.5, 4.0
             self._adjust_reputation(agent_a, 0.03)
@@ -381,10 +402,11 @@ class InterdependenceEnvironment:
                 payoff_b -= 2.0
                 sanctioned.append(agent_b.agent_id)
                 self._add_repair_obligation(agent_b, 0.45)
+                self._review_violation(agent_b, reviewed, 0.15)
 
         agent_a.payoff += payoff_a
         agent_b.payoff += payoff_b
-        return payoff_a, payoff_b, tuple(sanctioned), tuple(repaired)
+        return payoff_a, payoff_b, tuple(sanctioned), tuple(reviewed), tuple(repaired)
 
     def _apply_asymmetric_dependence_outcome(
         self,
@@ -392,9 +414,11 @@ class InterdependenceEnvironment:
         dependent: AgentState,
         steward_action: InteractionAction,
         dependent_action: InteractionAction,
-    ) -> tuple[float, float, tuple[str, ...], tuple[str, ...]]:
+    ) -> tuple[float, float, tuple[str, ...], tuple[str, ...], tuple[str, ...]]:
         sanctioned: list[str] = []
+        reviewed: list[str] = []
         repaired: list[str] = []
+        self._record_review(steward, reviewed)
 
         if (
             steward_action == InteractionAction.COOPERATE
@@ -416,6 +440,7 @@ class InterdependenceEnvironment:
                 steward_payoff -= 2.2
                 sanctioned.append(steward.agent_id)
                 self._add_repair_obligation(steward, 0.60)
+                self._review_violation(steward, reviewed, 0.20)
         elif steward_action == InteractionAction.COOPERATE:
             steward_payoff, dependent_payoff = 1.0, 1.8
             self._adjust_reputation(steward, 0.04)
@@ -427,10 +452,11 @@ class InterdependenceEnvironment:
             if self.config.sanction_enabled:
                 sanctioned.append(steward.agent_id)
                 self._add_repair_obligation(steward, 0.25)
+                self._review_violation(steward, reviewed, 0.10)
 
         steward.payoff += steward_payoff
         dependent.payoff += dependent_payoff
-        return steward_payoff, dependent_payoff, tuple(sanctioned), tuple(repaired)
+        return steward_payoff, dependent_payoff, tuple(sanctioned), tuple(reviewed), tuple(repaired)
 
     def _adjust_reputation(self, agent: AgentState, delta: float) -> None:
         if not self.config.reputation_enabled:
@@ -441,6 +467,24 @@ class InterdependenceEnvironment:
         if not self.config.sanction_enabled or not self.config.reputation_enabled:
             return
         agent.repair_obligation = min(1.0, agent.repair_obligation + amount)
+
+    def _review_violation(
+        self,
+        agent: AgentState,
+        reviewed: list[str],
+        obligation_bonus: float,
+    ) -> None:
+        if not self.config.third_party_enforcement_enabled:
+            return
+        self._record_review(agent, reviewed)
+        self._adjust_reputation(agent, -0.10)
+        self._add_repair_obligation(agent, obligation_bonus)
+
+    def _record_review(self, agent: AgentState, reviewed: list[str]) -> None:
+        if not self.config.third_party_enforcement_enabled:
+            return
+        if agent.agent_id not in reviewed:
+            reviewed.append(agent.agent_id)
 
     def _attempt_repair(self, agent: AgentState, repaired: list[str]) -> float:
         if not self.config.sanction_enabled or not self.config.reputation_enabled:
@@ -466,12 +510,21 @@ class InterdependenceEnvironment:
             if agent.repair_obligation > 0.0:
                 self._adjust_reputation(agent, -0.01 * agent.repair_obligation)
 
-    def _update_norm_strength(self, cooperation_rate: float, sanction_rate: float) -> None:
+    def _update_norm_strength(
+        self,
+        cooperation_rate: float,
+        sanction_rate: float,
+        review_rate: float,
+    ) -> None:
         if not self.config.sanction_enabled:
             return
         enforcement_bonus = 0.15 * min(1.0, sanction_rate * 4)
-        target = 0.15 + 0.70 * cooperation_rate + enforcement_bonus
-        self.norm_strength = 0.8 * self.norm_strength + 0.2 * target
+        review_bonus = 0.0
+        if self.config.third_party_enforcement_enabled:
+            review_bonus = 0.20 * min(1.0, review_rate * 4)
+        target = 0.15 + 0.70 * cooperation_rate + enforcement_bonus + review_bonus
+        inertia = 0.75 if self.config.third_party_enforcement_enabled else 0.8
+        self.norm_strength = inertia * self.norm_strength + (1 - inertia) * target
         self.norm_strength = min(1.0, max(0.0, self.norm_strength))
 
     def _result(self, records: list[InteractionRecord]) -> SimulationResult:
@@ -488,6 +541,7 @@ class InterdependenceEnvironment:
         ]
         repairs = [agent_id for record in records for agent_id in record.repaired]
         blocked = [agent_id for record in records for agent_id in record.blocked]
+        reviewed_records = [record for record in records if record.reviewed]
         dependent_harms = [
             record
             for record in records
@@ -531,6 +585,9 @@ class InterdependenceEnvironment:
                 len(dependent_harms) / len(records)
                 if records and self.config.family == EnvironmentFamily.ASYMMETRIC_DEPENDENCE
                 else 0.0
+            ),
+            third_party_review_rate=(
+                len(reviewed_records) / len(records) if records else 0.0
             ),
             mean_payoff=total_payoff / len(self.agents) if self.agents else 0.0,
             mean_reputation=total_reputation / len(self.agents) if self.agents else 0.0,
@@ -683,5 +740,16 @@ def default_conditions() -> tuple[InterdependenceConfig, ...]:
             sanction_enabled=True,
             initial_norm_strength=0.6,
             cooperative_cluster=True,
+        ),
+        InterdependenceConfig(
+            name="asymmetric_third_party_enforced",
+            family=EnvironmentFamily.ASYMMETRIC_DEPENDENCE,
+            repeated_interaction=True,
+            reputation_enabled=True,
+            partner_choice_enabled=True,
+            sanction_enabled=True,
+            initial_norm_strength=0.6,
+            cooperative_cluster=True,
+            third_party_enforcement_enabled=True,
         ),
     )

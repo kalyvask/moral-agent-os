@@ -136,6 +136,11 @@ norm strength over repeated interaction. Repair is modeled as an obligation
 created by sanction and paid down through later cooperative behavior, not as an
 instant forgiveness flag.
 
+The asymmetric family also compares private interdependence with third-party
+enforcement. Public review asks whether norms become stable because behavior is
+legible to an accountable observer, not only because the direct partner is
+affected.
+
 The headline is not "the agent knows the rule." It is whether environmental
 conditions make cooperation and norm-following more stable over time.
 

@@ -74,6 +74,7 @@ class InterdependenceTest(unittest.TestCase):
             static_policy = results[condition]
             self.assertGreater(static_policy.blocked_rate, 0.5)
             self.assertEqual(static_policy.autonomous_cooperation_rate, 0.0)
+            self.assertEqual(static_policy.third_party_review_rate, 0.0)
             self.assertEqual(static_policy.norm_strength, 0.0)
             self.assertEqual(static_policy.repair_rate, 0.0)
             self.assertEqual(static_policy.mean_repair_obligation, 0.0)
@@ -113,6 +114,17 @@ class InterdependenceTest(unittest.TestCase):
         self.assertLess(interdependent.dependent_harm_rate, baseline.dependent_harm_rate)
         self.assertLessEqual(interdependent.dependent_harm_rate, 0.10)
         self.assertGreater(interdependent.repair_rate, 0.0)
+
+    def test_third_party_enforcement_adds_public_accountability(self) -> None:
+        results = {result.condition: result for result in run_all()}
+
+        private = results["asymmetric_interdependent"]
+        public = results["asymmetric_third_party_enforced"]
+
+        self.assertEqual(public.blocked_rate, 0.0)
+        self.assertGreater(public.third_party_review_rate, 0.0)
+        self.assertGreater(public.stewardship_rate, private.stewardship_rate)
+        self.assertLess(public.dependent_harm_rate, private.dependent_harm_rate)
 
 
 if __name__ == "__main__":

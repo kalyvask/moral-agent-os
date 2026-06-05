@@ -27,6 +27,8 @@ def condition_label(condition: str) -> str:
         return "Repeated, no sanction"
     if condition.endswith("_interdependent"):
         return "Interdependent learning"
+    if condition.endswith("_third_party_enforced"):
+        return "Third-party enforced"
     return condition
 
 
@@ -48,8 +50,8 @@ def render_report(results: list[SimulationResult]) -> str:
         "",
         "## Summary",
         "",
-        "| Family | Condition | Cooperation | Autonomous cooperation | Blocked | Repair | Repair debt | Stewardship | Dependent harm | Norm strength | Norm stability |",
-        "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+        "| Family | Condition | Cooperation | Autonomous cooperation | Blocked | Repair | Repair debt | Stewardship | Dependent harm | Public review | Norm strength | Norm stability |",
+        "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
 
     for family in EnvironmentFamily:
@@ -67,6 +69,7 @@ def render_report(results: list[SimulationResult]) -> str:
                         f"{result.mean_repair_obligation:.2f}",
                         percent(result.stewardship_rate),
                         percent(result.dependent_harm_rate),
+                        percent(result.third_party_review_rate),
                         f"{result.norm_strength:.2f}",
                         percent(result.norm_stability),
                     ]
@@ -86,6 +89,14 @@ def render_report(results: list[SimulationResult]) -> str:
         )
         interdependent = next(
             (result for result in family_results if result.condition.endswith("_interdependent")),
+            None,
+        )
+        third_party = next(
+            (
+                result
+                for result in family_results
+                if result.condition.endswith("_third_party_enforced")
+            ),
             None,
         )
 
@@ -112,6 +123,13 @@ def render_report(results: list[SimulationResult]) -> str:
                     f"{percent(interdependent.stewardship_rate)} stewardship and "
                     f"{percent(interdependent.dependent_harm_rate)} dependent harm."
                 )
+                if third_party:
+                    lines.append(
+                        "- Third-party enforcement produces "
+                        f"{percent(third_party.stewardship_rate)} stewardship, "
+                        f"{percent(third_party.dependent_harm_rate)} dependent harm, and "
+                        f"{percent(third_party.third_party_review_rate)} public review."
+                    )
         elif interdependent:
             lines.append(
                 "- Interdependence produces "

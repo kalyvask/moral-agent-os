@@ -13,7 +13,8 @@ auto-execute, confirm, present alternatives, escalate, or block.
 The deeper thesis is that moral behavior cannot be added only at the moment of
 action. It has to be learned in an environment of interdependence: repeated
 interaction, shared stakes, partner choice, reputation, sanction, repair, and
-stewardship under power asymmetry.
+stewardship under power asymmetry. Some norms also need public review: behavior
+becomes stable when accountable observers can approve or sanction it.
 
 ## User
 
@@ -32,6 +33,8 @@ infrastructure.
   than one-shot action choice.
 - Test whether agents protect dependent stakeholders when shortcutting would
   benefit the agent or its principal.
+- Test whether third-party review improves accountability without reverting to
+  hard-rule blocking.
 
 ## Product Surface
 
