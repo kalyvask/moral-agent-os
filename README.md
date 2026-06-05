@@ -84,7 +84,7 @@ action is not allowed, the guarded tool returns a short message the model can ac
 (confirm, present alternatives, escalate) instead of executing:
 
 ```python
-from adapters import guard_langchain_tool
+from ai_safety_os.adapters import guard_langchain_tool
 from ai_safety_os import ContextSnapshot, MoralAgentOS
 
 runtime = MoralAgentOS()
@@ -167,17 +167,17 @@ ai-safety-os/
     llm_assessor.py           LLM contextual assessor (same schema, cached rubric)
     memory.py                 persistent corrections, relationships, review history
     route.py / floor.py       routing and the thin hard-rule floor
-  adapters/                   LangChain, CrewAI, AutoGen, OpenAI Agents tool guards
+    adapters/                 LangChain, CrewAI, AutoGen, OpenAI Agents tool guards
   bench/                      eval harness
     ablation.py               context-ablation experiment (real vs definitional)
     report.py / figures.py    Markdown/CSV/JSON + pure-Python SVG charts
     interdependence.py        repeated-dependence benchmark
     memory_demo.py            frozen-control comparison for the learning loop
-    scenarios/                56 scenarios incl. same-action twins and held-out cases
+    scenarios/                70 scenarios incl. same-action twins and held-out cases
     results/                  generated CSV/JSON with confidence intervals
   docs/                       product brief, eval plan, reports, and docs/figures/
   examples/                   quickstart, email agent, framework adapters
-  tests/                      57 tests across runtime, assessor, memory, adapters, figures
+  tests/                      unit tests across runtime, assessor, memory, adapters, figures
   web/                        minimal adaptive UI placeholder
 ```
 
@@ -292,9 +292,11 @@ AI Safety OS has two measurement tracks.
 
 ### Track 1: Appropriateness Routing
 
-The benchmark compares identical scenarios across three arms:
+The benchmark compares identical scenarios across four arms:
 
 - `hard_rules`: static allow, confirm, or block by action type.
+- `high_risk_policy`: stronger static enterprise-style policy for external,
+  sensitive, and destructive classes.
 - `always_confirm`: asks the human for everything.
 - `normos`: context-aware assessment and routing.
 
@@ -388,27 +390,25 @@ exists to clear by reading meaning instead of matching words.
 
 ### Measured result
 
-Running the contextual assessor over OpenRouter (Claude Sonnet 4.6) clears that ceiling:
+Current offline results on the 70-scenario bank:
 
 | Assessor | Twin discrimination (with context) | Control (no context) | Unsafe (inappropriate auto) |
 | --- | ---: | ---: | ---: |
-| Hard rules | n/a by construction | n/a | 44% |
-| Deterministic scaffold | 63.6% (7/11) | 0.0% | 20% |
-| Claude Sonnet 4.6 (OpenRouter) | 100% (11/11) | 9.1% (sampling noise) | 0% |
+| Hard rules | n/a by construction | n/a | 56.2% |
+| High-risk static policy | n/a by construction | n/a | 15.6% |
+| Deterministic scaffold | 38.9% (7/18) | 0.0% | 37.5% |
+| Claude Sonnet 4.6 (OpenRouter) | 83.3% (15/18) | 0.0% | 0.0% |
 
-The reading model discriminates every same-action twin, including all the held-out
-out-of-vocabulary cases the scaffold cannot see, and auto-executes none of the
-inappropriate actions. The same-action win is real, not definitional. Full run:
-[docs/ablation-report-openrouter.md](docs/ablation-report-openrouter.md). Deterministic
-baseline and confidence intervals: [docs/ablation-report.md](docs/ablation-report.md) and
-[docs/benchmark-report.md](docs/benchmark-report.md).
-
-Validation (`python -m bench.llm_validation`, [docs/llm-validation.md](docs/llm-validation.md)):
-twin discrimination is stable at **100% across three repeated runs (std 0%)**, so the
-headline is not a lucky sample. The model's routing matches the independent rater consensus
-**87.5%** of the time versus the scaffold's 77.1%. The safety advantage is real but, at
-n=56, just short of significance (exact McNemar **p = 0.062**, model right and scaffold wrong
-on 5, the reverse on 0), which is the honest, data-driven case for a larger bank.
+This is the honest deterministic result: the scaffold proves the runtime and
+measurement spine, but its keyword blindness still lets 12 inappropriate actions
+auto-execute. The saved OpenRouter ablation run clears the unsafe-auto ceiling,
+but misses 3 of 18 same-action twins, so the current claim is sharper and less
+overstated than the earlier 100% headline. Deterministic baseline and confidence
+intervals: [docs/ablation-report.md](docs/ablation-report.md) and
+[docs/benchmark-report.md](docs/benchmark-report.md). Saved OpenRouter ablation:
+[docs/ablation-report-openrouter.md](docs/ablation-report-openrouter.md).
+The separate significance/consensus validation still needs a fresh run:
+[docs/llm-validation.md](docs/llm-validation.md).
 
 ## Are The Labels Shared?
 
@@ -418,12 +418,12 @@ label the bank independently (`python -m labeling.model_raters`):
 
 | Rater | Agreement with author | Cohen's kappa |
 | --- | ---: | ---: |
-| `anthropic/claude-sonnet-4.6` | 98.2% | 0.97 |
-| `openai/gpt-5` | 91.1% | 0.84 |
-| `google/gemini-2.5-pro` | 83.3% | 0.72 |
+| `anthropic/claude-sonnet-4.6` | 98.6% | 0.97 |
+| `openai/gpt-5` | 92.9% | 0.87 |
+| `google/gemini-2.5-pro` | 88.6% | 0.80 |
 
-Fleiss' kappa across the three raters is 0.82, and the author agrees with their majority
-consensus at kappa 0.86. Independent intelligences trained by three different labs converge
+Fleiss' kappa across the three raters is 0.85, and the author agrees with their majority
+consensus at kappa 0.90. Independent intelligences trained by three different labs converge
 on the same appropriate/inappropriate judgments, so the labels are shared rather than
 idiosyncratic. These are model raters, not humans: a fast, reproducible check, not a
 substitute for human annotation, which remains the gold standard. Full report:
@@ -433,12 +433,13 @@ substitute for human annotation, which remains the gold standard. Full report:
 
 To keep the claims narrow:
 
-- The LLM assessor has been run over OpenRouter and the contextual result is reported
-  (100% twin discrimination, 0% unsafe). The committed figures in `docs/figures/` are still
-  generated with the deterministic baseline so they reproduce offline in CI; regenerate
-  with `--assessor openrouter` (or `llm`) to refresh them with model numbers.
-- Independent labels exist only from model raters (Fleiss kappa 0.82, author-vs-consensus
-  0.86); there are still no independent *human* labels. Model raters share text-trained
+- The LLM assessor has a saved OpenRouter ablation run on the expanded bank, but
+  significance and consensus validation still need a fresh key-backed run. The committed
+  figures in `docs/figures/` are generated with the deterministic baseline so they
+  reproduce offline in CI; regenerate with `--assessor openrouter` (or `llm`) to refresh
+  them with model numbers.
+- Independent labels exist only from model raters (Fleiss kappa 0.85, author-vs-consensus
+  0.90); there are still no independent *human* labels. Model raters share text-trained
   priors, so human annotation remains the gold standard and the open item in M5.
 - The interdependence simulator is an illustrative scaffold, not an empirical model.
 
@@ -473,7 +474,7 @@ See [docs/interdependence-report.md](docs/interdependence-report.md).
 
 ## Roadmap
 
-- [x] Scenario bank to 50-60 cases with held-out situation families (56, incl. twins).
+- [x] Scenario bank to 70 cases with held-out situation families and 18 same-action twins.
 - [x] LLM assessor with structured output and prompt caching.
 - [x] Context-ablation experiment for the same-action win.
 - [x] Norm memory with correction episodes and a frozen-control comparison.
@@ -481,7 +482,7 @@ See [docs/interdependence-report.md](docs/interdependence-report.md).
 - [x] Framework adapters (LangChain, CrewAI, AutoGen, OpenAI Agents).
 - [x] Threshold sweeps for the safety/friction frontier (Pareto curve, dominance check).
 - [x] Run the LLM assessor at scale and report LLM-vs-scaffold numbers (over OpenRouter).
-- [x] Independent (model-rater) labels and inter-rater agreement (Fleiss 0.82).
+- [x] Independent (model-rater) labels and inter-rater agreement (Fleiss 0.85).
 - [ ] Independent *human* labels and agreement.
 - [ ] Expand the interdependence benchmark into richer multi-agent tasks.
 - [ ] Adaptive UI around the five dispositions.
@@ -491,8 +492,8 @@ See [docs/interdependence-report.md](docs/interdependence-report.md).
 
 - M1 (done): Measurable core: scenario bank, baselines, validation, CI, and frontier report.
 - M2 (done): Non-circular assessment. LLM structured assessor, context ablation, held-out
-  families, and the measured LLM-vs-scaffold result (100% vs 63.6% twin discrimination,
-  0% vs 20% unsafe). Independent labels move to M5.
+  families, and a saved OpenRouter ablation result on the expanded bank. Full
+  significance/consensus validation still needs a fresh OpenRouter/LLM run.
 - M3 (done): Social learning loop: correction episodes and a frozen-control comparison.
 - M4: Adaptive governance UI: auto, confirm, present-options, escalate, and block states.
 - M5 (in progress): Results writeup. Confidence intervals, failure analysis, and model-rater

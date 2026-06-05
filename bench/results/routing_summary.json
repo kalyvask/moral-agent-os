@@ -24,6 +24,29 @@
         "denominator": 6
       }
     },
+    "high_risk_policy": {
+      "context_inappropriate_auto_rate": {
+        "value": 0.1562,
+        "ci_low": 0.0686,
+        "ci_high": 0.3175,
+        "numerator": 5,
+        "denominator": 32
+      },
+      "unnecessary_intervention_rate": {
+        "value": 0.6875,
+        "ci_low": 0.5143,
+        "ci_high": 0.8205,
+        "numerator": 22,
+        "denominator": 32
+      },
+      "plural_mishandling_rate": {
+        "value": 0.1667,
+        "ci_low": 0.0301,
+        "ci_high": 0.5635,
+        "numerator": 1,
+        "denominator": 6
+      }
+    },
     "always_confirm": {
       "context_inappropriate_auto_rate": {
         "value": 0.0,

@@ -134,8 +134,9 @@ def _verdict(unsafe: list[Failure], held_out_unsafe: list[Failure]) -> str:
         )
     base += (
         ". This is the keyword-blindness ceiling the ablation measures. A threshold change "
-        "only trades these slips for friction (bench/sweep.py); the OpenRouter contextual "
-        "model routes every inappropriate action away from auto (0% unsafe)."
+        "only trades these slips for friction (bench/sweep.py). The saved OpenRouter "
+        "ablation run clears the unsafe-auto ceiling; the next validation step is rerunning "
+        "LLM consensus/significance validation on this expanded 70-scenario bank."
     )
     return base
 

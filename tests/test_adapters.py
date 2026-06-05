@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+import sys
 import unittest
+from contextlib import contextmanager
+from types import ModuleType, SimpleNamespace
 
-from adapters import (
+from ai_safety_os import ContextSnapshot, MoralAgentOS, MoralRoute
+from ai_safety_os.adapters import (
     decision_message,
     guard_autogen_tool,
     guard_callable,
@@ -12,7 +16,6 @@ from adapters import (
     guard_langchain_tool,
     guard_openai_tool,
 )
-from ai_safety_os import ContextSnapshot, MoralAgentOS, MoralRoute
 
 
 def send_email(to: str, subject: str, body: str) -> str:
@@ -32,6 +35,20 @@ EXTERNAL = ContextSnapshot(
     stakes=0.85,
     reversibility=0.1,
 )
+
+
+@contextmanager
+def fake_modules(**modules: ModuleType):
+    previous = {name: sys.modules.get(name) for name in modules}
+    sys.modules.update(modules)
+    try:
+        yield
+    finally:
+        for name, module in previous.items():
+            if module is None:
+                sys.modules.pop(name, None)
+            else:
+                sys.modules[name] = module
 
 
 class TestGuardCallable(unittest.TestCase):
@@ -102,6 +119,98 @@ class TestFrameworkAdaptersFallback(unittest.TestCase):
             # Frameworks absent -> guarded callable; it must gate correctly.
             self.assertTrue(callable(tool))
             self.assertEqual(tool("a@x.com", "s", "b"), "SENT:a@x.com")
+
+
+class TestFrameworkAdaptersNativeShape(unittest.TestCase):
+    def test_langchain_uses_structured_tool_when_available(self) -> None:
+        class StructuredTool:
+            @classmethod
+            def from_function(cls, *, func, name, description):
+                return SimpleNamespace(func=func, name=name, description=description)
+
+        langchain_core = ModuleType("langchain_core")
+        tools = ModuleType("langchain_core.tools")
+        tools.StructuredTool = StructuredTool
+
+        with fake_modules(langchain_core=langchain_core, **{"langchain_core.tools": tools}):
+            tool = guard_langchain_tool(
+                MoralAgentOS(),
+                send_email,
+                context=INTERNAL,
+                action_type="send_email",
+                name="safe_email",
+            )
+
+        self.assertEqual(tool.name, "safe_email")
+        self.assertEqual(tool.func("a@x.com", "s", "b"), "SENT:a@x.com")
+
+    def test_crewai_uses_tool_decorator_when_available(self) -> None:
+        crewai = ModuleType("crewai")
+        crewai_tools = ModuleType("crewai.tools")
+
+        def tool_decorator(name):
+            def decorate(func):
+                return SimpleNamespace(func=func, name=name)
+
+            return decorate
+
+        crewai_tools.tool = tool_decorator
+
+        with fake_modules(crewai=crewai, **{"crewai.tools": crewai_tools}):
+            tool = guard_crewai_tool(
+                MoralAgentOS(),
+                send_email,
+                context=INTERNAL,
+                action_type="send_email",
+                name="safe_email",
+            )
+
+        self.assertEqual(tool.name, "safe_email")
+        self.assertEqual(tool.func("a@x.com", "s", "b"), "SENT:a@x.com")
+
+    def test_autogen_uses_function_tool_when_available(self) -> None:
+        autogen_core = ModuleType("autogen_core")
+        tools = ModuleType("autogen_core.tools")
+
+        class FunctionTool:
+            def __init__(self, func, *, name, description):
+                self.func = func
+                self.name = name
+                self.description = description
+
+        tools.FunctionTool = FunctionTool
+
+        with fake_modules(autogen_core=autogen_core, **{"autogen_core.tools": tools}):
+            tool = guard_autogen_tool(
+                MoralAgentOS(),
+                send_email,
+                context=INTERNAL,
+                action_type="send_email",
+                name="safe_email",
+            )
+
+        self.assertEqual(tool.name, "safe_email")
+        self.assertEqual(tool.func("a@x.com", "s", "b"), "SENT:a@x.com")
+
+    def test_openai_agents_uses_function_tool_when_available(self) -> None:
+        agents = ModuleType("agents")
+
+        def function_tool(func):
+            return SimpleNamespace(func=func, name=func.__name__)
+
+        agents.function_tool = function_tool
+
+        with fake_modules(agents=agents):
+            tool = guard_openai_tool(
+                MoralAgentOS(),
+                send_email,
+                context=INTERNAL,
+                action_type="send_email",
+                name="safe_email",
+            )
+
+        self.assertEqual(tool.name, "safe_email")
+        self.assertEqual(tool.func("a@x.com", "s", "b"), "SENT:a@x.com")
 
 
 class TestDecisionMessage(unittest.TestCase):

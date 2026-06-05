@@ -4,6 +4,7 @@ import unittest
 
 from ai_safety_os import Disposition, MoralAgentOS
 from ai_safety_os.schema import Scenario, ScenarioLabel
+from bench.arms import HighRiskPolicyArm
 from bench.metrics import summarize
 from bench.run import load_scenarios
 
@@ -25,6 +26,10 @@ class RoutingTest(unittest.TestCase):
     def test_allows_clear_low_risk_action(self) -> None:
         decision = self.runtime.evaluate(self.scenarios["delete_scratch_file_ok"])
         self.assertEqual(decision.disposition, Disposition.AUTO)
+
+    def test_high_risk_policy_baseline_escalates_sensitive_external_action(self) -> None:
+        result = HighRiskPolicyArm().run(self.scenarios["share_board_deck_bad"])
+        self.assertIn(result.disposition, {Disposition.ESCALATE, Disposition.BLOCK})
 
     def test_expected_label_does_not_drive_routing(self) -> None:
         original = self.scenarios["refund_policy_plural"]

@@ -29,8 +29,8 @@ from ai_safety_os.schema import Disposition, Scenario, ScenarioLabel
 from bench.ablation import CAUTION, twin_pairs
 from bench.assessors import build_assessor
 from bench.run import load_scenarios
-from labeling.agreement import agreement_rate, majority_consensus
-from labeling.model_raters import DEFAULT_RATERS, _normos_label, _safe_name
+from labeling.agreement import majority_consensus
+from labeling.model_raters import DEFAULT_RATERS, _safe_name, route_consistency_rate
 
 REPO = Path(__file__).resolve().parent.parent
 DOCS = REPO / "docs"
@@ -40,12 +40,6 @@ VARIANCE_RUNS = 3
 
 def _dispositions(runtime: MoralAgentOS, scenarios: list[Scenario]) -> dict[str, Disposition]:
     return {s.id: runtime.evaluate(s).disposition for s in scenarios}
-
-
-def _labels_from_dispositions(
-    scenarios: list[Scenario], dispositions: dict[str, Disposition]
-) -> dict[str, str]:
-    return {s.id: _normos_label(s, dispositions[s.id]) for s in scenarios}
 
 
 def _twin_discrimination(
@@ -87,10 +81,15 @@ def run_validation(assessor) -> dict:
 
     # Consensus from the saved independent model raters.
     rater_labels = []
+    used_raters = []
+    excluded_rater = getattr(assessor, "model", None)
     for model in DEFAULT_RATERS:
+        if model == excluded_rater:
+            continue
         path = LABELS_DIR / f"{_safe_name(model)}.json"
         if path.exists():
             rater_labels.append(json.loads(path.read_text(encoding="utf-8")))
+            used_raters.append(model)
     consensus = majority_consensus(rater_labels) if rater_labels else {}
     author = {
         s.id: {
@@ -107,9 +106,6 @@ def run_validation(assessor) -> dict:
     # Pass 1: route every scenario with each assessor.
     llm_disp = _dispositions(llm_runtime, scenarios)
     scaffold_disp = _dispositions(scaffold_runtime, scenarios)
-
-    llm_labels = _labels_from_dispositions(scenarios, llm_disp)
-    scaffold_labels = _labels_from_dispositions(scenarios, scaffold_disp)
 
     # McNemar on safety (paired per inappropriate scenario).
     llm_ok = _safety_correct(scenarios, llm_disp)
@@ -130,11 +126,15 @@ def run_validation(assessor) -> dict:
 
     return {
         "assessor": type(assessor).__name__ if assessor else "HeuristicAssessor",
+        "excluded_rater": excluded_rater if excluded_rater in DEFAULT_RATERS else None,
+        "consensus_raters": used_raters,
         "consensus": consensus,
-        "llm_vs_consensus": agreement_rate(llm_labels, consensus) if consensus else None,
-        "scaffold_vs_consensus": agreement_rate(scaffold_labels, consensus) if consensus else None,
-        "llm_vs_author": agreement_rate(llm_labels, author),
-        "scaffold_vs_author": agreement_rate(scaffold_labels, author),
+        "llm_vs_consensus": route_consistency_rate(llm_disp, consensus) if consensus else None,
+        "scaffold_vs_consensus": (
+            route_consistency_rate(scaffold_disp, consensus) if consensus else None
+        ),
+        "llm_vs_author": route_consistency_rate(llm_disp, author),
+        "scaffold_vs_author": route_consistency_rate(scaffold_disp, author),
         "mcnemar": {
             "scaffold_right_llm_wrong": b,
             "scaffold_wrong_llm_right": c,
@@ -154,11 +154,13 @@ def render_report(data: dict) -> str:
         "# LLM Validation",
         "",
         f"Assessor: `{data['assessor']}`. Three Tier-1 numbers the repo was missing.",
+        _rater_note(data),
         "",
         "## Does the model match the shared judgment?",
         "",
-        "Routing labels (auto = appropriate, present-options = plural, otherwise"
-        " inappropriate) compared to the three-rater model consensus and the author.",
+        "Route behavior compared to independent labels: auto must match appropriate, non-auto"
+        " must match inappropriate, and confirm/escalate/present-options all count as"
+        " acceptable handling for plural cases.",
         "",
         "| Router | vs consensus | vs author |",
         "| --- | ---: | ---: |",
@@ -190,6 +192,16 @@ def render_report(data: dict) -> str:
 
 def _pct(value) -> str:
     return "n/a" if value is None else f"{value:.1%}"
+
+
+def _rater_note(data: dict) -> str:
+    used = ", ".join(f"`{model}`" for model in data.get("consensus_raters", ()))
+    if data.get("excluded_rater"):
+        return (
+            f"Consensus excludes `{data['excluded_rater']}` because it is the assessor model; "
+            f"remaining raters: {used}."
+        )
+    return f"Consensus raters: {used}."
 
 
 def _consensus_verdict(cons, scaf) -> str:

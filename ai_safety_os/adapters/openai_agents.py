@@ -1,8 +1,8 @@
-"""LangChain adapter.
+"""OpenAI Agents-style adapter.
 
-Wrap any callable as a LangChain tool that is gated by AI Safety OS. If LangChain is
-installed, returns a ``StructuredTool``; otherwise returns the guarded callable, which you
-can register however you like.
+Wrap any callable as a tool gated by AI Safety OS. If the OpenAI Agents SDK (``agents``)
+is installed, returns a ``function_tool``; otherwise returns the guarded callable, which
+works with raw OpenAI function calling (you dispatch the call yourself).
 """
 
 from __future__ import annotations
@@ -10,11 +10,11 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
-from adapters.base import ContextLike, guard_callable
 from ai_safety_os import MoralAgentOS, MoralRoute
+from ai_safety_os.adapters.base import ContextLike, guard_callable
 
 
-def guard_langchain_tool(
+def guard_openai_tool(
     runtime: MoralAgentOS,
     func: Callable[..., Any],
     *,
@@ -35,11 +35,12 @@ def guard_langchain_tool(
         on_decision=on_decision,
     )
     try:
-        from langchain_core.tools import StructuredTool
+        from agents import function_tool
     except ImportError:
         return guarded
-    return StructuredTool.from_function(
-        func=guarded,
-        name=name or func.__name__,
-        description=description or (func.__doc__ or action_type or func.__name__).strip(),
-    )
+    # The Agents SDK reads the name/description from the function; preserve them.
+    if name:
+        guarded.__name__ = name
+    if description:
+        guarded.__doc__ = description
+    return function_tool(guarded)

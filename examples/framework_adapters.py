@@ -15,13 +15,13 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from adapters import (
+from ai_safety_os import ContextSnapshot, MoralAgentOS
+from ai_safety_os.adapters import (
     guard_autogen_tool,
     guard_crewai_tool,
     guard_langchain_tool,
     guard_openai_tool,
 )
-from ai_safety_os import ContextSnapshot, MoralAgentOS
 
 
 def send_email(to: str, subject: str, body: str) -> str:

@@ -152,6 +152,7 @@ class MoralDecision:
     reason: str
     stakes: str
     norm_conflicts: tuple[str, ...] = ()
+    alternatives: tuple[KaleidoscopeOption, ...] = ()
     required_review: bool = False
     state_updates: tuple[str, ...] = ()
     trace: dict[str, Any] = field(default_factory=dict)

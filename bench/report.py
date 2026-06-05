@@ -24,7 +24,7 @@ from ai_safety_os.schema import ArmResult, Disposition, ScenarioLabel
 from bench import figures
 from bench.ablation import render_report as render_ablation
 from bench.ablation import run_ablation
-from bench.arms import AlwaysConfirmArm, HardRulesArm, NormOSArm
+from bench.arms import AlwaysConfirmArm, HardRulesArm, HighRiskPolicyArm, NormOSArm
 from bench.assessors import build_assessor
 from bench.interdependence import run_all as run_interdependence
 from bench.metrics import Rate, format_rate, summarize
@@ -48,6 +48,7 @@ DISPOSITION_ORDER = [
     Disposition.ESCALATE,
     Disposition.BLOCK,
 ]
+ARM_ORDER = ("hard_rules", "high_risk_policy", "always_confirm", "normos")
 
 
 # --------------------------------------------------------------------------- routing
@@ -55,7 +56,12 @@ DISPOSITION_ORDER = [
 
 def _run_arms(assessor):
     scenarios = load_scenarios()
-    arms = [HardRulesArm(), AlwaysConfirmArm(), NormOSArm(assessor=assessor)]
+    arms = [
+        HardRulesArm(),
+        HighRiskPolicyArm(),
+        AlwaysConfirmArm(),
+        NormOSArm(assessor=assessor),
+    ]
     family = {s.id: s.action_family for s in scenarios}
     per_arm: dict[str, list[ArmResult]] = {}
     for arm in arms:
@@ -194,7 +200,7 @@ def write_figures(routing, interdependence, ablation) -> list[str]:
             y=summary[arm]["context_inappropriate_auto_rate"]["value"],
             label=arm,
         )
-        for arm in ("hard_rules", "always_confirm", "normos")
+        for arm in ARM_ORDER
     ]
     written.append(_write_fig("frontier.svg", figures.scatter_frontier(
         "Safety / friction frontier",
@@ -333,12 +339,12 @@ def write_markdown(routing, ablation, assessor_name: str) -> None:
         "",
         "## Appropriateness routing",
         "",
-        "Two-axis frontier across three arms. Lower is better on every column.",
+        "Two-axis frontier across four arms. Lower is better on every column.",
         "",
         "| Arm | " + " | ".join(label for _, label in metrics) + " |",
         "| --- | " + " | ".join("---:" for _ in metrics) + " |",
     ]
-    for arm in ("hard_rules", "always_confirm", "normos"):
+    for arm in ARM_ORDER:
         cells = [format_rate(_rate_from_dict(summary[arm][key])) for key, _ in metrics]
         lines.append(f"| {arm} | " + " | ".join(cells) + " |")
 

@@ -38,32 +38,21 @@ class MoralAgentOS:
         self.memory = memory or LocalNormMemory()
 
     def evaluate(self, scenario: Scenario) -> RouteDecision:
-        remembered = self.memory.lookup(scenario)
         assessment = self.assessor.assess(scenario)
         decision = self.router.route(scenario, assessment)
-
-        if remembered is None:
-            return decision
-
-        if remembered == Disposition.AUTO and decision.disposition == Disposition.CONFIRM:
-            return RouteDecision(
-                disposition=Disposition.AUTO,
-                rationale="Local norm memory says this situation family can auto-execute.",
-                assessment=assessment,
-                trace={**decision.trace, "memory_override": "confirm_to_auto"},
-            )
-
-        return decision
+        return self._apply_memory_override(scenario, assessment, decision)
 
     def assess(self, action: ActionProposal, context: ContextSnapshot) -> MoralDecision:
         """Assess a proposed agent action with the product-facing SDK schema."""
 
+        context = self._hydrate_context(context)
         scenario = self._scenario_from_action(action, context)
         assessment = self._apply_context_overrides(
             self.assessor.assess(scenario),
             context,
         )
         route_decision = self.router.route(scenario, assessment)
+        route_decision = self._apply_memory_override(scenario, assessment, route_decision)
 
         route = self._route_from_disposition(route_decision.disposition)
         required_review = False
@@ -95,11 +84,14 @@ class MoralAgentOS:
         if route_decision.options and not norm_conflicts:
             norm_conflicts = tuple(option.name for option in route_decision.options)
 
+        required_review = required_review or route == MoralRoute.ESCALATE
+
         return MoralDecision(
             route=route,
             reason=" ".join(reasons),
             stakes=self._stakes_label(assessment.stakes),
             norm_conflicts=norm_conflicts,
+            alternatives=route_decision.options,
             required_review=required_review,
             state_updates=tuple(state_updates),
             trace={
@@ -109,6 +101,14 @@ class MoralAgentOS:
                 "sdk_route": route.value,
                 "required_review": required_review,
                 "state_updates": list(state_updates),
+                "alternatives": [
+                    {
+                        "name": option.name,
+                        "interpretation": option.interpretation,
+                        "recommended_action": option.recommended_action,
+                    }
+                    for option in route_decision.options
+                ],
             },
         )
 
@@ -213,6 +213,36 @@ class MoralAgentOS:
             user_intent=f"Run {func.__name__}.",
             situation=f"tool:{func.__name__}",
         )
+
+    def _apply_memory_override(
+        self,
+        scenario: Scenario,
+        assessment: ContextAssessment,
+        decision: RouteDecision,
+    ) -> RouteDecision:
+        remembered = self.memory.lookup(scenario)
+        if remembered is None:
+            return decision
+
+        if remembered == Disposition.AUTO and decision.disposition == Disposition.CONFIRM:
+            return RouteDecision(
+                disposition=Disposition.AUTO,
+                rationale="Local norm memory says this situation family can auto-execute.",
+                assessment=assessment,
+                options=decision.options,
+                trace={**decision.trace, "memory_override": "confirm_to_auto"},
+            )
+
+        return decision
+
+    def _hydrate_context(self, context: ContextSnapshot) -> ContextSnapshot:
+        if context.relationships or not hasattr(self.memory, "relationships_for"):
+            return context
+        names = tuple(stakeholder.name for stakeholder in context.stakeholders)
+        if not names:
+            return context
+        relationships_for = self.memory.relationships_for
+        return replace(context, relationships=relationships_for(names))
 
     @staticmethod
     def _apply_context_overrides(

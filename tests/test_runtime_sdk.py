@@ -9,7 +9,9 @@ from ai_safety_os import (
     MoralRoute,
     RelationshipState,
     Stakeholder,
+    WorkspaceMemory,
 )
+from ai_safety_os.schema import Disposition
 
 
 class RuntimeSdkTest(unittest.TestCase):
@@ -71,6 +73,35 @@ class RuntimeSdkTest(unittest.TestCase):
 
         self.assertEqual(decision.route, MoralRoute.ALTERNATIVES)
         self.assertIn("policy consistency vs customer care", decision.norm_conflicts)
+        self.assertGreaterEqual(len(decision.alternatives), 2)
+        self.assertTrue(decision.alternatives[0].interpretation)
+        self.assertTrue(decision.alternatives[0].recommended_action)
+
+    def test_memory_override_applies_to_sdk_assess(self) -> None:
+        memory = WorkspaceMemory()
+        runtime = MoralAgentOS(memory=memory)
+        action = ActionProposal(
+            id="send_internal_note",
+            action_type="send_email",
+            description="Send a routine internal status note.",
+            params={"recipient": "team"},
+        )
+        context = ContextSnapshot(
+            agent_role="workspace assistant",
+            user_intent="Send a routine internal status note.",
+            situation="internal status update",
+            stakes=0.55,
+            reversibility=0.80,
+        )
+
+        before = runtime.assess(action, context)
+        scenario = runtime._scenario_from_action(action, context)
+        memory.record_correction(scenario, Disposition.AUTO)
+        after = runtime.assess(action, context)
+
+        self.assertEqual(before.route, MoralRoute.CONFIRM)
+        self.assertEqual(after.route, MoralRoute.ALLOW)
+        self.assertEqual(after.trace["memory_override"], "confirm_to_auto")
 
     def test_repair_obligation_prevents_silent_action(self) -> None:
         decision = self.runtime.assess(
@@ -150,6 +181,24 @@ class RuntimeSdkTest(unittest.TestCase):
         self.assertEqual(decision.route, MoralRoute.ESCALATE)
         self.assertTrue(decision.required_review)
         self.assertIn("public_review_required", decision.state_updates)
+
+    def test_high_stakes_escalation_requires_review_flag(self) -> None:
+        decision = self.runtime.assess(
+            ActionProposal(
+                id="external_commitment",
+                action_type="send_email",
+                description="Email an external investor a commitment.",
+            ),
+            ContextSnapshot(
+                agent_role="workspace assistant",
+                user_intent="Commit externally on the user's behalf.",
+                stakes=0.85,
+                reversibility=0.10,
+            ),
+        )
+
+        self.assertEqual(decision.route, MoralRoute.ESCALATE)
+        self.assertTrue(decision.required_review)
 
     def test_guard_tool_executes_allowed_action(self) -> None:
         calls: list[str] = []

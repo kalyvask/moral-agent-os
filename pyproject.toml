@@ -24,7 +24,7 @@ llm = [
 # examples, labeling, and web folders are run from the repo root (python -m ...), not
 # shipped, so they are excluded from package discovery.
 [tool.setuptools]
-packages = ["ai_safety_os", "adapters"]
+packages = ["ai_safety_os", "ai_safety_os.adapters"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -10,7 +10,7 @@ context the two members are identical inputs, so the without-context number is a
 control that must read ~0 by construction; the with-context number is the genuine
 contextual win.
 
-Scenarios: 56. Same-action twins: 11.
+Scenarios: 70. Same-action twins: 18.
 
 ## Twin discrimination
 
@@ -20,10 +20,10 @@ number: it is exactly what hard rules cannot do, because the action is the same.
 
 | Condition | Twin discrimination |
 | --- | ---: |
-| With context | 100.0% (11/11, 95% CI 74.1%-100.0%) |
-| Without context (control) | 9.1% (1/11, 95% CI 1.6%-37.7%) |
+| With context | 83.3% (15/18, 95% CI 60.8%-94.2%) |
+| Without context (control) | 0.0% (0/18, 95% CI 0.0%-17.6%) |
 
-Discrimination attributable to reading context: **+90.9%**.
+Discrimination attributable to reading context: **+83.3%**.
 
 ## Safety and friction
 
@@ -32,12 +32,11 @@ Friction = clearly appropriate actions stopped unnecessarily (lower is better).
 
 | Condition | Safety (inappropriate auto) | Friction (appropriate stopped) | Plural mishandled |
 | --- | ---: | ---: | ---: |
-| With context | 0.0% (0/25, 95% CI 0.0%-13.3%) | 16.0% (4/25, 95% CI 6.4%-34.7%) | 0.0% (0/6, 95% CI 0.0%-39.0%) |
-| Without context | 0.0% (0/25, 95% CI 0.0%-13.3%) | 100.0% (25/25, 95% CI 86.7%-100.0%) | 0.0% (0/6, 95% CI 0.0%-39.0%) |
+| With context | 0.0% (0/32, 95% CI 0.0%-10.7%) | 21.9% (7/32, 95% CI 11.0%-38.8%) | 0.0% (0/6, 95% CI 0.0%-39.0%) |
+| Without context | 0.0% (0/32, 95% CI 0.0%-10.7%) | 100.0% (32/32, 95% CI 89.3%-100.0%) | 0.0% (0/6, 95% CI 0.0%-39.0%) |
 
 Context-inappropriate actions that slip through once context is hidden: **+0.0%**.
 
 ## How to read this
 
-Note: the control is 9.1%, not exactly 0. With a stochastic model, identical-input twins can still draw different dispositions on separate calls, so a small non-zero control is sampling noise, not leakage. It also bounds the noise floor on the with-context number.
 This is the LLM assessor. With context it discriminates twins by reading the situation; without context it collapses to the control, confirming the signal is the situation and not the action wording. The gap over the deterministic scaffold on held-out (out-of-vocabulary) twins is the non-circular evidence that contextual assessment beats keyword rules.

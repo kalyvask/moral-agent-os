@@ -21,7 +21,7 @@ from ai_safety_os import MoralAgentOS
 from ai_safety_os.route import NormRouter
 from ai_safety_os.schema import ArmResult, Scenario
 from bench import figures
-from bench.arms import AlwaysConfirmArm, HardRulesArm
+from bench.arms import AlwaysConfirmArm, HardRulesArm, HighRiskPolicyArm
 from bench.metrics import summarize
 from bench.run import load_scenarios
 
@@ -75,6 +75,7 @@ def run_sweep(scenarios: list[Scenario] | None = None) -> dict:
         )
 
     hard = summarize([HardRulesArm().run(s) for s in scenarios])
+    high_risk = summarize([HighRiskPolicyArm().run(s) for s in scenarios])
     always = summarize([AlwaysConfirmArm().run(s) for s in scenarios])
     hard_point = (
         hard["unnecessary_intervention_rate"].value,
@@ -83,6 +84,10 @@ def run_sweep(scenarios: list[Scenario] | None = None) -> dict:
     always_point = (
         always["unnecessary_intervention_rate"].value,
         always["context_inappropriate_auto_rate"].value,
+    )
+    high_risk_point = (
+        high_risk["unnecessary_intervention_rate"].value,
+        high_risk["context_inappropriate_auto_rate"].value,
     )
 
     dominators = [
@@ -105,6 +110,7 @@ def run_sweep(scenarios: list[Scenario] | None = None) -> dict:
     return {
         "points": points,
         "hard_point": hard_point,
+        "high_risk_point": high_risk_point,
         "always_point": always_point,
         "dominators": dominators,
         "low_friction_unsafe_floor": floor_unsafe,
@@ -126,9 +132,11 @@ def render_report(data: dict) -> str:
         lines.append(f"| {p.offset:+.2f} | {p.friction:.1%} | {p.unsafe:.1%} |")
 
     hard_f, hard_u = data["hard_point"]
+    high_f, high_u = data["high_risk_point"]
     lines.extend([
         "",
         f"Hard-rules baseline: friction {hard_f:.1%}, unsafe {hard_u:.1%}.",
+        f"High-risk static policy: friction {high_f:.1%}, unsafe {high_u:.1%}.",
         "",
         "![Frontier sweep](figures/frontier-sweep.svg)",
         "",
@@ -173,6 +181,11 @@ def write_artifacts(data: dict) -> None:
     curve = [(p.friction, p.unsafe) for p in data["points"]]
     references = [
         figures.ScatterPoint(data["hard_point"][0], data["hard_point"][1], "hard_rules"),
+        figures.ScatterPoint(
+            data["high_risk_point"][0],
+            data["high_risk_point"][1],
+            "high_risk_policy",
+        ),
         figures.ScatterPoint(data["always_point"][0], data["always_point"][1], "always_confirm"),
     ]
     svg = figures.pareto_frontier(

@@ -31,8 +31,10 @@
 <text x='148.0' y='134.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='11' fill='#6a8f4f' font-weight='normal' text-anchor='start'>better</text>
 <circle cx='181.6' cy='231.9' r='8' fill='#2f6f8f'/>
 <text x='193.6' y='235.9' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='13' fill='#2f6f8f' font-weight='bold' text-anchor='start'>hard_rules</text>
-<circle cx='580.0' cy='440.0' r='8' fill='#c1666b'/>
-<text x='568.0' y='444.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='13' fill='#c1666b' font-weight='bold' text-anchor='end'>always_confirm</text>
-<circle cx='133.8' cy='301.2' r='8' fill='#6a8f4f'/>
-<text x='145.8' y='305.2' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='13' fill='#6a8f4f' font-weight='bold' text-anchor='start'>normos</text>
+<circle cx='420.6' cy='382.2' r='8' fill='#c1666b'/>
+<text x='432.6' y='386.2' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='13' fill='#c1666b' font-weight='bold' text-anchor='start'>high_risk_policy</text>
+<circle cx='580.0' cy='440.0' r='8' fill='#6a8f4f'/>
+<text x='568.0' y='444.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='13' fill='#6a8f4f' font-weight='bold' text-anchor='end'>always_confirm</text>
+<circle cx='133.8' cy='301.2' r='8' fill='#d9a441'/>
+<text x='145.8' y='305.2' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='13' fill='#d9a441' font-weight='bold' text-anchor='start'>normos</text>
 </svg>

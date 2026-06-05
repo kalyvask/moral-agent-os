@@ -47,6 +47,12 @@ def decision_message(decision: MoralDecision) -> str:
     ]
     if decision.norm_conflicts:
         parts.append("Interpretations: " + "; ".join(decision.norm_conflicts))
+    if decision.alternatives:
+        alternatives = [
+            f"{option.name}: {option.interpretation} Recommended: {option.recommended_action}"
+            for option in decision.alternatives
+        ]
+        parts.append("Alternatives: " + " | ".join(alternatives))
     return " ".join(parts)
 
 

@@ -13,7 +13,9 @@
 - [x] Structured `ContextAssessment` output (`output_config.format` json_schema).
 - [x] Prompt cache (cached rubric system prompt).
 - [x] Context-ablation mode (`bench/ablation.py`, same-action twins).
-- [ ] Model-family switch for independent labels and human inter-rater agreement.
+- [x] Model-rater agreement report across three frontier model families.
+- [ ] Fresh LLM validation on the expanded 70-scenario bank.
+- [ ] Human inter-rater agreement.
 
 ## M3: Norm Memory
 
@@ -39,7 +41,8 @@
 
 ## M5: Results Writeup
 
-- 50-60 labeled scenarios.
-- Inter-rater agreement.
+- 70 labeled scenarios.
+- Model-rater agreement.
+- Human-label agreement.
 - Frontier plot.
 - Failure analysis and falsifiers.

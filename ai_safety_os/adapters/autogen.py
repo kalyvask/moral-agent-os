@@ -10,8 +10,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
-from adapters.base import ContextLike, guard_callable
 from ai_safety_os import MoralAgentOS, MoralRoute
+from ai_safety_os.adapters.base import ContextLike, guard_callable
 
 
 def guard_autogen_tool(

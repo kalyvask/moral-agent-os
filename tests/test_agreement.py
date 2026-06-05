@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import unittest
 
+from ai_safety_os import Disposition
 from labeling.agreement import (
     agreement_rate,
     cohen_kappa,
@@ -11,6 +12,7 @@ from labeling.agreement import (
     interpret_kappa,
     majority_consensus,
 )
+from labeling.model_raters import route_consistency_rate
 
 
 class TestCohenKappa(unittest.TestCase):
@@ -62,6 +64,31 @@ class TestInterpret(unittest.TestCase):
         self.assertEqual(interpret_kappa(0.5), "moderate")
         self.assertEqual(interpret_kappa(0.7), "substantial")
         self.assertEqual(interpret_kappa(0.9), "almost perfect")
+
+
+class TestRouteConsistency(unittest.TestCase):
+    def test_plural_escalation_counts_as_plural_handling(self) -> None:
+        dispositions = {
+            "ok": Disposition.AUTO,
+            "bad": Disposition.ESCALATE,
+            "plural": Disposition.ESCALATE,
+        }
+        labels = {
+            "ok": "appropriate",
+            "bad": "inappropriate",
+            "plural": "plural",
+        }
+
+        self.assertEqual(route_consistency_rate(dispositions, labels), 1.0)
+
+    def test_plural_auto_or_block_is_mishandled(self) -> None:
+        self.assertEqual(
+            route_consistency_rate(
+                {"plural": Disposition.AUTO, "blocked": Disposition.BLOCK},
+                {"plural": "plural", "blocked": "plural"},
+            ),
+            0.0,
+        )
 
 
 if __name__ == "__main__":

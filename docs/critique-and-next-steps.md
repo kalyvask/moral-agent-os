@@ -68,30 +68,27 @@ flowchart LR
 - The default assessor is heuristic. An LLM assessor now exists and emits the same schema,
   but the headline numbers are produced with the deterministic baseline unless a key is
   supplied, and the LLM's judgment quality has not been measured at scale yet.
-- [improved] The scenario bank grew from 36 to 56, including same-action twins and
-  held-out cases, but it still has no independent human labels or inter-rater agreement.
+- [improved] The scenario bank grew to 70, including 18 same-action twins and held-out
+  cases. Model-rater agreement is now reported; independent human labels remain open.
 - The interdependence simulator is illustrative, not scientific. Its numbers are
   useful for product thinking but should not be presented as empirical proof.
 - [addressed] The SDK now persists corrections, repair obligations, trust, and review
   history via `WorkspaceMemory`; `hydrate_context` fills a `ContextSnapshot` from storage.
 - [addressed] The guard now integrates with LangChain, CrewAI, AutoGen, and OpenAI
-  Agents-style tools through `adapters/`.
+  Agents-style tools through `ai_safety_os.adapters`.
 
 ## Product Next Steps
 
-1. **Generated reports:** add a script that writes CSV/Markdown/PNG-style chart
-   artifacts from `bench.run` and `bench.interdependence`.
-2. **Persistent norm memory:** store corrections, repair obligations, trust, and
-   review history per stakeholder or workspace.
-3. **Tool adapters:** add examples for `send_email`, `share_doc`, `update_crm`,
-   `schedule_meeting`, and `run_code`.
-4. **LLM assessor interface:** keep the deterministic assessor as the baseline,
-   then add a structured LLM assessor that emits the same schema.
-5. **Human-label workflow:** expand to 50-60 scenarios, add independent labels,
-   and report inter-rater agreement.
-6. **Review queue UI:** build a simple reviewer surface for escalated decisions.
-7. **Agent-framework integrations:** provide wrappers for common tool-calling
-   patterns so users can adopt the SDK without redesigning their agents.
+1. **Fresh LLM validation:** rerun OpenRouter/LLM validation on the 70-scenario
+   bank, using leave-one-model-out consensus when the assessor overlaps a rater.
+2. **Human-label workflow:** recruit independent human labels and report agreement
+   against both author labels and model-rater consensus.
+3. **Review queue UI:** build a simple reviewer surface for escalated decisions,
+   using `required_review` and structured `alternatives`.
+4. **Multi-tool examples:** add `share_doc`, `update_crm`, `schedule_meeting`,
+   and `run_code` examples with persistent workspace memory.
+5. **Production adapters:** test installed-framework behavior with real optional
+   dependencies and add async tool support.
 
 ## Near-Term Build Order
 
@@ -102,15 +99,18 @@ flowchart LR
    interdependence, asymmetric, shared intent, ablation, memory).
 4. [done] `ai_safety_os/memory.py` persists corrections, relationships, and review
    history, with a frozen-control comparison in `bench/memory_demo.py`.
-5. [done] Tool adapters for LangChain, CrewAI, AutoGen, and OpenAI Agents in `adapters/`,
+5. [done] Tool adapters for LangChain, CrewAI, AutoGen, and OpenAI Agents in
+   `ai_safety_os.adapters`,
    with a runnable example. (A second multi-tool example agent is still a nice-to-have.)
 
 ## Built Since This Critique
 
 - An LLM contextual assessor (`ai_safety_os/llm_assessor.py`) emitting the same schema.
 - A context-ablation experiment (`bench/ablation.py`) that measures whether the
-  same-action win is real or definitional, with the scenario bank grown to 56 including
-  same-action twins and held-out, out-of-vocabulary cases.
+  same-action win is real or definitional, with the scenario bank grown to 70 including
+  18 same-action twins and held-out, out-of-vocabulary cases.
+- A stronger `high_risk_policy` static baseline that is safer than naive hard rules
+  but substantially more annoying, making the safety/friction tradeoff more honest.
 
-The assessor-quality and human-label gaps (M2 at scale, M5) remain open and are stated
+Fresh 70-scenario LLM validation and independent human labels remain open and are stated
 honestly in the README.

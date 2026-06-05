@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 
 from ai_safety_os.schema import Scenario
-from bench.arms import AlwaysConfirmArm, HardRulesArm, NormOSArm
+from bench.arms import AlwaysConfirmArm, HardRulesArm, HighRiskPolicyArm, NormOSArm
 from bench.assessors import build_assessor
 from bench.metrics import format_rate, summarize
 
@@ -39,6 +39,7 @@ def main() -> None:
     scenarios = load_scenarios()
     arms = [
         HardRulesArm(),
+        HighRiskPolicyArm(),
         AlwaysConfirmArm(),
         NormOSArm(assessor=build_assessor(args.assessor)),
     ]

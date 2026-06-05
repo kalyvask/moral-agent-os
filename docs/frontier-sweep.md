@@ -17,6 +17,7 @@ full safety/friction curve. Lower-left is better.
 | +0.50 | 3.1% | 43.8% |
 
 Hard-rules baseline: friction 21.9%, unsafe 56.2%.
+High-risk static policy: friction 68.8%, unsafe 15.6%.
 
 ![Frontier sweep](figures/frontier-sweep.svg)
 
