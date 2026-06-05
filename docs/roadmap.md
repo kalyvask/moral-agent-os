@@ -14,7 +14,8 @@
 - [x] Prompt cache (cached rubric system prompt).
 - [x] Context-ablation mode (`bench/ablation.py`, same-action twins).
 - [x] Model-rater agreement report across three frontier model families.
-- [ ] Fresh LLM validation on the expanded 70-scenario bank.
+- [x] Fresh LLM validation on the 70-scenario bank (model vs consensus 90% vs 71%; exact
+  McNemar p < 0.001 for the safety advantage; twin discrimination 87.0% +/- 2.6%).
 - [ ] Human inter-rater agreement.
 
 ## M3: Norm Memory

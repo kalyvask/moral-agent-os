@@ -407,8 +407,15 @@ overstated than the earlier 100% headline. Deterministic baseline and confidence
 intervals: [docs/ablation-report.md](docs/ablation-report.md) and
 [docs/benchmark-report.md](docs/benchmark-report.md). Saved OpenRouter ablation:
 [docs/ablation-report-openrouter.md](docs/ablation-report-openrouter.md).
-The separate significance/consensus validation still needs a fresh run:
-[docs/llm-validation.md](docs/llm-validation.md).
+
+Significance and consensus on the 70-bank
+([docs/llm-validation.md](docs/llm-validation.md)): the model matches the independent rater
+consensus (with its own model excluded to avoid circularity) **90.0%** versus the scaffold's
+71.4%, and its safety advantage is now statistically significant, exact McNemar **p < 0.001**
+(model right and scaffold wrong on 12 inappropriate actions, the reverse on 0). Twin
+discrimination is stable at **87.0% ± 2.6%** across three runs, so the headline is a
+distribution, not a lucky sample. Growing the bank from 56 to 70 is what turned the earlier
+borderline p = 0.062 into clear significance.
 
 ## Are The Labels Shared?
 
@@ -492,8 +499,8 @@ See [docs/interdependence-report.md](docs/interdependence-report.md).
 
 - M1 (done): Measurable core: scenario bank, baselines, validation, CI, and frontier report.
 - M2 (done): Non-circular assessment. LLM structured assessor, context ablation, held-out
-  families, and a saved OpenRouter ablation result on the expanded bank. Full
-  significance/consensus validation still needs a fresh OpenRouter/LLM run.
+  families, a saved OpenRouter ablation on the 70-bank, and significance/consensus validation
+  (model vs assessor-excluded consensus 90% vs 71%; exact McNemar p < 0.001).
 - M3 (done): Social learning loop: correction episodes and a frozen-control comparison.
 - M4: Adaptive governance UI: auto, confirm, present-options, escalate, and block states.
 - M5 (in progress): Results writeup. Confidence intervals, failure analysis, and model-rater
