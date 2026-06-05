@@ -40,7 +40,7 @@ infrastructure.
 
 ## Product Surface
 
-The product has two parts:
+The product has three parts:
 
 1. Runtime SDK: `intercept -> assess -> route -> act/ask/escalate/block`.
 2. Adaptive UI: the governance surface that changes with moral uncertainty.

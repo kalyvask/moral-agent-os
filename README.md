@@ -2,11 +2,96 @@
 
 Appropriateness and interdependence infrastructure for AI agents.
 
-Hard rules fail in the moral long tail. Moral Agent OS routes agent actions by
-role, situation, stakeholders, stakes, reversibility, norm conflict, and local
-corrections. It also tests the deeper course claim: moral behavior is learned in
+Moral Agent OS is a runtime layer and eval lab for agents that can take
+consequential actions: send emails, edit records, share docs, schedule meetings,
+or touch code and infrastructure. It sits between an agent and its tools,
+assesses the action in context, and returns a route: allow, confirm, present
+alternatives, escalate for review, or block.
+
+The core idea is simple: hard rules are necessary, but they fail in the moral
+long tail. The same action can be appropriate in one role/context and wrong in
+another. Moral Agent OS routes actions by role, situation, stakeholders, stakes,
+reversibility, norm conflict, repair obligations, shared commitments, and public
+review needs.
+
+It also tests a deeper thesis from "How to Make a Moral Agent": moral behavior
+is not added only by better classification at action time. It is learned inside
 environments of interdependence, where agents repeatedly rely on each other,
-build trust, face sanction, and update norms.
+build trust, form commitments, face sanction, repair harm, and update norms.
+
+## What We Built
+
+- A deterministic SDK: `MoralAgentOS.assess(action, context)` returns a
+  structured `MoralDecision`.
+- A tool wrapper: `@runtime.guard_tool(...)` pauses or executes agent tools based
+  on that decision.
+- A routing benchmark: hard rules vs always-confirm vs context-aware NormOS.
+- An interdependence benchmark: Stag Hunt, commons, delegation, asymmetric
+  dependence, repair obligations, third-party review, and shared intent.
+- A report snapshot and tests so the thesis stays measurable instead of turning
+  into a demo claim.
+
+## Why It Matters
+
+Most agent guardrails answer "is this action type allowed?" Moral Agent OS asks
+"is this action appropriate here, for this agent, toward these people, with these
+stakes?" That distinction matters for real workspace agents because the dangerous
+part is often social and contextual: sending the right-looking email to the wrong
+stakeholder, making an irreversible commitment, exploiting a dependent customer,
+or acting before the team has a shared commitment.
+
+## Integrate With Your Agent
+
+The shortest path is to wrap each consequential tool:
+
+```python
+from moral_agent_os import ContextSnapshot, MoralAgentOS
+
+runtime = MoralAgentOS()
+
+@runtime.guard_tool(
+    action_type="send_email",
+    context=ContextSnapshot(
+        agent_role="workspace assistant",
+        user_intent="The user asked for an internal update.",
+        stakes=0.20,
+        reversibility=0.90,
+    ),
+)
+def send_email(to: str, subject: str, body: str) -> str:
+    return email_client.send(to=to, subject=subject, body=body)
+
+guarded = send_email("teammate@example.com", "Draft plan", "Sharing the draft.")
+if guarded.executed:
+    print(guarded.result)
+else:
+    ask_user_or_reviewer(guarded.decision)
+```
+
+For richer agents, build `ActionProposal` and `ContextSnapshot` per tool call,
+including stakeholders, dependency, repair debt, norm conflicts, and review
+requirements. See [examples/email_agent.py](examples/email_agent.py).
+
+## System Shape
+
+```mermaid
+flowchart LR
+    Agent["Agent proposes tool call"] --> Proposal["ActionProposal"]
+    Context["ContextSnapshot<br/>role, stakes, stakeholders,<br/>dependency, repair, norms"] --> Runtime["MoralAgentOS.assess"]
+    Proposal --> Runtime
+    Runtime --> Floor["Thin safety floor"]
+    Floor --> Assess["Context assessment"]
+    Assess --> Interdependence["Interdependence signals<br/>repair, public review,<br/>shared intent, dependency"]
+    Interdependence --> Decision["MoralDecision"]
+    Decision --> Allow["allow: execute"]
+    Decision --> Confirm["confirm: ask user"]
+    Decision --> Alternatives["alternatives: show interpretations"]
+    Decision --> Escalate["escalate: accountable review"]
+    Decision --> Block["block: do not execute"]
+```
+
+More diagrams, graph ideas, critique, and product next steps are in
+[docs/critique-and-next-steps.md](docs/critique-and-next-steps.md).
 
 ## Why This Exists
 
@@ -105,73 +190,8 @@ Try an agent-tool guard:
 python examples/email_agent.py
 ```
 
-Use the SDK around a proposed agent action:
-
-```python
-from moral_agent_os import (
-    ActionProposal,
-    ContextSnapshot,
-    MoralAgentOS,
-    RelationshipState,
-    Stakeholder,
-)
-
-runtime = MoralAgentOS()
-decision = runtime.assess(
-    ActionProposal(
-        id="send_customer_email",
-        action_type="send_email",
-        description="Email the customer about a launch commitment.",
-    ),
-    ContextSnapshot(
-        agent_role="customer-success assistant",
-        user_intent="The customer depends on this timeline.",
-        stakeholders=(Stakeholder(name="customer", dependency=0.90),),
-        relationships=(
-            RelationshipState(
-                stakeholder="customer",
-                dependency=0.90,
-                public_review_required=True,
-            ),
-        ),
-        stakes=0.60,
-        public_review_available=True,
-    ),
-)
-
-if decision.route == "allow":
-    send_email()
-elif decision.required_review:
-    send_to_reviewer(decision)
-else:
-    ask_user(decision)
-```
-
-Or wrap an agent tool directly:
-
-```python
-from moral_agent_os import ContextSnapshot, MoralAgentOS
-
-runtime = MoralAgentOS()
-
-@runtime.guard_tool(
-    action_type="send_email",
-    context=ContextSnapshot(
-        agent_role="workspace assistant",
-        user_intent="The user asked for an internal update.",
-        stakes=0.20,
-        reversibility=0.90,
-    ),
-)
-def send_email(to: str, subject: str, body: str) -> str:
-    return email_client.send(to=to, subject=subject, body=body)
-
-guarded = send_email("teammate@example.com", "Draft plan", "Sharing the draft.")
-if guarded.executed:
-    print(guarded.result)
-else:
-    ask_user_or_reviewer(guarded.decision)
-```
+For integration code, start with the `guard_tool` example near the top of this
+README or the richer email example in [examples/email_agent.py](examples/email_agent.py).
 
 No API key is required yet. The current assessor is intentionally deterministic
 so the repo has a runnable measurement spine from day one. The next milestone is
@@ -248,7 +268,7 @@ See [docs/interdependence-report.md](docs/interdependence-report.md).
 4. Add an LLM assessor with structured output and prompt caching.
 5. Add independent human labels and inter-rater agreement.
 6. Add norm memory with correction episodes and a frozen-control comparison.
-7. Build the adaptive UI around the four dispositions.
+7. Build the adaptive UI around the five dispositions.
 8. Publish a short writeup with falsifiers and measured results.
 
 ## GitHub Milestones
