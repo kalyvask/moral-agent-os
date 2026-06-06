@@ -368,9 +368,9 @@ stays low; only interdependence earns it. More charts are in
 
 ### How interdependence works for an agent
 
-This is the research track: a benchmark that models the mechanism, not a loop real agents plug
-into today (the bridge to the live runtime is norm memory, which carries human corrections
-forward). The toy game still maps cleanly onto tool-using agents. Take delegation with
+The mechanism runs in two places: a benchmark that measures whether cooperation is learnable
+(this section), and the live runtime, which closes the same loop on a real agent's actions (see
+"In the live runtime" below). The toy game maps cleanly onto tool-using agents. Take delegation with
 accountability: two agents share a deliverable, where "cooperate" means doing the honest,
 reviewable work and "defect" means shipping the unreviewed shortcut because it is faster and
 nobody is checking. The other families are the same move under different stakes: showing up for
@@ -417,6 +417,17 @@ clears the trust bar, and cooperation does not yet spread to the rest of the pop
 rate is flat rather than climbing. The load-bearing results are the direction (interdependence
 beats one-shot) and the separation of autonomous cooperation from forced compliance, not the
 exact percentage.
+
+**In the live runtime.** This is no longer benchmark-only. `WorkspaceMemory` keeps the same
+state per counterparty (trust, repair obligation, dependency, joint commitment), and
+`MoralAgentOS` both reads and writes it. A caught violation sanctions that counterparty (trust
+falls, repair debt rises); an approved appropriate action records cooperation that pays the debt
+back. Routing responds: low trust or an open repair debt tightens a routine action to confirm,
+and an established clean track record relaxes a routine confirm back to auto. So an agent earns
+or loses autonomy with a counterparty from its own behavior, not a hand-set flag, and anything
+the safety floor flags is never relaxed. `python -m bench.relationship_demo` shows it against a
+frozen control: after a blocked violation the agent's routine actions need confirmation, then
+return to auto once it repairs trust.
 
 ## Is The Win Real? Context Ablation
 

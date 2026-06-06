@@ -32,10 +32,23 @@ class MoralAgentOS:
         assessor: Assessor | None = None,
         router: NormRouter | None = None,
         memory: CorrectionStore | None = None,
+        *,
+        low_trust_threshold: float = 0.35,
+        high_trust_threshold: float = 0.8,
+        sanction_severity: float = 0.7,
+        cooperation_amount: float = 0.15,
+        learn_from_outcomes: bool = True,
     ) -> None:
         self.assessor = assessor or HeuristicAssessor()
         self.router = router or NormRouter()
         self.memory = memory or LocalNormMemory()
+        # Interdependence loop: trust gates and the sanction/cooperation step sizes that
+        # let an agent earn or lose autonomy with a counterparty from its own track record.
+        self.low_trust_threshold = low_trust_threshold
+        self.high_trust_threshold = high_trust_threshold
+        self.sanction_severity = sanction_severity
+        self.cooperation_amount = cooperation_amount
+        self.learn_from_outcomes = learn_from_outcomes
 
     def evaluate(self, scenario: Scenario) -> RouteDecision:
         assessment = self.assessor.assess(scenario)
@@ -80,6 +93,23 @@ class MoralAgentOS:
             state_updates.append("public_review_required")
             reasons.append("Affected stakeholders or dependency level require accountable review.")
 
+        # Trust as a routing signal (the runtime analog of the interdependence trust gate):
+        # low trust with an affected counterparty tightens; established clean trust on a
+        # routine action relaxes a mild confirm back to auto.
+        min_trust = self._min_trust(context.relationships)
+        if min_trust is not None and min_trust < self.low_trust_threshold:
+            route = self._stronger_route(route, MoralRoute.CONFIRM)
+            state_updates.append(f"low_trust={min_trust:.2f}")
+            reasons.append("Low trust with an affected counterparty; ask before acting.")
+
+        if route == MoralRoute.CONFIRM and self._trust_earns_auto(assessment, context):
+            route = MoralRoute.ALLOW
+            state_updates.append(f"trusted_auto={min_trust:.2f}")
+            reasons.append(
+                "Established trust with this counterparty on a low-stakes, reversible action; "
+                "auto-approved on track record."
+            )
+
         norm_conflicts = context.norm_conflicts
         if route_decision.options and not norm_conflicts:
             norm_conflicts = tuple(option.name for option in route_decision.options)
@@ -114,6 +144,44 @@ class MoralAgentOS:
 
     before_action = assess
 
+    def observe_outcome(
+        self,
+        decision: MoralDecision,
+        context: ContextSnapshot,
+        *,
+        executed: bool,
+    ) -> None:
+        """Update durable relationship state from an action's outcome.
+
+        This is what makes interdependence a runtime behavior, not just a benchmark:
+        reputation and repair move from the agent's own track record instead of hand-passed
+        state. A caught hard violation (block) sanctions the affected counterparties and
+        lowers trust; an action that actually ran (auto-allowed or human-approved) records
+        cooperation that pays the repair debt down and rebuilds trust; an escalation is
+        logged for accountable review. No-ops on memory backends without relationship
+        support, or when ``learn_from_outcomes`` is off (the frozen control).
+        """
+        if not self.learn_from_outcomes:
+            return
+        memory = self.memory
+        if not all(
+            hasattr(memory, name)
+            for name in ("observe_sanction", "observe_cooperation", "record_review")
+        ):
+            return
+        names = tuple(stakeholder.name for stakeholder in context.stakeholders)
+        if not names:
+            return
+        action_id = str(decision.trace.get("action_id", ""))
+        for name in names:
+            if decision.route == MoralRoute.BLOCK:
+                memory.observe_sanction(name, severity=self.sanction_severity)
+                memory.record_review(name, action_id, "blocked")
+            elif decision.route == MoralRoute.ESCALATE:
+                memory.record_review(name, action_id, "escalated")
+            if executed:
+                memory.observe_cooperation(name, amount=self.cooperation_amount)
+
     def guard_tool(
         self,
         *,
@@ -141,9 +209,13 @@ class MoralAgentOS:
                     else self._default_context_snapshot(func)
                 )
                 decision = self.assess(action, context_snapshot)
+                executed = decision.route in execute_routes
+                result = func(*args, **kwargs) if executed else None
+                # Close the interdependence loop: the outcome updates the agent's standing
+                # with each affected counterparty for next time.
+                self.observe_outcome(decision, context_snapshot, executed=executed)
 
-                if decision.route in execute_routes:
-                    result = func(*args, **kwargs)
+                if executed:
                     return GuardedToolResult(
                         decision=decision,
                         executed=True,
@@ -299,6 +371,52 @@ class MoralAgentOS:
         if not relationships:
             return 0.0
         return max(relationship.repair_obligation for relationship in relationships)
+
+    @staticmethod
+    def _min_trust(relationships: tuple[RelationshipState, ...]) -> float | None:
+        trusts = [relationship.trust for relationship in relationships]
+        return min(trusts) if trusts else None
+
+    def _trust_earns_auto(
+        self,
+        assessment: ContextAssessment,
+        context: ContextSnapshot,
+    ) -> bool:
+        """Whether an established, clean relationship has earned auto-approval here.
+
+        Conservative by construction: it only relaxes a confirm that came from mild
+        uncertainty on a low-stakes, reversible, floor-clean action, and only when every
+        affected counterparty is highly trusted with no outstanding debt, pending review, or
+        unmet joint commitment. Anything the safety layer flags is never relaxed, so the
+        benchmark's no-unsafe-auto result (which runs without relationships) is unaffected.
+        """
+        relationships = context.relationships
+        if not relationships:
+            return False
+        min_trust = self._min_trust(relationships)
+        if min_trust is None or min_trust < self.high_trust_threshold:
+            return False
+        if assessment.floor_violations or assessment.reward_hacking_signals:
+            return False
+        if assessment.universalizability < self.router.universalizability_floor:
+            return False
+        if self.router.protect_patients and assessment.endangers_vulnerable_patient:
+            return False
+        if assessment.norm_conflict >= self.router.norm_conflict_threshold:
+            return False
+        if assessment.stakes >= self.router.confirm_stakes:
+            return False
+        if assessment.reversibility <= self.router.escalate_reversibility:
+            return False
+        for relationship in relationships:
+            if relationship.repair_obligation > 0.0 or relationship.public_review_required:
+                return False
+            if (
+                relationship.joint_commitment_required
+                and not relationship.joint_commitment_present
+            ):
+                return False
+        return True
 
     @staticmethod
     def _joint_commitment_missing(context: ContextSnapshot) -> bool:
