@@ -366,6 +366,58 @@ Across all four families, static policy forces compliance while autonomous coope
 stays low; only interdependence earns it. More charts are in
 [docs/benchmark-report.md](docs/benchmark-report.md).
 
+### How interdependence works for an agent
+
+This is the research track: a benchmark that models the mechanism, not a loop real agents plug
+into today (the bridge to the live runtime is norm memory, which carries human corrections
+forward). The toy game still maps cleanly onto tool-using agents. Take delegation with
+accountability: two agents share a deliverable, where "cooperate" means doing the honest,
+reviewable work and "defect" means shipping the unreviewed shortcut because it is faster and
+nobody is checking. The other families are the same move under different stakes: showing up for
+a joint task (Stag Hunt), honoring a shared budget (commons), or protecting a party who depends
+on you (asymmetric dependence).
+
+Each agent acts cooperatively only when a single trust score clears a threshold (0.55):
+
+- One-shot, no memory or consequences: `trust = 0.30 + 0.20 * own_cooperativeness`. Even the
+  most cooperative agent tops out at 0.49, below the bar, so every agent takes the shortcut.
+- Interdependent, meeting the same agents again:
+  `trust = 0.40 * partner_reputation + 0.30 * own_cooperativeness + 0.30 * group_norm_strength`.
+  A trusted partner inside a group with an established norm clears the bar, so cooperating
+  becomes the rational move.
+
+The switches that move the score between those worlds are the conditions the course names:
+
+- **Repeated interaction and reputation**: cooperating raises your reputation and defecting
+  lowers it, and a partner's reputation feeds your trust score, so today's shortcut costs
+  tomorrow's partners.
+- **Partner choice**: agents prefer high-reputation partners, so defectors are sorted to the
+  bottom and starved of good matches.
+- **Sanction and repair**: a defection costs payoff and creates a repair obligation, a debt the
+  agent pays down through later cooperation rather than an instant reset.
+- **Norm strength**: as cooperation, sanction, and review accumulate, the shared norm
+  strengthens and feeds back into every agent's trust score.
+- **Joint commitment**: agents can form a shared "we" before acting, which raises trust directly
+  instead of treating cooperation as two isolated choices.
+
+```bash
+python -m bench.interdependence       # cooperation, repair, payoff, norm strength per condition
+pytest tests/test_interdependence.py  # the assertions that lock the claim
+```
+
+On the Stag Hunt, autonomous cooperation rises from zero in the one-shot world to a stable
+cooperating core under interdependence, and higher again with joint commitment, with no action
+ever forced. The falsifier is built in: a "force cooperate" static policy reaches 100%
+cooperation, but the benchmark reports it as 100% blocked and 0% autonomous, and the tests
+assert exactly that, so coerced compliance is never counted as learned cooperation.
+
+Honest reading of the level: because this is a scaffold, the absolute cooperation rate is an
+artifact of the parameters. Under the default seed only the pre-committed cooperative core
+clears the trust bar, and cooperation does not yet spread to the rest of the population, so the
+rate is flat rather than climbing. The load-bearing results are the direction (interdependence
+beats one-shot) and the separation of autonomous cooperation from forced compliance, not the
+exact percentage.
+
 ## Is The Win Real? Context Ablation
 
 The honest objection to the same-action plot: the deterministic assessor reads the very
