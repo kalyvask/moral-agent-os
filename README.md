@@ -107,21 +107,7 @@ With none of those frameworks installed they return a guarded callable, so
 
 ## System Shape
 
-```mermaid
-flowchart LR
-    Agent["Agent proposes tool call"] --> Proposal["ActionProposal"]
-    Context["ContextSnapshot: role, stakes, stakeholders, dependency, repair, norms"] --> Runtime["MoralAgentOS.assess"]
-    Proposal --> Runtime
-    Runtime --> Floor["Thin safety floor"]
-    Floor --> Assess["Context assessment"]
-    Assess --> Interdependence["Interdependence signals: repair, public review, shared intent, dependency"]
-    Interdependence --> Decision["MoralDecision"]
-    Decision --> Allow["allow: execute"]
-    Decision --> Confirm["confirm: ask user"]
-    Decision --> Alternatives["alternatives: show interpretations"]
-    Decision --> Escalate["escalate: accountable review"]
-    Decision --> Block["block: do not execute"]
-```
+![System shape](docs/figures/system-shape.svg)
 
 More diagrams, graph ideas, critique, and product next steps are in
 [docs/critique-and-next-steps.md](docs/critique-and-next-steps.md).
