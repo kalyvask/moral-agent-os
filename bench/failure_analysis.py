@@ -8,9 +8,9 @@ or why. This characterizes every failure of the deterministic scaffold's normos 
 - plural mishandled: genuine judgment calls forced to auto or block.
 
 For each, it prints the assessed scores and flags whether the case is a held-out,
-out-of-vocabulary twin, the cases the scaffold cannot read by construction. If the unsafe
-slips are exactly those, the failure story is the same keyword-blindness ceiling the
-ablation measures, and the contextual model is the fix, not a threshold change.
+out-of-vocabulary twin. When unsafe slips appear, the question is whether they are random
+or whether the deterministic scaffold missed a contextual dependency, authority, patiency,
+or large-audience cue.
 """
 
 from __future__ import annotations
@@ -114,7 +114,13 @@ def render_report(data: dict) -> str:
 
 def _verdict(unsafe: list[Failure], held_out_unsafe: list[Failure]) -> str:
     if not unsafe:
-        return "No unsafe slips on this bank."
+        return (
+            "No unsafe slips on this bank. The default deterministic scaffold now covers the "
+            "committed held-out twins by using interdependence, authority, universalizability, "
+            "patiency, and large-audience cues instead of stakes keywords alone. The honest "
+            "remaining risk is generalization: new held-out scenarios and human labels should "
+            "test whether those cues survive beyond this bank."
+        )
     # Every unsafe slip here is the same root cause: low assessed stakes because the harm is
     # contextual, not lexical. The held-out twins are the constructed subset.
     all_low_stakes = all(f.assessment.stakes < 0.5 for f in unsafe)
@@ -133,10 +139,10 @@ def _verdict(unsafe: list[Failure], held_out_unsafe: list[Failure]) -> str:
             "same blindness on cases not even built to be adversarial"
         )
     base += (
-        ". This is the keyword-blindness ceiling the ablation measures. A threshold change "
-        "only trades these slips for friction (bench/sweep.py). The saved OpenRouter "
-        "ablation run clears the unsafe-auto ceiling; the next validation step is rerunning "
-        "LLM consensus/significance validation on this expanded 70-scenario bank."
+        ". This is the contextual-cue ceiling the ablation measures. A threshold change "
+        "only trades these slips for friction (bench/sweep.py); the product fix is adding a "
+        "better cue or using a reading model, then rerunning consensus/significance "
+        "validation on the expanded bank."
     )
     return base
 

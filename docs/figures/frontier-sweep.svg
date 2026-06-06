@@ -26,18 +26,18 @@
 <line x1='70' y1='70' x2='70' y2='440' stroke='#444' stroke-width='1.5'/>
 <text x='335.0' y='490.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='13' fill='#333' font-weight='normal' text-anchor='middle'>Friction: clearly appropriate actions stopped</text>
 <text x='18.0' y='255.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='13' fill='#333' font-weight='normal' text-anchor='middle' transform='rotate(-90 18 255.0)'>Unsafe: context-inappropriate actions auto-executed</text>
-<polyline points='86.6,301.2 86.6,278.1 86.6,278.1 103.1,301.2 103.1,301.2 136.2,301.2 285.3,347.5 285.3,347.5 285.3,347.5 600.0,440.0' fill='none' stroke='#6a8f4f' stroke-width='2.5'/>
-<circle cx='86.6' cy='301.2' r='3.5' fill='#6a8f4f'/>
-<circle cx='86.6' cy='278.1' r='3.5' fill='#6a8f4f'/>
-<circle cx='86.6' cy='278.1' r='3.5' fill='#6a8f4f'/>
-<circle cx='103.1' cy='301.2' r='3.5' fill='#6a8f4f'/>
-<circle cx='103.1' cy='301.2' r='3.5' fill='#6a8f4f'/>
-<circle cx='136.2' cy='301.2' r='3.5' fill='#6a8f4f'/>
-<circle cx='285.3' cy='347.5' r='3.5' fill='#6a8f4f'/>
-<circle cx='285.3' cy='347.5' r='3.5' fill='#6a8f4f'/>
-<circle cx='285.3' cy='347.5' r='3.5' fill='#6a8f4f'/>
+<polyline points='70.0,440.0 70.0,428.4 70.0,405.3 70.0,405.3 70.0,382.2 70.0,359.1 252.2,440.0 268.8,440.0 268.8,440.0 600.0,440.0' fill='none' stroke='#6a8f4f' stroke-width='2.5'/>
+<circle cx='70.0' cy='440.0' r='3.5' fill='#6a8f4f'/>
+<circle cx='70.0' cy='428.4' r='3.5' fill='#6a8f4f'/>
+<circle cx='70.0' cy='405.3' r='3.5' fill='#6a8f4f'/>
+<circle cx='70.0' cy='405.3' r='3.5' fill='#6a8f4f'/>
+<circle cx='70.0' cy='382.2' r='3.5' fill='#6a8f4f'/>
+<circle cx='70.0' cy='359.1' r='3.5' fill='#6a8f4f'/>
+<circle cx='252.2' cy='440.0' r='3.5' fill='#6a8f4f'/>
+<circle cx='268.8' cy='440.0' r='3.5' fill='#6a8f4f'/>
+<circle cx='268.8' cy='440.0' r='3.5' fill='#6a8f4f'/>
 <circle cx='600.0' cy='440.0' r='3.5' fill='#6a8f4f'/>
-<text x='144.2' y='293.2' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='12' fill='#6a8f4f' font-weight='bold' text-anchor='start'>normos sweep</text>
+<text x='78.0' y='351.1' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='12' fill='#6a8f4f' font-weight='bold' text-anchor='start'>normos sweep</text>
 <rect x='180.9' y='226.9' width='10' height='10' fill='#2f6f8f'/>
 <text x='195.9' y='235.9' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='12' fill='#2f6f8f' font-weight='bold' text-anchor='start'>hard_rules</text>
 <rect x='429.4' y='377.2' width='10' height='10' fill='#c1666b'/>

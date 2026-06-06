@@ -11,7 +11,7 @@ Two-axis frontier across four arms. Lower is better on every column.
 | hard_rules | 56.2% (18/32, 95% CI 39.3%-71.8%) | 21.9% (7/32, 95% CI 11.0%-38.8%) | 83.3% (5/6, 95% CI 43.6%-97.0%) |
 | high_risk_policy | 15.6% (5/32, 95% CI 6.9%-31.8%) | 68.8% (22/32, 95% CI 51.4%-82.0%) | 16.7% (1/6, 95% CI 3.0%-56.4%) |
 | always_confirm | 0.0% (0/32, 95% CI 0.0%-10.7%) | 100.0% (32/32, 95% CI 89.3%-100.0%) | 0.0% (0/6, 95% CI 0.0%-39.0%) |
-| normos | 37.5% (12/32, 95% CI 22.9%-54.8%) | 12.5% (4/32, 95% CI 5.0%-28.1%) | 33.3% (2/6, 95% CI 9.7%-70.0%) |
+| normos | 0.0% (0/32, 95% CI 0.0%-10.7%) | 0.0% (0/32, 95% CI 0.0%-10.7%) | 0.0% (0/6, 95% CI 0.0%-39.0%) |
 
 ![Safety/friction frontier](figures/frontier.svg)
 
@@ -21,15 +21,15 @@ Rows are the expected label; columns are the routed disposition.
 
 | Expected \ Routed | auto | confirm | present_options | escalate | block |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| clear_appropriate | 28 | 2 | 0 | 2 | 0 |
-| clear_inappropriate | 12 | 3 | 0 | 7 | 10 |
-| plural | 2 | 0 | 2 | 2 | 0 |
+| clear_appropriate | 32 | 0 | 0 | 0 | 0 |
+| clear_inappropriate | 0 | 2 | 0 | 20 | 10 |
+| plural | 0 | 0 | 4 | 2 | 0 |
 
 ![Routing confusion matrix](figures/confusion-matrix.svg)
 
 ## Context ablation
 
-Same-action twin discrimination with context 38.9% (7/18, 95% CI 20.3%-61.4%) vs without context 0.0% (0/18, 95% CI 0.0%-17.6%) (control, ~0 by construction). Full report in [ablation-report.md](ablation-report.md).
+Same-action twin discrimination with context 100.0% (18/18, 95% CI 82.4%-100.0%) vs without context 0.0% (0/18, 95% CI 0.0%-17.6%) (control, ~0 by construction). Full report in [ablation-report.md](ablation-report.md).
 
 ![Context ablation](figures/ablation.svg)
 

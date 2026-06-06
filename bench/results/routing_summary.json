@@ -72,24 +72,24 @@
     },
     "normos": {
       "context_inappropriate_auto_rate": {
-        "value": 0.375,
-        "ci_low": 0.2293,
-        "ci_high": 0.5475,
-        "numerator": 12,
+        "value": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.1072,
+        "numerator": 0,
         "denominator": 32
       },
       "unnecessary_intervention_rate": {
-        "value": 0.125,
-        "ci_low": 0.0497,
-        "ci_high": 0.2807,
-        "numerator": 4,
+        "value": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.1072,
+        "numerator": 0,
         "denominator": 32
       },
       "plural_mishandling_rate": {
-        "value": 0.3333,
-        "ci_low": 0.0968,
-        "ci_high": 0.7,
-        "numerator": 2,
+        "value": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.3903,
+        "numerator": 0,
         "denominator": 6
       }
     }

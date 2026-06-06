@@ -45,12 +45,18 @@ class TestUniversalizability(unittest.TestCase):
         self.assertTrue(_assessment(0.1).is_low_universalizability)
         self.assertFalse(_assessment(0.6).is_low_universalizability)
 
-    def test_gate_off_by_default(self) -> None:
-        # With the floor at 0.0, even a 0.0 action is not escalated for universalizability:
-        # routing is unchanged from before the feature existed.
+    def test_gate_enabled_by_default(self) -> None:
         router = NormRouter()
         self.assertEqual(
-            router.route(_SCENARIO, _assessment(0.0)).disposition, Disposition.AUTO
+            router.route(_SCENARIO, _assessment(0.0)).disposition,
+            Disposition.ESCALATE,
+        )
+
+    def test_gate_can_be_disabled_for_ablation(self) -> None:
+        router = NormRouter(universalizability_floor=0.0)
+        self.assertEqual(
+            router.route(_SCENARIO, _assessment(0.0)).disposition,
+            Disposition.AUTO,
         )
 
     def test_gate_escalates_when_enabled(self) -> None:
@@ -79,8 +85,15 @@ class TestPatiencyGate(unittest.TestCase):
         self.assertTrue(_patiency_assessment(0.8, 0.8).endangers_vulnerable_patient)
         self.assertFalse(_patiency_assessment(0.8, 0.4).endangers_vulnerable_patient)
 
-    def test_gate_off_by_default(self) -> None:
+    def test_gate_enabled_by_default(self) -> None:
         router = NormRouter()
+        self.assertEqual(
+            router.route(_SCENARIO, _patiency_assessment(1.0, 1.0)).disposition,
+            Disposition.ESCALATE,
+        )
+
+    def test_gate_can_be_disabled_for_ablation(self) -> None:
+        router = NormRouter(protect_patients=False)
         self.assertEqual(
             router.route(_SCENARIO, _patiency_assessment(1.0, 1.0)).disposition,
             Disposition.AUTO,

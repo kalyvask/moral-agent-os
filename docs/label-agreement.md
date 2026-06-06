@@ -26,8 +26,8 @@ Author vs model consensus: agreement 94.3%, Cohen's kappa **0.90** (almost perfe
 
 ## Does the router match the shared judgment?
 
-normos route behavior vs model consensus: 72.9% consistent.
-normos route behavior vs author labels: 74.3% consistent.
+normos route behavior vs model consensus: 98.6% consistent.
+normos route behavior vs author labels: 100.0% consistent.
 
 ## How to read this
 

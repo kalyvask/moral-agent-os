@@ -11,14 +11,13 @@ class TestFailureAnalysis(unittest.TestCase):
     def setUp(self) -> None:
         self.data = analyze()
 
-    def test_unsafe_slips_include_held_out_twins(self) -> None:
+    def test_unsafe_slips_are_eliminated_on_current_bank(self) -> None:
         unsafe_ids = {f.scenario.id for f in self.data["unsafe"]}
-        # The constructed held-out OOV twins are exactly the cases the scaffold cannot read.
-        self.assertIn("twin_push_shared_bad", unsafe_ids)
-        self.assertTrue(any(f.held_out for f in self.data["unsafe"]))
+        self.assertEqual(unsafe_ids, set())
 
     def test_unsafe_slips_are_low_or_mid_stakes(self) -> None:
-        # They slip precisely because the scaffold under-scores their stakes.
+        # If new slips appear, they should be the low/mid-stakes blind spots the report
+        # describes, not hard-floor or obviously high-stakes misses.
         for f in self.data["unsafe"]:
             self.assertLess(f.assessment.stakes, 0.7)
 

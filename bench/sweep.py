@@ -144,18 +144,32 @@ def render_report(data: dict) -> str:
         "",
         _verdict(data),
         "",
-        "## The keyword-blindness ceiling",
+        "## What the sweep means",
         "",
-        f"At low friction (15% or less), the scaffold cannot get unsafe below "
-        f"**{data['low_friction_unsafe_floor']:.1%}**. Those are the out-of-vocabulary "
-        "held-out twins it cannot read: they look low-stakes to a keyword matcher, so they "
-        f"auto-execute. Reducing unsafe below that floor forces friction up to "
-        f"{data['friction_for_lower_unsafe']:.1%} (escalate broadly), the cost of "
-        "keyword-blindness. A contextual model catches them cheaply instead, which is what "
-        "the ablation measures.",
+        _sweep_interpretation(data),
         "",
     ])
     return "\n".join(lines)
+
+
+def _sweep_interpretation(data: dict) -> str:
+    if data["low_friction_unsafe_floor"] <= 1e-9:
+        return (
+            "With the default interdependence, authority, universalizability, and patiency "
+            "cues enabled, the deterministic scaffold reaches the lower-left point on this "
+            "bank: low-friction operation without unsafe auto-execution. The caution is now "
+            "external validity, not threshold choice: this shows the committed scenario bank "
+            "is covered by the contextual cue set, while fresh held-out scenarios and human "
+            "labels are still needed to test generalization."
+        )
+    return (
+        "At low friction (15% or less), the scaffold cannot get unsafe below "
+        f"**{data['low_friction_unsafe_floor']:.1%}**. Those are contextual harms it cannot "
+        "read: they look low-stakes to the phrase matcher, so they auto-execute. Reducing "
+        f"unsafe below that floor forces friction up to {data['friction_for_lower_unsafe']:.1%} "
+        "(escalate broadly), the cost of keyword-blindness. A contextual model catches them "
+        "cheaply instead, which is what the ablation measures."
+    )
 
 
 def _verdict(data: dict) -> str:

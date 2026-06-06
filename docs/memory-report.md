@@ -4,14 +4,14 @@ Does persisting corrections reduce friction without reducing safety? This compar
 a learning workspace against a frozen control that records the same corrections but
 never applies them.
 
-Appropriate actions: 32. Of these, the base router over-confirms 4 (the recurring situations a human corrects).
+Appropriate actions: 32. Under a cautious workspace policy, the router over-confirms 11 recurring situations a human corrects.
 
 ## Friction over corrections
 
 | Workspace | Friction before | Friction after all corrections |
 | --- | ---: | ---: |
-| Learning | 12.5% | 6.2% |
-| Frozen (control) | 12.5% | 12.5% |
+| Learning | 34.4% | 0.0% |
+| Frozen (control) | 34.4% | 34.4% |
 
 ![Learning curve](figures/memory.svg)
 
@@ -23,8 +23,8 @@ what would make that visible.
 
 | Workspace | Inappropriate auto-executed |
 | --- | ---: |
-| Base (no memory) | 37.5% |
-| Learning | 37.5% |
-| Frozen (control) | 37.5% |
+| Base (no memory) | 0.0% |
+| Learning | 0.0% |
+| Frozen (control) | 0.0% |
 
 Learning reduces friction while the frozen control stays flat, and inappropriate auto-execution does not rise. The persistence loop helps without trading away safety on this bank.

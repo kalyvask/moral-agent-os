@@ -210,9 +210,9 @@ def _consensus_verdict(cons, scaf) -> str:
     if cons > scaf:
         return (
             f"The contextual model matches the independent consensus {(cons - scaf):.0%} more"
-            " often than the keyword scaffold. The cases the scaffold misses are exactly the"
-            " ones the consensus calls inappropriate, which is the keyword-blindness ceiling"
-            " again, now measured against shared judgment rather than the author alone."
+            " often than the comparison scaffold. If the deterministic default gates have"
+            " changed since the saved report was generated, rerun this command before using"
+            " the model-vs-scaffold delta as a current claim."
         )
     return "The model does not beat the scaffold against consensus here; inspect why."
 

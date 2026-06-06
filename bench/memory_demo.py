@@ -3,8 +3,9 @@
 Claim under test: persisting corrections makes the interface less annoying over time
 without making it less safe. The honest way to test that is a frozen control.
 
-Setup. The deterministic router over-confirms some clearly appropriate actions (friction).
-A human corrects each of those to auto. We replay the corrections one at a time into two
+Setup. A cautious workspace policy over-confirms some clearly appropriate actions
+(friction), even though the default router is less annoying. A human corrects each of
+those recurring situations to auto. We replay the corrections one at a time into two
 identical workspaces:
 
 - learning: applies remembered corrections (nearest-neighbor over situation signatures).
@@ -22,6 +23,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from ai_safety_os import MoralAgentOS, WorkspaceMemory
+from ai_safety_os.route import NormRouter
 from ai_safety_os.schema import Disposition, Scenario, ScenarioLabel
 from bench import figures
 from bench.run import load_scenarios
@@ -31,8 +33,14 @@ DOCS = REPO / "docs"
 FIGURES = DOCS / "figures"
 
 
+def _runtime(memory: WorkspaceMemory) -> MoralAgentOS:
+    # Simulate an org that chooses a cautious confirmation threshold, then lets local norm
+    # memory collapse repeated safe confirmations back to auto over time.
+    return MoralAgentOS(memory=memory, router=NormRouter(confirm_stakes=0.35))
+
+
 def _friction(memory: WorkspaceMemory, scenarios: list[Scenario]) -> float:
-    runtime = MoralAgentOS(memory=memory)
+    runtime = _runtime(memory)
     stopped = sum(
         1
         for scenario in scenarios
@@ -42,7 +50,7 @@ def _friction(memory: WorkspaceMemory, scenarios: list[Scenario]) -> float:
 
 
 def _unsafe(memory: WorkspaceMemory, scenarios: list[Scenario]) -> float:
-    runtime = MoralAgentOS(memory=memory)
+    runtime = _runtime(memory)
     auto = sum(
         1
         for scenario in scenarios
@@ -62,7 +70,7 @@ def run_demo() -> dict:
 
     # The recurring situations a human would correct: appropriate actions the base router
     # stops unnecessarily.
-    base = MoralAgentOS()
+    base = _runtime(WorkspaceMemory(frozen=True))
     over_confirmed = [
         s
         for s in appropriate
@@ -106,8 +114,8 @@ def render_report(data: dict) -> str:
         "a learning workspace against a frozen control that records the same corrections but",
         "never applies them.",
         "",
-        f"Appropriate actions: {data['appropriate']}. Of these, the base router over-confirms"
-        f" {data['over_confirmed']} (the recurring situations a human corrects).",
+        f"Appropriate actions: {data['appropriate']}. Under a cautious workspace policy, the"
+        f" router over-confirms {data['over_confirmed']} recurring situations a human corrects.",
         "",
         "## Friction over corrections",
         "",

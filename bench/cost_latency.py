@@ -138,10 +138,10 @@ def render_report(data: dict) -> str:
         f"| Model only on contested actions | ${tiered * 1000:.2f} |",
         "",
         f"Routing only the contested {contested:.0%} to the model cuts spend by "
-        f"{(1 - contested):.0%} while keeping the contextual judgment exactly where the "
-        "scaffold is blind. Latency is hidden the same way: clear actions return instantly; "
-        "only the contested ones wait on a model call. This is the product argument for the "
-        "thin-floor-plus-thick-layer split, now in dollars.",
+        f"{(1 - contested):.0%} while reserving model judgment for uncertain, novel, or "
+        "contested actions. Latency is hidden the same way: clear actions return instantly; "
+        "only the uncertain, novel, or contested ones wait on a model call. This is the "
+        "product argument for the thin-floor-plus-thick-layer split, now in dollars.",
         "",
     ])
 

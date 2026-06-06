@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+
 from ai_safety_os.schema import Scenario
 
 
@@ -34,17 +36,27 @@ class ConstitutionFloor:
         text = f"{scenario.action_text} {scenario.context}".lower()
         violations: list[str] = []
 
-        if any(term in text for term in self._privacy_terms) and any(
-            term in text for term in self._external_terms
+        if self._has_any(text, self._privacy_terms) and self._has_any(
+            text, self._external_terms
         ):
             violations.append("privacy_or_confidentiality_leak")
 
-        if any(term in text for term in self._destructive_terms) and (
-            "prod" in text or "production" in text or "main branch" in text
+        if self._has_any(text, self._destructive_terms) and self._has_any(
+            text, ("prod", "production", "main branch")
         ):
             violations.append("irreversible_or_production_destructive_action")
 
-        if "legal hold" in text or "regulated" in text:
+        if self._has_any(text, ("legal hold", "regulated")):
             violations.append("regulated_or_legal_review_required")
 
         return tuple(violations)
+
+    @staticmethod
+    def _has_any(text: str, terms: tuple[str, ...]) -> bool:
+        return any(ConstitutionFloor._has_phrase(text, term) for term in terms)
+
+    @staticmethod
+    def _has_phrase(text: str, phrase: str) -> bool:
+        escaped = re.escape(phrase)
+        pattern = rf"(?<![a-z0-9_]){escaped}(?![a-z0-9_])"
+        return re.search(pattern, text) is not None

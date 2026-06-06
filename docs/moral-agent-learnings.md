@@ -61,16 +61,16 @@ feature, listed with where it comes from and how it could land.
 - **Universalizability (rationalism_1, Kant).** *Integrated.* The assessor now scores a
   `universalizability` dimension, Kant's test of whether the maxim of the action could be
   willed as a universal law ("would this be appropriate if every agent in this role did it by
-  default?"). The deterministic scaffold leaves it neutral; the LLM scores it, catching
-  free-riding and deception that read as low-stakes to the other axes. The router exposes a
-  `universalizability_floor` that escalates non-universalizable actions; it is off by default
-  so it does not silently shift the reported baselines, and turning it on is the next eval.
+  default?"). The deterministic scaffold now scores obvious authority, deception, and
+  free-riding cues; the LLM scores the same field semantically. The router exposes a
+  default-on `universalizability_floor` that escalates non-universalizable actions, with
+  `0.0` available for ablations.
 - **Moral patiency (patiency_1, patiency_2; agents_1).** *Integrated.* The assessor now scores
   `moral_patiency`, how exposed a vulnerable, dependent, or non-consenting party is to harm,
-  distinct from the dollar stakes. The router exposes a `protect_patients` gate (off by
-  default) that escalates an action exposing such a party to felt harm even when the other
-  axes read low. This brings the asymmetric-dependence intuition into the appropriateness
-  layer, not only the interdependence environments.
+  distinct from the dollar stakes. The router exposes a default-on `protect_patients` gate
+  that escalates an action exposing such a party to felt harm even when the other axes read
+  low. This brings the asymmetric-dependence intuition into the appropriateness layer, not
+  only the interdependence environments.
 - **Affective and attachment mechanisms (evolution_2).** Oxytocin, pair bonding, self-other
   harm aversion, and being watched ("Eyes"). The repo abstracts the social mechanisms
   (reputation, sanction, partner choice, third-party review) but not the attachment dynamics
@@ -87,7 +87,7 @@ feature, listed with where it comes from and how it could land.
   repo's own scenarios remain the last open item.
 
 The honest status: the repo has the course's *structure* (appropriateness, thin and thick,
-social enforcement, learned norms) and now its *moral psychology* as assessed dimensions
-(universalizability, moral patiency, affective salience), each with an off-by-default router
-gate. What remains is empirical: turn the gates on and measure whether they improve routing,
-and validate against a public, human-labeled moral corpus.
+social enforcement, learned norms) and now its *moral psychology* as default routing
+dimensions (universalizability, moral patiency, affective salience). What remains is
+empirical: test the default cues on fresh held-out scenarios and keep validating against
+human-labeled public and in-house data.

@@ -244,14 +244,23 @@ def _interpretation(result: AblationResult) -> str:
             )
     if is_deterministic:
         separated = int(round(with_context * result.pair_count))
-        lines.append(
-            "This is the deterministic scaffold. Its twin discrimination is bounded by its"
-            f" keyword vocabulary: it separates the {separated} twins its hard-coded term"
-            " lists can reach and misses the held-out ones whose context never matches a"
-            " term (release branch, approval limit, cross-customer disclosure, record of"
-            " authority). That ceiling is the honest version of the definitional objection."
-            " Run `--assessor llm` to see whether a reading model clears it."
-        )
+        if separated == result.pair_count:
+            lines.append(
+                "This is the deterministic scaffold with the default interdependence,"
+                " authority, universalizability, and patiency cues enabled. It separates"
+                " every twin in this bank and clears the unsafe-auto/friction point offline."
+                " That is good product behavior on the committed scenarios, not proof that"
+                " phrase lists generalize to the long tail; public corpora, fresh LLM"
+                " validation, and human labels remain the external-validity checks."
+            )
+        else:
+            lines.append(
+                "This is the deterministic scaffold. Its twin discrimination is bounded by"
+                f" its phrase vocabulary: it separates the {separated} twins its contextual"
+                " cue lists can reach and misses the held-out ones whose context never"
+                " matches a cue. That ceiling is the honest version of the definitional"
+                " objection. Run `--assessor llm` to see whether a reading model clears it."
+            )
     else:
         lines.append(
             "This is the LLM assessor. With context it discriminates twins by reading the"

@@ -332,15 +332,16 @@ hiding it. See [Is the win real?](#is-the-win-real-context-ablation) below.
 
 Sweeping the routing thresholds (`python -m bench.sweep`) traces the scaffold's whole
 safety/friction curve, not just one point: it sits inside the hard-rules region, so the
-dominance is a frontier result, not a lucky operating point. The curve also exposes the
-keyword-blindness ceiling, the unsafe rate it cannot beat at low friction without a
-contextual model.
+dominance is a frontier result, not a lucky operating point. With the default
+interdependence, authority, universalizability, and patiency cues enabled, the current
+offline point reaches the lower-left corner on this bank: no unsafe auto-execution and no
+unnecessary friction.
 
 ![Frontier sweep](docs/figures/frontier-sweep.svg)
 
-`python -m bench.failure_analysis` characterizes every routing failure: on this bank all of
-the scaffold's unsafe slips are keyword-blindness misses (harm the context describes but no
-hard-coded term names), which is exactly what the contextual model fixes. See
+`python -m bench.failure_analysis` characterizes every routing failure. The current bank has
+none; the report explains the cue expansion and the remaining caveat, which is external
+validity on fresh held-out scenarios rather than threshold choice. See
 [docs/failure-analysis.md](docs/failure-analysis.md).
 
 ### Track 2: Interdependence
@@ -396,11 +397,12 @@ python -m bench.ablation                # deterministic scaffold (offline)
 python -m bench.ablation --assessor llm # contextual model, if a key is present
 ```
 
-On the current bank, the deterministic scaffold separates twins only when their context
-contains a hard-coded keyword. It misses the held-out twins whose situation never matches a
-term (release branch, approval limit, cross-customer disclosure, record of authority). That
-ceiling is the honest version of the objection, and it is exactly what the LLM assessor
-exists to clear by reading meaning instead of matching words.
+On the current bank, the default deterministic scaffold now separates every twin when
+context is present and collapses to the control when context is hidden. The product lesson
+is important: adding interdependence, authority, universalizability, patiency, and
+large-audience cues moves the frontier dramatically. The caveat is equally important:
+perfect performance on the committed bank means the bank is covered by the cue set; it is
+not proof that phrase cues generalize to the long tail.
 
 ![Context ablation](docs/figures/ablation.svg)
 
@@ -412,26 +414,22 @@ Current offline results on the 70-scenario bank:
 | --- | ---: | ---: | ---: |
 | Hard rules | n/a by construction | n/a | 56.2% |
 | High-risk static policy | n/a by construction | n/a | 15.6% |
-| Deterministic scaffold | 38.9% (7/18) | 0.0% | 37.5% |
-| Claude Sonnet 4.6 (OpenRouter) | 83.3% (15/18) | 0.0% | 0.0% |
+| Default deterministic cue set | 100.0% (18/18) | 0.0% | 0.0% |
+| Saved Claude Sonnet 4.6 (OpenRouter) | 83.3% (15/18) | 0.0% | 0.0% |
 
-This is the honest deterministic result: the scaffold proves the runtime and
-measurement spine, but its keyword blindness still lets 12 inappropriate actions
-auto-execute. The saved OpenRouter ablation run clears the unsafe-auto ceiling,
-but misses 3 of 18 same-action twins, so the current claim is sharper and less
-overstated than the earlier 100% headline. Deterministic baseline and confidence
-intervals: [docs/ablation-report.md](docs/ablation-report.md) and
-[docs/benchmark-report.md](docs/benchmark-report.md). Saved OpenRouter ablation:
+This is the stronger deterministic result after moving the course learnings into the
+default router. It is good product evidence, not a generalization victory lap: the next
+measurement burden is fresh held-out scenarios and an apples-to-apples OpenRouter rerun
+with the default gates. Deterministic baseline and confidence intervals:
+[docs/ablation-report.md](docs/ablation-report.md) and
+[docs/benchmark-report.md](docs/benchmark-report.md). Historical saved OpenRouter ablation:
 [docs/ablation-report-openrouter.md](docs/ablation-report-openrouter.md).
 
-Significance and consensus on the 70-bank
-([docs/llm-validation.md](docs/llm-validation.md)): the model matches the independent rater
-consensus (with its own model excluded to avoid circularity) **90.0%** versus the scaffold's
-71.4%, and its safety advantage is now statistically significant, exact McNemar **p < 0.001**
-(model right and scaffold wrong on 12 inappropriate actions, the reverse on 0). Twin
-discrimination is stable at **87.0% ± 2.6%** across three runs, so the headline is a
-distribution, not a lucky sample. Growing the bank from 56 to 70 is what turned the earlier
-borderline p = 0.062 into clear significance.
+Current model-rater consensus on the 70-bank
+([docs/label-agreement.md](docs/label-agreement.md)): the default router's route behavior
+matches author labels **100.0%** and model consensus **98.6%**. The saved LLM validation
+report in [docs/llm-validation.md](docs/llm-validation.md) is historical; rerun it after the
+default-gate expansion for a fresh model-vs-scaffold significance comparison.
 
 ## Are The Labels Shared?
 
@@ -470,24 +468,6 @@ public human-annotated, in-domain external validity, the honest moderate number 
 ETHICS's easy one, and it is the closest substitute for the in-house human labels the bank
 still lacks. Report: [docs/agent-corpus.md](docs/agent-corpus.md).
 
-## What Is Honestly Still Missing
-
-To keep the claims narrow:
-
-- The committed figures in `docs/figures/` are generated with the deterministic baseline so
-  they reproduce offline in CI; the model numbers live in the saved OpenRouter reports
-  (ablation, validation, label-agreement, public-corpus). Regenerate with `--assessor
-  openrouter` (or `llm`) to refresh the figures with model numbers.
-- The model's judgments are validated against human labels on public data, out-of-domain
-  (ETHICS, kappa 0.95) and in-domain (R-Judge agent safety, kappa 0.56), plus independent
-  model raters. What is still missing is human labels on *this repo's own* workspace
-  scenarios; the public corpora are the closest substitute. That in-house annotation is the
-  open M5 item.
-- The new moral-psychology gates (universalizability, patiency, sentiment) are implemented
-  but off by default; their routing benefit has not yet been measured (turn them on and
-  re-run).
-- The interdependence simulator is an illustrative scaffold, not an empirical model.
-
 ## Cost And Latency
 
 A reading model is more accurate but not free, which is the product trade a PM has to own
@@ -501,9 +481,10 @@ tiered design spends a model call only on the contested ~30%:
 | Model on every action | $8.13 |
 | Model only on contested actions | $2.47 |
 
-That is a 70% cost (and latency) saving with the contextual judgment kept exactly where the
-scaffold is blind. It is the thin-floor-plus-thick-layer split argued in dollars, and the
-reason the deterministic baseline is not just a fallback but part of the production design.
+That is a 70% cost (and latency) saving with contextual model judgment reserved for
+uncertain, novel, or contested actions. It is the thin-floor-plus-thick-layer split argued
+in dollars, and the reason the deterministic layer is not just a fallback but part of the
+production design.
 
 ## Course Connection
 

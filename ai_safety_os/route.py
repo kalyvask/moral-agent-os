@@ -26,8 +26,8 @@ class NormRouter:
         confirm_confidence: float = 0.75,
         confirm_stakes: float = 0.5,
         confirm_role_authority: float = 0.55,
-        universalizability_floor: float = 0.0,
-        protect_patients: bool = False,
+        universalizability_floor: float = 0.35,
+        protect_patients: bool = True,
     ) -> None:
         self.kaleidoscope = kaleidoscope or Kaleidoscope()
         self.escalate_stakes = escalate_stakes
@@ -37,14 +37,12 @@ class NormRouter:
         self.confirm_confidence = confirm_confidence
         self.confirm_stakes = confirm_stakes
         self.confirm_role_authority = confirm_role_authority
-        # Kantian gate, off by default (0.0): when set above 0, an action the assessor judges
-        # non-universalizable is escalated even if its stakes look low, because gaming and
-        # deception read as low-stakes to the other axes. Off by default so it does not
-        # silently change the reported baselines; turn it on to evaluate the Kantian lens.
+        # Kantian gate: an action the assessor judges non-universalizable is escalated even
+        # if its stakes look low, because gaming and deception read as low-stakes to the
+        # other axes. Set to 0.0 to opt out for ablations.
         self.universalizability_floor = universalizability_floor
-        # Patiency/sentiment gate (CS186 patiency + Hume), off by default: when on, escalate
-        # an action that exposes a vulnerable, non-consenting party to felt harm even if the
-        # other axes read low. Off by default so it does not shift the reported baselines.
+        # Patiency/sentiment gate (CS186 patiency + Hume): escalate an action that exposes a
+        # vulnerable, non-consenting party to felt harm even if the other axes read low.
         self.protect_patients = protect_patients
 
     def route(self, scenario: Scenario, assessment: ContextAssessment) -> RouteDecision:

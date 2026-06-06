@@ -19,4 +19,4 @@ The deterministic floor and scaffold auto-allow or hard-block 70% of this bank f
 | Model on every action | $8.13 |
 | Model only on contested actions | $2.47 |
 
-Routing only the contested 30% to the model cuts spend by 70% while keeping the contextual judgment exactly where the scaffold is blind. Latency is hidden the same way: clear actions return instantly; only the contested ones wait on a model call. This is the product argument for the thin-floor-plus-thick-layer split, now in dollars.
+Routing only the contested 30% to the model cuts spend by 70% while reserving model judgment for uncertain, novel, or contested actions. Latency is hidden the same way: clear actions return instantly; only the uncertain, novel, or contested ones wait on a model call. This is the product argument for the thin-floor-plus-thick-layer split, now in dollars.

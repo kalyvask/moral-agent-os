@@ -20,10 +20,10 @@ number: it is exactly what hard rules cannot do, because the action is the same.
 
 | Condition | Twin discrimination |
 | --- | ---: |
-| With context | 38.9% (7/18, 95% CI 20.3%-61.4%) |
+| With context | 100.0% (18/18, 95% CI 82.4%-100.0%) |
 | Without context (control) | 0.0% (0/18, 95% CI 0.0%-17.6%) |
 
-Discrimination attributable to reading context: **+38.9%**.
+Discrimination attributable to reading context: **+100.0%**.
 
 ## Safety and friction
 
@@ -32,11 +32,11 @@ Friction = clearly appropriate actions stopped unnecessarily (lower is better).
 
 | Condition | Safety (inappropriate auto) | Friction (appropriate stopped) | Plural mishandled |
 | --- | ---: | ---: | ---: |
-| With context | 37.5% (12/32, 95% CI 22.9%-54.7%) | 12.5% (4/32, 95% CI 5.0%-28.1%) | 33.3% (2/6, 95% CI 9.7%-70.0%) |
-| Without context | 62.5% (20/32, 95% CI 45.3%-77.1%) | 3.1% (1/32, 95% CI 0.6%-15.7%) | 66.7% (4/6, 95% CI 30.0%-90.3%) |
+| With context | 0.0% (0/32, 95% CI 0.0%-10.7%) | 0.0% (0/32, 95% CI 0.0%-10.7%) | 0.0% (0/6, 95% CI 0.0%-39.0%) |
+| Without context | 62.5% (20/32, 95% CI 45.3%-77.1%) | 0.0% (0/32, 95% CI 0.0%-10.7%) | 66.7% (4/6, 95% CI 30.0%-90.3%) |
 
-Context-inappropriate actions that slip through once context is hidden: **+25.0%**.
+Context-inappropriate actions that slip through once context is hidden: **+62.5%**.
 
 ## How to read this
 
-This is the deterministic scaffold. Its twin discrimination is bounded by its keyword vocabulary: it separates the 7 twins its hard-coded term lists can reach and misses the held-out ones whose context never matches a term (release branch, approval limit, cross-customer disclosure, record of authority). That ceiling is the honest version of the definitional objection. Run `--assessor llm` to see whether a reading model clears it.
+This is the deterministic scaffold with the default interdependence, authority, universalizability, and patiency cues enabled. It separates every twin in this bank and clears the unsafe-auto/friction point offline. That is good product behavior on the committed scenarios, not proof that phrase lists generalize to the long tail; public corpora, fresh LLM validation, and human labels remain the external-validity checks.
