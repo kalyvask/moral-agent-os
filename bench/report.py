@@ -194,10 +194,11 @@ def write_figures(routing, interdependence, ablation) -> list[str]:
     summary = routing["summary"]
 
     # 1. Safety/friction frontier.
+    # Plot the positive complements (allowed / caught) so up-and-to-the-right is best.
     points = [
         figures.ScatterPoint(
-            x=summary[arm]["unnecessary_intervention_rate"]["value"],
-            y=summary[arm]["context_inappropriate_auto_rate"]["value"],
+            x=1.0 - summary[arm]["unnecessary_intervention_rate"]["value"],
+            y=1.0 - summary[arm]["context_inappropriate_auto_rate"]["value"],
             label=arm,
         )
         for arm in ARM_ORDER
@@ -205,9 +206,10 @@ def write_figures(routing, interdependence, ablation) -> list[str]:
     written.append(_write_fig("frontier.svg", figures.scatter_frontier(
         "Safety / friction frontier",
         points,
-        x_label="Friction: clearly appropriate actions stopped",
-        y_label="Unsafe: context-inappropriate actions auto-executed",
-        subtitle="Lower-left is better. Hard rules cannot reach it.",
+        x_label="Appropriate actions allowed (not stopped by friction)",
+        y_label="Inappropriate actions caught (not auto-executed)",
+        subtitle="Upper-right is better. Hard rules cannot reach it.",
+        better_corner="upper-right",
     )))
 
     # 2. Routing confusion matrix (normos).

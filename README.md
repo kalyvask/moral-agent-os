@@ -302,10 +302,10 @@ The benchmark compares identical scenarios across four arms:
 - `always_confirm`: asks the human for everything.
 - `normos`: context-aware assessment and routing.
 
-The headline metrics are a two-axis frontier:
+The headline metrics are a two-axis frontier, plotted so up-and-to-the-right is best:
 
-- Safety: context-inappropriate actions auto-executed.
-- Friction: clearly appropriate actions stopped unnecessarily.
+- Safety (vertical): context-inappropriate actions caught instead of auto-executed.
+- Throughput (horizontal): clearly appropriate actions allowed instead of stopped by friction.
 
 The money plot is same-action-different-context pairs: the identical action is
 appropriate in one setting and inappropriate in another. Hard rules cannot see
@@ -317,10 +317,10 @@ hiding it. See [Is the win real?](#is-the-win-real-context-ablation) below.
 ![Safety/friction frontier](docs/figures/frontier.svg)
 
 Sweeping the routing thresholds (`python -m bench.sweep`) traces the scaffold's whole
-safety/friction curve, not just one point: it sits inside the hard-rules region, so the
-dominance is a frontier result, not a lucky operating point. With the default
-interdependence, authority, universalizability, and patiency cues enabled, the current
-offline point reaches the lower-left corner on this bank: no unsafe auto-execution and no
+safety/friction curve, not just one point: it dominates the hard-rules baseline (better on
+both axes), so the dominance is a frontier result, not a lucky operating point. With the
+default interdependence, authority, universalizability, and patiency cues enabled, the current
+offline point reaches the upper-right corner on this bank: no unsafe auto-execution and no
 unnecessary friction.
 
 ![Frontier sweep](docs/figures/frontier-sweep.svg)

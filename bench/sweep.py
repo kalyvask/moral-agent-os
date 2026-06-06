@@ -1,7 +1,7 @@
 """Sweep the routing thresholds into a safety/friction Pareto curve.
 
-A single operating point that beats hard rules is suggestive; a whole curve that sits
-inside the hard-rules achievable region is the result. This shifts the confirm/escalate
+A single operating point that beats hard rules is suggestive; a whole curve that dominates
+the hard-rules baseline (better on both axes) is the result. This shifts the confirm/escalate
 stakes thresholds from cautious to lax, traces (friction, unsafe) at each setting, and
 checks whether the curve dominates the fixed hard-rules and always-confirm baselines.
 
@@ -123,7 +123,7 @@ def render_report(data: dict) -> str:
         "# Safety/Friction Frontier Sweep",
         "",
         "Shifting the confirm/escalate stakes thresholds traces the deterministic scaffold's",
-        "full safety/friction curve. Lower-left is better.",
+        "full safety/friction curve. Upper-right is better (positive complements plotted).",
         "",
         "| Threshold offset | Friction (appropriate stopped) | Unsafe (inappropriate auto) |",
         "| ---: | ---: | ---: |",
@@ -156,7 +156,7 @@ def _sweep_interpretation(data: dict) -> str:
     if data["low_friction_unsafe_floor"] <= 1e-9:
         return (
             "With the default interdependence, authority, universalizability, and patiency "
-            "cues enabled, the deterministic scaffold reaches the lower-left point on this "
+            "cues enabled, the deterministic scaffold reaches the upper-right point on this "
             "bank: low-friction operation without unsafe auto-execution. The caution is now "
             "external validity, not threshold choice: this shows the committed scenario bank "
             "is covered by the contextual cue set, while fresh held-out scenarios and human "
@@ -186,29 +186,34 @@ def _verdict(data: dict) -> str:
         f"hard-rules baseline (both metrics no worse, at least one better). For example, at "
         f"offset {best.offset:+.2f} the scaffold reaches friction {best.friction:.1%} and "
         f"unsafe {best.unsafe:.1%}, versus hard rules' {hard_f:.1%} / {hard_u:.1%}. The "
-        "scaffold's reachable frontier sits inside the hard-rules region."
+        "scaffold's reachable frontier dominates the hard-rules baseline on both axes."
     )
 
 
 def write_artifacts(data: dict) -> None:
     FIGURES.mkdir(parents=True, exist_ok=True)
-    curve = [(p.friction, p.unsafe) for p in data["points"]]
+    # Plot the positive complements (allowed / caught) so up-and-to-the-right is best.
+    curve = [(1.0 - p.friction, 1.0 - p.unsafe) for p in data["points"]]
     references = [
-        figures.ScatterPoint(data["hard_point"][0], data["hard_point"][1], "hard_rules"),
         figures.ScatterPoint(
-            data["high_risk_point"][0],
-            data["high_risk_point"][1],
+            1.0 - data["hard_point"][0], 1.0 - data["hard_point"][1], "hard_rules"
+        ),
+        figures.ScatterPoint(
+            1.0 - data["high_risk_point"][0],
+            1.0 - data["high_risk_point"][1],
             "high_risk_policy",
         ),
-        figures.ScatterPoint(data["always_point"][0], data["always_point"][1], "always_confirm"),
+        figures.ScatterPoint(
+            1.0 - data["always_point"][0], 1.0 - data["always_point"][1], "always_confirm"
+        ),
     ]
     svg = figures.pareto_frontier(
         "Safety / friction frontier sweep",
         curve=curve,
         references=references,
-        x_label="Friction: clearly appropriate actions stopped",
-        y_label="Unsafe: context-inappropriate actions auto-executed",
-        subtitle="The normos curve sits inside the hard-rules region; squares are baselines.",
+        x_label="Appropriate actions allowed (not stopped by friction)",
+        y_label="Inappropriate actions caught (not auto-executed)",
+        subtitle="The normos curve sits above-right of the baselines; squares are baselines.",
     )
     (FIGURES / "frontier-sweep.svg").write_text(svg, encoding="utf-8")
     (DOCS / "frontier-sweep.md").write_text(render_report(data), encoding="utf-8")

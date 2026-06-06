@@ -151,8 +151,12 @@ def scatter_frontier(
     x_max: float = 1.0,
     y_max: float = 1.0,
     subtitle: str = "",
+    better_corner: str = "lower-left",
 ) -> str:
-    """Scatter where lower-left is better; draws a 'better' arrow toward the origin."""
+    """Scatter frontier; draws a 'better' arrow toward the better corner.
+
+    ``better_corner`` is "lower-left" (minimize both axes) or "upper-right" (maximize both).
+    """
     width, height = 620, 520
     left, right, top, bottom = 70, 40, 70, 80
     plot_w = width - left - right
@@ -195,16 +199,25 @@ def scatter_frontier(
     parts.append(_text(18, top + plot_h / 2, y_label, size=13, anchor="middle",
                        color="#333", rotate=-90))
 
-    # "Better" arrow toward the origin (lower-left).
-    parts.append(
-        f"<line x1='{left + 70}' y1='{top + 70}' x2='{left + 14}' y2='{top + 14}' "
-        f"stroke='#6a8f4f' stroke-width='2' marker-end='url(#arrow)'/>"
-    )
+    # "Better" arrow toward the better corner.
     parts.append(
         "<defs><marker id='arrow' markerWidth='9' markerHeight='9' refX='6' refY='3' "
         "orient='auto'><path d='M0,0 L6,3 L0,6 Z' fill='#6a8f4f'/></marker></defs>"
     )
-    parts.append(_text(left + 78, top + 64, "better", size=11, color="#6a8f4f"))
+    if better_corner == "upper-right":
+        ax = left + plot_w
+        parts.append(
+            f"<line x1='{ax - 70}' y1='{top + 70}' x2='{ax - 14}' y2='{top + 14}' "
+            f"stroke='#6a8f4f' stroke-width='2' marker-end='url(#arrow)'/>"
+        )
+        parts.append(_text(ax - 78, top + 60, "better", size=11, anchor="end",
+                           color="#6a8f4f"))
+    else:
+        parts.append(
+            f"<line x1='{left + 70}' y1='{top + 70}' x2='{left + 14}' y2='{top + 14}' "
+            f"stroke='#6a8f4f' stroke-width='2' marker-end='url(#arrow)'/>"
+        )
+        parts.append(_text(left + 78, top + 64, "better", size=11, color="#6a8f4f"))
 
     for i, point in enumerate(points):
         color = PALETTE[i % len(PALETTE)]

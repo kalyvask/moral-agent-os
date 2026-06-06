@@ -1,7 +1,7 @@
 <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 620 520' width='620' height='520' role='img'>
 <rect width='620' height='520' fill='white'/>
 <text x='70.0' y='28.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='18' fill='#222' font-weight='bold' text-anchor='start'>Safety / friction frontier</text>
-<text x='70.0' y='48.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='12' fill='#666' font-weight='normal' text-anchor='start'>Lower-left is better. Hard rules cannot reach it.</text>
+<text x='70.0' y='48.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='12' fill='#666' font-weight='normal' text-anchor='start'>Upper-right is better. Hard rules cannot reach it.</text>
 <line x1='70.0' y1='70' x2='70.0' y2='440' stroke='#dddddd'/>
 <line x1='70' y1='440.0' x2='580' y2='440.0' stroke='#dddddd'/>
 <text x='70.0' y='458.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='11' fill='#666' font-weight='normal' text-anchor='middle'>0%</text>
@@ -24,17 +24,17 @@
 <text x='62.0' y='74.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='11' fill='#666' font-weight='normal' text-anchor='end'>100%</text>
 <line x1='70' y1='440' x2='580' y2='440' stroke='#444' stroke-width='1.5'/>
 <line x1='70' y1='70' x2='70' y2='440' stroke='#444' stroke-width='1.5'/>
-<text x='325.0' y='490.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='13' fill='#333' font-weight='normal' text-anchor='middle'>Friction: clearly appropriate actions stopped</text>
-<text x='18.0' y='255.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='13' fill='#333' font-weight='normal' text-anchor='middle' transform='rotate(-90 18 255.0)'>Unsafe: context-inappropriate actions auto-executed</text>
-<line x1='140' y1='140' x2='84' y2='84' stroke='#6a8f4f' stroke-width='2' marker-end='url(#arrow)'/>
+<text x='325.0' y='490.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='13' fill='#333' font-weight='normal' text-anchor='middle'>Appropriate actions allowed (not stopped by friction)</text>
+<text x='18.0' y='255.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='13' fill='#333' font-weight='normal' text-anchor='middle' transform='rotate(-90 18 255.0)'>Inappropriate actions caught (not auto-executed)</text>
 <defs><marker id='arrow' markerWidth='9' markerHeight='9' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 Z' fill='#6a8f4f'/></marker></defs>
-<text x='148.0' y='134.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='11' fill='#6a8f4f' font-weight='normal' text-anchor='start'>better</text>
-<circle cx='181.6' cy='231.9' r='8' fill='#2f6f8f'/>
-<text x='193.6' y='235.9' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='13' fill='#2f6f8f' font-weight='bold' text-anchor='start'>hard_rules</text>
-<circle cx='420.6' cy='382.2' r='8' fill='#c1666b'/>
-<text x='432.6' y='386.2' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='13' fill='#c1666b' font-weight='bold' text-anchor='start'>high_risk_policy</text>
-<circle cx='580.0' cy='440.0' r='8' fill='#6a8f4f'/>
-<text x='568.0' y='444.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='13' fill='#6a8f4f' font-weight='bold' text-anchor='end'>always_confirm</text>
-<circle cx='70.0' cy='440.0' r='8' fill='#d9a441'/>
-<text x='82.0' y='444.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='13' fill='#d9a441' font-weight='bold' text-anchor='start'>normos</text>
+<line x1='510' y1='140' x2='566' y2='84' stroke='#6a8f4f' stroke-width='2' marker-end='url(#arrow)'/>
+<text x='502.0' y='130.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='11' fill='#6a8f4f' font-weight='normal' text-anchor='end'>better</text>
+<circle cx='468.4' cy='278.1' r='8' fill='#2f6f8f'/>
+<text x='456.4' y='282.1' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='13' fill='#2f6f8f' font-weight='bold' text-anchor='end'>hard_rules</text>
+<circle cx='229.4' cy='127.8' r='8' fill='#c1666b'/>
+<text x='241.4' y='131.8' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='13' fill='#c1666b' font-weight='bold' text-anchor='start'>high_risk_policy</text>
+<circle cx='70.0' cy='70.0' r='8' fill='#6a8f4f'/>
+<text x='82.0' y='74.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='13' fill='#6a8f4f' font-weight='bold' text-anchor='start'>always_confirm</text>
+<circle cx='580.0' cy='70.0' r='8' fill='#d9a441'/>
+<text x='568.0' y='74.0' font-family='Segoe UI, Helvetica, Arial, sans-serif' font-size='13' fill='#d9a441' font-weight='bold' text-anchor='end'>normos</text>
 </svg>
