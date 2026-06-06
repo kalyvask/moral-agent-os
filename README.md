@@ -34,6 +34,9 @@ build trust, form commitments, face sanction, repair harm, and update norms.
   dependence, repair obligations, third-party review, and shared intent.
 - Persistent workspace memory: corrections, repair obligations, trust, and review
   history, with a frozen-control comparison for the learning loop.
+- A runtime interdependence loop: each counterparty's trust and repair debt update from the
+  agent's own outcomes, so a caught violation costs autonomy and cooperation earns it back,
+  with routing tightening or relaxing in step (frozen-control demo in `bench/relationship_demo.py`).
 - Adapters that gate tools in LangChain, CrewAI, AutoGen, and OpenAI Agents-style agents.
 - Generated reports and figures (Markdown, CSV, JSON, SVG) plus tests, so the thesis
   stays measurable instead of turning into a demo claim.
@@ -46,6 +49,11 @@ stakes?" That distinction matters for real workspace agents because the dangerou
 part is often social and contextual: sending the right-looking email to the wrong
 stakeholder, making an irreversible commitment, exploiting a dependent customer,
 or acting before the team has a shared commitment.
+
+Appropriateness is also not only per-action. An agent that abused a counterparty should not
+silently keep full autonomy with them, so the runtime tracks trust and repair per counterparty
+and lets routing tighten or relax as that standing changes: autonomy is earned and lost from
+behavior over time, not fixed by a static rule.
 
 ## Integrate With Your Agent
 
@@ -159,6 +167,7 @@ ai-safety-os/
     report.py / figures.py    Markdown/CSV/JSON + pure-Python SVG charts
     interdependence.py        repeated-dependence benchmark
     memory_demo.py            frozen-control comparison for the learning loop
+    relationship_demo.py      runtime interdependence loop (frozen-control demo)
     scenarios/                70 scenarios incl. same-action twins and held-out cases
     results/                  generated CSV/JSON with confidence intervals
   docs/                       product brief, eval plan, reports, and docs/figures/
