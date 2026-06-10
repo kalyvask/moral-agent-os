@@ -436,7 +436,8 @@ and an established clean track record relaxes a routine confirm back to auto. So
 or loses autonomy with a counterparty from its own behavior, not a hand-set flag, and anything
 the safety floor flags is never relaxed. `python -m bench.relationship_demo` shows it against a
 frozen control: after a blocked violation the agent's routine actions need confirmation, then
-return to auto once it repairs trust.
+return to auto once it repairs trust. See
+[docs/relationship-report.md](docs/relationship-report.md).
 
 ## Is The Win Real? Context Ablation
 

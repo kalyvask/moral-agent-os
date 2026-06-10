@@ -195,6 +195,14 @@ class WorkspaceMemory:
     def relationships_for(self, names: tuple[str, ...]) -> tuple[RelationshipState, ...]:
         return tuple(self.relationship(name) for name in names)
 
+    def all_relationships(self) -> tuple[RelationshipState, ...]:
+        """Every stored relationship, for surfacing standing in a reviewer surface."""
+        with self._session() as conn:
+            rows = conn.execute(
+                "SELECT stakeholder FROM relationships ORDER BY stakeholder"
+            ).fetchall()
+        return tuple(self.relationship(row[0]) for row in rows)
+
     def upsert_relationship(self, state: RelationshipState) -> None:
         with self._session() as conn:
             conn.execute(

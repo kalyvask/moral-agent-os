@@ -23,7 +23,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from ai_safety_os import MoralAgentOS, WorkspaceMemory
-from ai_safety_os.schema import Disposition
+from ai_safety_os.schema import Disposition, Scenario
 from bench.run import load_scenarios
 
 # One workspace memory for the server's lifetime, so corrections accumulate across requests
@@ -66,6 +66,7 @@ def _decision_payload(scenario_id: str) -> dict:
             "affective_salience": a.affective_salience,
         },
         "flags": list(a.floor_violations) + list(a.reward_hacking_signals),
+        "stakeholders": list(a.stakeholders),
         "options": [
             {
                 "name": o.name,
@@ -80,7 +81,39 @@ def _decision_payload(scenario_id: str) -> dict:
 def build_queue() -> dict:
     items = [_decision_payload(sid) for sid in SCENARIOS]
     counts = {d: sum(1 for it in items if it["disposition"] == d) for d in DISPOSITIONS}
-    return {"items": items, "counts": counts, "corrections": MEMORY.correction_count()}
+    standing = [
+        {
+            "stakeholder": rel.stakeholder,
+            "trust": round(rel.trust, 2),
+            "repair": round(rel.repair_obligation, 2),
+        }
+        for rel in MEMORY.all_relationships()
+    ]
+    return {
+        "items": items,
+        "counts": counts,
+        "corrections": MEMORY.correction_count(),
+        "standing": standing,
+    }
+
+
+def apply_review(memory: WorkspaceMemory, scenario: Scenario, *, approve: bool) -> None:
+    """Record a reviewer's decision: a correction plus the interdependence update.
+
+    Approving records the action as routine and credits cooperation with each stakeholder it
+    touches; flagging records a stricter disposition and sanctions them, so the agent's
+    standing tracks human review. The bank exposes stakeholder types (user, customer,
+    investor); a live agent supplies named counterparties.
+    """
+    stakeholders = MoralAgentOS(memory=memory).evaluate(scenario).assessment.stakeholders
+    if approve:
+        memory.record_correction(scenario, Disposition.AUTO, note="reviewer console: approved")
+        for name in stakeholders:
+            memory.observe_cooperation(name)
+    else:
+        memory.record_correction(scenario, Disposition.ESCALATE, note="reviewer console: flagged")
+        for name in stakeholders:
+            memory.observe_sanction(name)
 
 
 PAGE = """<!doctype html>
@@ -126,6 +159,8 @@ PAGE = """<!doctype html>
   button:hover { background:#f0efea; }
   .label { font-size:11px; color:var(--muted); }
   .mismatch { color:var(--escalate); }
+  .standing { padding:8px 24px; background:#fff; border-bottom:1px solid var(--line);
+              font-size:12px; display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
 </style>
 </head>
 <body>
@@ -134,6 +169,7 @@ PAGE = """<!doctype html>
   <span class="sub">Adaptive review console - five dispositions over the workspace action bank</span>
   <span class="counts" id="counts"></span>
 </header>
+<div id="standing" class="standing"></div>
 <main id="board"></main>
 <script>
 const DISPS = ["auto","confirm","present_options","escalate","block"];
@@ -154,8 +190,11 @@ function card(it) {
   const chips = Object.entries(it.scores).map(([k,v])=>chip(k,v)).join("");
   const flags = it.flags.length ? `<div class="flags">flag: ${it.flags.join("; ")}</div>` : "";
   const opts = it.options.map(o=>`<div class="opt"><b>${o.name}</b>: ${o.interpretation} <span class="label">-> ${o.recommended_action}</span></div>`).join("");
-  const acts = it.disposition==="auto" ? "" :
-    `<div class="actions"><button onclick="correct('${it.id}','auto')">Approve -> remember as routine</button></div>`;
+  const approve = it.disposition!=="auto"
+    ? `<button onclick="review('${it.id}','approve')">Approve -> routine</button>` : "";
+  const flag = it.disposition!=="block"
+    ? `<button onclick="review('${it.id}','flag')">Flag -> inappropriate</button>` : "";
+  const acts = (approve||flag) ? `<div class="actions">${approve}${flag}</div>` : "";
   const tag = mism ? ` <span class="mismatch label">(vs label: ${it.expected_label})</span>` : "";
   return `<div class="card" style="border-left-color:var(--${it.disposition})">
     <div class="action">${it.action}</div>
@@ -170,6 +209,11 @@ async function load() {
   document.getElementById("counts").innerHTML =
     DISPS.map(d=>`<span class="pill" style="background:var(--${d})">${LABEL[d]} ${data.counts[d]}</span>`).join("")
     + `<span class="pill" style="background:#555">corrections ${data.corrections}</span>`;
+  const st = document.getElementById("standing");
+  st.innerHTML = data.standing.length
+    ? "<span class='label'>Standing by stakeholder:</span> " + data.standing.map(s=>
+        `<span class="chip ${s.repair>0?'hot':''}">${s.stakeholder} · trust ${s.trust.toFixed(2)}${s.repair>0?` · owes ${s.repair.toFixed(2)}`:""}</span>`).join("")
+    : "<span class='label'>Standing by stakeholder: approve or flag actions to build per-stakeholder trust.</span>";
   const board = document.getElementById("board");
   board.innerHTML = DISPS.map(d=>{
     const items = data.items.filter(it=>it.disposition===d);
@@ -177,9 +221,9 @@ async function load() {
     return `<div class="col"><h2 style="border-color:var(--${d})">${LABEL[d]} (${items.length})</h2>${items.map(card).join("")}</div>`;
   }).join("");
 }
-async function correct(id, disp) {
+async function review(id, action) {
   await fetch("/api/correct", {method:"POST", headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({scenario_id:id, disposition:disp})});
+    body: JSON.stringify({scenario_id:id, action:action})});
   load();
 }
 load();
@@ -214,12 +258,9 @@ class Handler(BaseHTTPRequestHandler):
         length = int(self.headers.get("Content-Length", "0"))
         payload = json.loads(self.rfile.read(length) or b"{}")
         scenario = SCENARIOS.get(str(payload.get("scenario_id")))
-        try:
-            disposition = Disposition(str(payload.get("disposition", "auto")))
-        except ValueError:
-            disposition = Disposition.AUTO
         if scenario is not None:
-            MEMORY.record_correction(scenario, disposition, note="reviewer console")
+            approve = str(payload.get("action", "approve")) != "flag"
+            apply_review(MEMORY, scenario, approve=approve)
         self._send(json.dumps({"ok": scenario is not None}).encode("utf-8"), "application/json")
 
 
