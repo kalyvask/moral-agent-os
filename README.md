@@ -27,13 +27,14 @@ build trust, form commitments, face sanction, repair harm, and update norms.
   prompt caching and a no-key fallback to the deterministic baseline.
 - A context-ablation experiment that measures whether the same-action-different-context
   win is real or definitional, instead of asserting it.
-- A tool wrapper: `@runtime.guard_tool(...)` pauses or executes agent tools based
-  on that decision.
+- A tool wrapper: `@runtime.guard_tool(...)` pauses or executes agent tools, sync or
+  async, based on that decision.
 - A routing benchmark: hard rules vs always-confirm vs context-aware NormOS.
 - An interdependence benchmark: Stag Hunt, commons, delegation, asymmetric
   dependence, repair obligations, third-party review, and shared intent.
-- Persistent workspace memory: corrections, repair obligations, trust, and review
-  history, with a frozen-control comparison for the learning loop.
+- Persistent workspace memory: corrections, repair obligations, trust, review
+  history, and an audit log of every SDK decision (`WorkspaceMemory.decision_log()`),
+  with a frozen-control comparison for the learning loop.
 - A runtime interdependence loop: each counterparty's trust and repair debt update from the
   agent's own outcomes, so a caught violation costs autonomy and cooperation earns it back,
   with routing tightening or relaxing in step (frozen-control demo in `bench/relationship_demo.py`).

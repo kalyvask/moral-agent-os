@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import replace
 from functools import wraps
-from inspect import signature
+from inspect import iscoroutinefunction, signature
 from typing import Any
 
 from ai_safety_os.assess import Assessor, HeuristicAssessor
@@ -116,7 +116,7 @@ class MoralAgentOS:
 
         required_review = required_review or route == MoralRoute.ESCALATE
 
-        return MoralDecision(
+        decision = MoralDecision(
             route=route,
             reason=" ".join(reasons),
             stakes=self._stakes_label(assessment.stakes),
@@ -141,6 +141,8 @@ class MoralAgentOS:
                 ],
             },
         )
+        self._log_decision(action, decision, assessment)
+        return decision
 
     before_action = assess
 
@@ -182,6 +184,22 @@ class MoralAgentOS:
             if executed:
                 memory.observe_cooperation(name, amount=self.cooperation_amount)
 
+    def _log_decision(
+        self,
+        action: ActionProposal,
+        decision: MoralDecision,
+        assessment: ContextAssessment,
+    ) -> None:
+        """Append the decision to the memory's audit log, if the backend keeps one.
+
+        Recording happens on every SDK ``assess()`` regardless of ``learn_from_outcomes``:
+        the audit trail is observation, not learning, so the frozen control logs too.
+        """
+        record = getattr(self.memory, "record_decision", None)
+        if record is None:
+            return
+        record(action, decision, stakeholders=assessment.stakeholders)
+
     def guard_tool(
         self,
         *,
@@ -190,12 +208,18 @@ class MoralAgentOS:
         proposal_builder: Callable[..., ActionProposal] | None = None,
         context_builder: Callable[..., ContextSnapshot] | None = None,
         execute_routes: tuple[MoralRoute, ...] = (MoralRoute.ALLOW,),
-    ) -> Callable[[Callable[..., Any]], Callable[..., GuardedToolResult]]:
-        """Decorate an agent tool so AI Safety OS gates execution."""
+    ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+        """Decorate an agent tool so AI Safety OS gates execution.
 
-        def decorator(func: Callable[..., Any]) -> Callable[..., GuardedToolResult]:
-            @wraps(func)
-            def wrapper(*args: Any, **kwargs: Any) -> GuardedToolResult:
+        Works on both sync and async tools: an ``async def`` tool gets an async wrapper
+        that awaits the tool only when the decision allows execution, so the guard drops
+        into asyncio-based agent frameworks unchanged.
+        """
+
+        def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+            def prepare(
+                args: tuple[Any, ...], kwargs: dict[str, Any]
+            ) -> tuple[ActionProposal, ContextSnapshot]:
                 action = (
                     proposal_builder(*args, **kwargs)
                     if proposal_builder
@@ -208,13 +232,17 @@ class MoralAgentOS:
                     if context
                     else self._default_context_snapshot(func)
                 )
-                decision = self.assess(action, context_snapshot)
-                executed = decision.route in execute_routes
-                result = func(*args, **kwargs) if executed else None
+                return action, context_snapshot
+
+            def finish(
+                decision: MoralDecision,
+                context_snapshot: ContextSnapshot,
+                executed: bool,
+                result: Any,
+            ) -> GuardedToolResult:
                 # Close the interdependence loop: the outcome updates the agent's standing
                 # with each affected counterparty for next time.
                 self.observe_outcome(decision, context_snapshot, executed=executed)
-
                 if executed:
                     return GuardedToolResult(
                         decision=decision,
@@ -222,12 +250,31 @@ class MoralAgentOS:
                         result=result,
                         message="Executed after AI Safety OS allowed the action.",
                     )
-
                 return GuardedToolResult(
                     decision=decision,
                     executed=False,
                     message=self._blocked_tool_message(decision),
                 )
+
+            if iscoroutinefunction(func):
+
+                @wraps(func)
+                async def async_wrapper(*args: Any, **kwargs: Any) -> GuardedToolResult:
+                    action, context_snapshot = prepare(args, kwargs)
+                    decision = self.assess(action, context_snapshot)
+                    executed = decision.route in execute_routes
+                    result = await func(*args, **kwargs) if executed else None
+                    return finish(decision, context_snapshot, executed, result)
+
+                return async_wrapper
+
+            @wraps(func)
+            def wrapper(*args: Any, **kwargs: Any) -> GuardedToolResult:
+                action, context_snapshot = prepare(args, kwargs)
+                decision = self.assess(action, context_snapshot)
+                executed = decision.route in execute_routes
+                result = func(*args, **kwargs) if executed else None
+                return finish(decision, context_snapshot, executed, result)
 
             return wrapper
 

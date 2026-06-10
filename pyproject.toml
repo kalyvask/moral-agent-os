@@ -1,6 +1,6 @@
 [project]
 name = "ai-safety-os"
-version = "0.1.0"
+version = "0.2.0"
 description = "Appropriateness infrastructure for AI agents."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -25,6 +25,10 @@ llm = [
 # shipped, so they are excluded from package discovery.
 [tool.setuptools]
 packages = ["ai_safety_os", "ai_safety_os.adapters"]
+
+[tool.setuptools.package-data]
+# PEP 561 marker so downstream type checkers see the package's annotations.
+ai_safety_os = ["py.typed"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -2,7 +2,7 @@
 
 from ai_safety_os.assess import Assessor, HeuristicAssessor
 from ai_safety_os.llm_assessor import LLMAssessor
-from ai_safety_os.memory import WorkspaceMemory, hydrate_context
+from ai_safety_os.memory import DecisionRecord, WorkspaceMemory, hydrate_context
 from ai_safety_os.openrouter_assessor import OpenRouterAssessor
 from ai_safety_os.runtime import MoralAgentOS
 from ai_safety_os.schema import (
@@ -20,10 +20,13 @@ from ai_safety_os.schema import (
     Stakeholder,
 )
 
+__version__ = "0.2.0"
+
 __all__ = [
     "ActionProposal",
     "Assessor",
     "ContextSnapshot",
+    "DecisionRecord",
     "Disposition",
     "GuardedToolResult",
     "HeuristicAssessor",

@@ -12,6 +12,9 @@ This module closes that gap. ``WorkspaceMemory`` stores three things per workspa
   debt; cooperation pays it down. This is the same state the runtime already reasons over,
   now durable instead of hand-passed.
 - Review history per stakeholder: an audit trail of escalated decisions and outcomes.
+- A decision log: every SDK assessment (``MoralAgentOS.assess``) is recorded with its route,
+  reason, and trace, so an agent's behavior is auditable after the fact via
+  ``decision_log()``.
 
 ``WorkspaceMemory`` exposes the same ``lookup(scenario)`` the runtime already consults, so
 it drops in via ``MoralAgentOS(memory=WorkspaceMemory(path))``. A ``frozen=True`` instance
@@ -21,12 +24,21 @@ the learning loop actually helps (see ``bench/memory_demo.py``).
 
 from __future__ import annotations
 
+import json
 import sqlite3
 from contextlib import contextmanager
 from dataclasses import dataclass, replace
 from pathlib import Path
+from typing import Any
 
-from ai_safety_os.schema import ContextSnapshot, Disposition, RelationshipState, Scenario
+from ai_safety_os.schema import (
+    ActionProposal,
+    ContextSnapshot,
+    Disposition,
+    MoralDecision,
+    RelationshipState,
+    Scenario,
+)
 
 _STOPWORDS = {"action", "agent", "context", "should", "would", "the", "and", "with"}
 
@@ -51,6 +63,18 @@ class ReviewRecord:
     stakeholder: str
     action_id: str
     outcome: str
+    created_at: str
+
+
+@dataclass(frozen=True)
+class DecisionRecord:
+    action_id: str
+    action_type: str
+    description: str
+    route: str
+    reason: str
+    stakeholders: tuple[str, ...]
+    trace: dict[str, Any]
     created_at: str
 
 
@@ -126,6 +150,21 @@ class WorkspaceMemory:
                     stakeholder TEXT NOT NULL,
                     action_id TEXT NOT NULL,
                     outcome TEXT NOT NULL,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS decisions (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    action_id TEXT NOT NULL,
+                    action_type TEXT NOT NULL,
+                    description TEXT NOT NULL,
+                    route TEXT NOT NULL,
+                    reason TEXT NOT NULL,
+                    stakeholders TEXT NOT NULL DEFAULT '',
+                    trace TEXT NOT NULL DEFAULT '{}',
                     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
                 )
                 """
@@ -285,6 +324,53 @@ class WorkspaceMemory:
                 (stakeholder,),
             ).fetchall()
         return [ReviewRecord(*row) for row in rows]
+
+    # ------------------------------------------------------------------ decisions
+
+    def record_decision(
+        self,
+        action: ActionProposal,
+        decision: MoralDecision,
+        stakeholders: tuple[str, ...] = (),
+    ) -> None:
+        """Append one SDK decision to the audit log (recorded even when frozen)."""
+        with self._session() as conn:
+            conn.execute(
+                "INSERT INTO decisions "
+                "(action_id, action_type, description, route, reason, stakeholders, trace) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (
+                    action.id,
+                    action.action_type,
+                    action.description,
+                    decision.route.value,
+                    decision.reason,
+                    " ".join(stakeholders),
+                    json.dumps(decision.trace, default=str),
+                ),
+            )
+
+    def decision_log(self, limit: int = 50) -> list[DecisionRecord]:
+        """Most recent SDK decisions, newest first."""
+        with self._session() as conn:
+            rows = conn.execute(
+                "SELECT action_id, action_type, description, route, reason, stakeholders, "
+                "trace, created_at FROM decisions ORDER BY id DESC LIMIT ?",
+                (limit,),
+            ).fetchall()
+        return [
+            DecisionRecord(
+                action_id=row[0],
+                action_type=row[1],
+                description=row[2],
+                route=row[3],
+                reason=row[4],
+                stakeholders=tuple(row[5].split()) if row[5] else (),
+                trace=json.loads(row[6]),
+                created_at=row[7],
+            )
+            for row in rows
+        ]
 
 
 def hydrate_context(
